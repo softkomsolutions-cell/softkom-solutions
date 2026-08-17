@@ -46,71 +46,13 @@ try {
 		softkom_v3_load_data();
 	}
 
-	smoke_assert( "Lead CPT function exists", function_exists( 'softkom_v3_register_lead_post_type' ) );
-	smoke_assert( "Store assessment lead function exists", function_exists( 'softkom_v3_store_assessment_lead' ) );
+	smoke_assert( "Lead storage handler exists", function_exists( 'softkom_v3_store_assessment_lead' ) );
+	smoke_assert( "HOT lead auto-pipeline handler exists", function_exists( 'softkom_v3_auto_pipeline_hot_lead' ) );
 
 	// -------------------------------------------------------------------------
-	// 2. Create Isolated Runtime Test Lead
+	// 2. Create Isolated Runtime Test Campaign
 	// -------------------------------------------------------------------------
-	$test_email = 'runtime_test_' . time() . '@__SOFTKOM_RUNTIME_TEST__.local';
-	$test_title = '__SOFTKOM_RUNTIME_TEST__ - Smoke Lead ' . time();
-
-	$payload = array(
-		'first_name'   => '__SOFTKOM_RUNTIME_TEST__',
-		'last_name'    => 'SmokeUser',
-		'email'        => $test_email,
-		'company'      => '__SOFTKOM_RUNTIME_TEST__ Corp',
-		'phone'        => '+27-70-000-0000',
-		'answers'      => array(
-			'visibility-01' => 1,
-			'reporting-03'  => 1,
-			'process-01'    => 1,
-			'automation-01' => 1,
-		),
-		'qualification'=> array(
-			'company_size'  => '51-200',
-			'decision_role' => 'owner-executive',
-			'urgency'       => 'critical',
-			'sales_process' => 'mostly-manual',
-		),
-		'started_at'   => time() - 60,
-		'completed_at' => time(),
-	);
-
-	if ( function_exists( 'softkom_v3_store_assessment_lead' ) ) {
-		$lead_id = softkom_v3_store_assessment_lead( $payload );
-		if ( $lead_id && ! is_wp_error( $lead_id ) ) {
-			$created_post_ids[] = (int) $lead_id;
-			update_post_meta( $lead_id, '_softkom_runtime_test_marker', '__SOFTKOM_RUNTIME_TEST__' );
-			smoke_assert( "Assessment lead post created successfully (ID: {$lead_id})", $lead_id > 0 );
-
-			$retrieved_email = get_post_meta( $lead_id, '_softkom_lead_email', true );
-			smoke_assert( "Lead metadata correctly assigned", $retrieved_email === $test_email );
-		} else {
-			smoke_assert( "Assessment lead post created successfully", false );
-		}
-	} else {
-		// Fallback manual post creation for testing harness if helper missing
-		$lead_id = wp_insert_post(
-			array(
-				'post_title'  => $test_title,
-				'post_type'   => 'softkom_lead',
-				'post_status' => 'publish',
-				'meta_input'  => array(
-					'_softkom_lead_email'        => $test_email,
-					'_softkom_runtime_test_marker' => '__SOFTKOM_RUNTIME_TEST__',
-				),
-			)
-		);
-		if ( $lead_id && ! is_wp_error( $lead_id ) ) {
-			$created_post_ids[] = (int) $lead_id;
-			smoke_assert( "Fallback lead post created successfully (ID: {$lead_id})", $lead_id > 0 );
-		}
-	}
-
-	// -------------------------------------------------------------------------
-	// 3. Create Isolated Runtime Test Campaign
-	// -------------------------------------------------------------------------
+	$campaign_key   = '__softkom_runtime_test_campaign_' . time() . '__';
 	$campaign_title = '__SOFTKOM_RUNTIME_TEST__ - Smoke Campaign ' . time();
 	$campaign_id    = wp_insert_post(
 		array(
@@ -119,7 +61,9 @@ try {
 			'post_status' => 'publish',
 			'meta_input'  => array(
 				'_softkom_campaign_utm_source'   => 'smoke-source',
-				'_softkom_campaign_utm_campaign' => '__softkom_runtime_test_campaign__',
+				'_softkom_campaign_utm_medium'   => 'cpc',
+				'_softkom_campaign_utm_campaign' => $campaign_key,
+				'_softkom_campaign_budget'       => '1000',
 				'_softkom_runtime_test_marker'   => '__SOFTKOM_RUNTIME_TEST__',
 			),
 		)
@@ -131,12 +75,124 @@ try {
 
 		if ( function_exists( 'softkom_v3_campaign_tracked_url' ) ) {
 			$tracked_url = softkom_v3_campaign_tracked_url( $campaign_id );
-			smoke_assert( "Campaign tracked URL generated", is_string( $tracked_url ) && strlen( $tracked_url ) > 0 );
+			smoke_assert( "Campaign tracked URL generated", is_string( $tracked_url ) && strpos( $tracked_url, 'utm_source=smoke-source' ) !== false );
 		}
 	}
 
-} catch ( Exception $e ) {
-	echo "[EXCEPTION] " . $e->getMessage() . "\n";
+	// -------------------------------------------------------------------------
+	// 3. Create & Verify HOT Sales-Eligible Lead with Auto-Pipeline & Attribution
+	// -------------------------------------------------------------------------
+	$test_email = 'runtime_test_' . time() . '@__SOFTKOM_RUNTIME_TEST__.local';
+	$test_title = '__SOFTKOM_RUNTIME_TEST__ Corp - Smoke User';
+
+	$mock_result = array(
+		'lead' => array(
+			'first_name' => 'Smoke',
+			'last_name'  => 'User',
+			'email'      => $test_email,
+			'company'    => '__SOFTKOM_RUNTIME_TEST__ Corp',
+		),
+		'scores' => array(
+			'maturity'        => 30,
+			'ai_opportunity'  => 85,
+			'commercial_fit'  => 80,
+			'purchase_intent' => 85,
+			'overall_lead'    => 82,
+		),
+		'lead_temperature' => 'HOT',
+		'maturity_level'   => array(
+			'key'   => 'spreadsheet-dependent',
+			'title' => 'Spreadsheet Dependent',
+		),
+		'priority_opportunities' => array(
+			array( 'title' => 'AI Automation', 'score' => 85 ),
+		),
+		'recommendations' => array(
+			array( 'id' => 'managed_automation', 'title' => 'Managed Automation' ),
+		),
+		'lead_routing' => array(
+			'sales_eligible' => true,
+		),
+		'attribution' => array(
+			'utm_source'   => 'smoke-source',
+			'utm_medium'   => 'cpc',
+			'utm_campaign' => $campaign_key,
+		),
+	);
+
+	$assessment_answers    = array( 'visibility-01' => 1, 'process-01' => 1 );
+	$qualification_answers = array( 'company_size' => '51-200', 'urgency' => 'critical' );
+	$security              = array( 'risk_score' => 10, 'risk_level' => 'LOW RISK' );
+
+	$count_before = count( get_posts( array( 'post_type' => 'softkom_lead', 'post_status' => 'any', 'posts_per_page' => -1 ) ) );
+
+	softkom_v3_store_assessment_lead(
+		$mock_result,
+		$assessment_answers,
+		$qualification_answers,
+		$security
+	);
+
+	// Find the created lead
+	$created_leads = get_posts(
+		array(
+			'post_type'      => 'softkom_lead',
+			'post_status'    => 'any',
+			'posts_per_page' => 1,
+			'meta_query'     => array(
+				array(
+					'key'     => '_softkom_email',
+					'value'   => $test_email,
+					'compare' => '=',
+				),
+			),
+		)
+	);
+
+	$lead_id = ( $created_leads && ! empty( $created_leads[0] ) ) ? $created_leads[0]->ID : 0;
+
+	if ( $lead_id > 0 ) {
+		$created_post_ids[] = (int) $lead_id;
+		update_post_meta( $lead_id, '_softkom_runtime_test_marker', '__SOFTKOM_RUNTIME_TEST__' );
+
+		smoke_assert( "HOT lead stored successfully (ID: {$lead_id})", $lead_id > 0 );
+
+		$retrieved_email = get_post_meta( $lead_id, '_softkom_email', true );
+		smoke_assert( "Lead _softkom_email meta correctly set", $retrieved_email === $test_email );
+
+		// Execute HOT Lead Auto-Pipeline
+		if ( function_exists( 'softkom_v3_auto_pipeline_hot_lead' ) ) {
+			softkom_v3_auto_pipeline_hot_lead( $lead_id, $mock_result, $security );
+		}
+
+		$stage     = get_post_meta( $lead_id, '_softkom_pipeline_stage', true );
+		$mrr       = get_post_meta( $lead_id, '_softkom_estimated_mrr', true );
+		$auto_flag = get_post_meta( $lead_id, '_softkom_recurring_auto_applied', true );
+
+		smoke_assert( "HOT lead auto-populated pipeline stage", ! empty( $stage ) );
+		smoke_assert( "HOT lead auto-populated estimated MRR", ! empty( $mrr ) && $mrr > 0 );
+		smoke_assert( "HOT lead auto-applied recurring flag set", ! empty( $auto_flag ) );
+
+		// Test Idempotency (re-running auto pipeline should not corrupt or duplicate)
+		if ( function_exists( 'softkom_v3_auto_pipeline_hot_lead' ) ) {
+			softkom_v3_auto_pipeline_hot_lead( $lead_id, $mock_result, $security );
+			$mrr_after = get_post_meta( $lead_id, '_softkom_estimated_mrr', true );
+			smoke_assert( "Auto-pipeline execution is idempotent", $mrr === $mrr_after );
+		}
+	} else {
+		smoke_assert( "HOT lead stored successfully", false );
+	}
+
+	// -------------------------------------------------------------------------
+	// 4. Verify Campaign Performance / Reporting Integration
+	// -------------------------------------------------------------------------
+	if ( $campaign_id > 0 && function_exists( 'softkom_v3_campaign_performance' ) ) {
+		$perf = softkom_v3_campaign_performance( $campaign_id );
+		smoke_assert( "Campaign performance metrics calculated", is_array( $perf ) && isset( $perf['leads'] ) );
+	}
+
+} catch ( Throwable $e ) {
+	echo "[EXCEPTION] " . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString() . "\n";
 	$failed++;
 } finally {
 	// -------------------------------------------------------------------------
