@@ -1,0 +1,117 @@
+/* Softkom V3 — home-exclusive section organisms (promoted via sections/) */
+
+.sk-site .trust { padding: 40px 0; border-bottom: 1px solid var(--sk-border); }
+.sk-site .trust-label {
+  font-size: 13px;
+  color: var(--sk-text-muted);
+  margin: 0 0 16px;
+}
+.sk-site .trust-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.sk-site .trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border: 1px solid var(--sk-border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sk-site .process-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 0;
+  align-items: center;
+}
+.sk-site .process-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid var(--sk-border);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sk-primary);
+}
+.sk-site .process-arrow {
+  color: var(--sk-accent);
+  padding: 0 8px;
+  font-weight: 700;
+}
+
+.sk-site .journey {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+.sk-site .journey-stage {
+  background: #fff;
+  border: 1px solid var(--sk-border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+.sk-site .journey-stage:hover,
+.sk-site .journey-stage.is-open {
+  transform: translateY(-2px);
+  box-shadow: var(--elevate);
+  z-index: 2;
+}
+.sk-site .stage-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--sk-accent);
+  margin-bottom: 8px;
+}
+.sk-site .journey-stage strong {
+  display: block;
+  font-size: 15px;
+  color: var(--sk-primary);
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+.sk-site .stage-hint {
+  font-size: 13px;
+  color: var(--sk-text-muted);
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease, margin 0.25s ease;
+}
+.sk-site .journey-stage:hover .stage-hint,
+.sk-site .journey-stage:focus-within .stage-hint,
+.sk-site .journey-stage.is-open .stage-hint {
+  max-height: 160px;
+  opacity: 1;
+  margin-top: 4px;
+}
+
+@media (max-width: 1100px) {
+  .sk-site .journey { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .sk-site .process-flow { flex-direction: column; align-items: stretch; }
+  .sk-site .process-arrow { transform: rotate(90deg); text-align: center; }
+  .sk-site .journey { grid-template-columns: 1fr; }
+  .sk-site .journey-stage { cursor: pointer; }
+  .sk-site .journey-stage:hover .stage-hint { max-height: 0; opacity: 0; margin-top: 0; }
+  .sk-site .journey-stage.is-open .stage-hint { max-height: 200px; opacity: 1; margin-top: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-site .journey-stage { transition: none; }
+  .sk-site .stage-hint {
+    max-height: none;
+    opacity: 1;
+    margin-top: 4px;
+  }
+}

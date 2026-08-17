@@ -1,0 +1,56 @@
+/* Softkom V3 — design tokens (product-led elevation) */
+.sk-site {
+  --sk-primary: #0B1220;
+  --sk-primary-soft: #1A2332;
+  --sk-accent: #1D4ED8;
+  --sk-accent-hover: #1E40AF;
+  --sk-accent-subtle: #F1F5F9;
+  --sk-bg: #FFFFFF;
+  --sk-bg-secondary: #F7F8FA;
+  --sk-bg-dark: #0B1220;
+  --sk-bg-luxury: #0A0A0B;
+  --sk-text: #1A2332;
+  --sk-text-muted: #5B6573;
+  --sk-text-on-dark: #F8FAFC;
+  --sk-text-muted-on-dark: #94A3B8;
+  --sk-border: #E6E8EC;
+  --sk-border-strong: #D0D5DD;
+  --sk-success: #22C55E;
+  --sk-danger: #B91C1C;
+  --sk-label-client: #0F766E;
+  --sk-label-product: #1D4ED8;
+  --sk-label-dev: #B45309;
+  --sk-gold: #C4A574;
+  --font: "Inter", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "Inter", system-ui, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --max: 1180px;
+  --max-wide: 1280px;
+  --elevate: 0 12px 40px rgba(11, 18, 32, 0.08);
+  --elevate-lg: 0 28px 72px rgba(11, 18, 32, 0.14);
+  --section-y: 120px;
+  --section-y-mobile: 72px;
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--sk-text);
+  background: var(--sk-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sk-site *,
+.sk-site *::before,
+.sk-site *::after { box-sizing: border-box; }
+
+.sk-site a { color: inherit; }
+.sk-site a:focus-visible,
+.sk-site button:focus-visible,
+.sk-site .journey-stage:focus-visible {
+  outline: 2px solid var(--sk-accent);
+  outline-offset: 3px;
+}

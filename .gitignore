@@ -1,0 +1,65 @@
+# =========================================================
+# Softkom Solutions repository
+# Keep custom application code; exclude WordPress runtime.
+# =========================================================
+
+# WordPress core
+/wp-admin/
+/wp-includes/
+/*.php
+!/index.php
+
+# Sensitive/local configuration
+wp-config.php
+wp-config.php.*
+.env
+.env.*
+
+# WordPress generated/runtime content
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/upgrade-temp-backup/
+
+# Backup systems
+/wp-content/ai1wm-backups/
+/wp-content/backups-dup-lite/
+/backups/
+*.sql
+*.bak
+*.backup
+
+# Logs
+*.log
+/wp-content/debug.log
+
+# Third-party plugins
+/wp-content/plugins/
+
+# Themes: ignore all except Softkom V3
+/wp-content/themes/*
+!/wp-content/themes/softkom-v3/
+
+# Keep MU plugins for now
+# We will inspect these before committing.
+
+# Dependencies/generated
+node_modules/
+vendor/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local runtime/helper files
+/.htaccess
+/index.php
+/license.txt
+/readme.html
+/powershell
+/wp
+
+# Local-specific MU plugin
+/wp-content/mu-plugins/local-by-flywheel-live-link-helper.php

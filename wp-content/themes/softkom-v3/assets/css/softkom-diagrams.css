@@ -1,0 +1,303 @@
+/* Softkom V3 — signature diagram grammar (website, proposals, workshops) */
+
+.sk-site .sk-diagram {
+  background: #fff;
+  border: 1px solid var(--sk-border);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: var(--elevate);
+}
+
+.sk-site .sk-diagram-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+
+.sk-site .sk-diagram-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sk-primary);
+}
+
+.sk-site .sk-diagram-meta {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--sk-text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sk-site .sk-diagram-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sk-accent);
+  letter-spacing: 0.04em;
+}
+
+.sk-site .sk-diagram-note {
+  margin: 18px 0 0;
+  font-size: 13px;
+  color: var(--sk-text-muted);
+  max-width: 40rem;
+}
+
+/* Connected Business */
+.sk-site .sk-diagram-stack { display: grid; gap: 12px; }
+.sk-site .sk-diagram-row {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1px solid var(--sk-border);
+  border-radius: var(--radius-lg);
+  background: var(--sk-bg-secondary);
+}
+.sk-site .sk-diagram-row > .sk-diagram-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--sk-primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+.sk-site .sk-diagram-row strong { display: block; font-size: 15px; color: var(--sk-primary); }
+.sk-site .sk-diagram-row span { display: block; font-size: 13px; color: var(--sk-text-muted); margin-top: 4px; }
+.sk-site .sk-diagram-nodes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+}
+.sk-site .sk-diagram-nodes span {
+  border: 1px dashed var(--sk-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sk-text-muted);
+  background: #fff;
+}
+
+/* Transformation Journey™ — within Softkom Transformation Framework™ */
+.sk-site .sk-journey {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.sk-site .sk-journey::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 28px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--sk-border) 10%, var(--sk-border) 90%, transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+.sk-site .sk-journey-stage {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border: 1px solid var(--sk-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 16px 18px;
+  min-height: 168px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: default;
+}
+.sk-site .sk-journey-stage:hover,
+.sk-site .sk-journey-stage:focus-within,
+.sk-site .sk-journey-stage.is-open {
+  transform: translateY(-3px);
+  box-shadow: var(--elevate);
+  border-color: #BFDBFE;
+}
+.sk-site .sk-journey-stage .sk-diagram-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--sk-accent-subtle);
+  color: var(--sk-accent);
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+.sk-site .sk-journey-stage strong {
+  display: block;
+  font-size: 15px;
+  color: var(--sk-primary);
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+.sk-site .sk-journey-hint {
+  font-size: 13px;
+  color: var(--sk-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+.sk-site .sk-journey-stage:not(:hover):not(:focus-within):not(.is-open) .sk-journey-hint {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sk-site .sk-journey-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sk-accent);
+  margin: 0 0 12px;
+}
+
+/* Maturity */
+.sk-site .sk-maturity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.sk-site .sk-maturity-level {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 8px 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--sk-border);
+  border-radius: var(--radius-lg);
+  background: var(--sk-bg-secondary);
+}
+.sk-site .sk-maturity-level .sk-diagram-num { grid-row: span 2; align-self: center; }
+.sk-site .sk-maturity-level strong { color: var(--sk-primary); font-size: 15px; }
+.sk-site .sk-maturity-level span { grid-column: 2; font-size: 13px; color: var(--sk-text-muted); }
+.sk-site .sk-maturity-level.is-emphasis {
+  background: var(--sk-accent-subtle);
+  border-color: #BFDBFE;
+}
+
+/* AI map */
+.sk-site .sk-ai-map {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.sk-site .sk-ai-band {
+  padding: 16px;
+  border: 1px solid var(--sk-border);
+  border-radius: var(--radius-lg);
+  background: var(--sk-bg-secondary);
+  display: grid;
+  gap: 8px;
+}
+.sk-site .sk-ai-band strong { color: var(--sk-primary); font-size: 15px; }
+.sk-site .sk-ai-band span:last-child { font-size: 13px; color: var(--sk-text-muted); }
+
+/* Integration */
+.sk-site .sk-integration {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
+  align-items: center;
+}
+.sk-site .sk-integration-hub {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--sk-primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 16px;
+}
+.sk-site .sk-integration-ring {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.sk-site .sk-integration-ring li {
+  border: 1px dashed var(--sk-border);
+  border-radius: var(--radius-md);
+  padding: 14px 10px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sk-primary);
+  background: var(--sk-bg-secondary);
+}
+
+/* Delivery lifecycle */
+.sk-site .sk-lifecycle {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+.sk-site .sk-lifecycle li {
+  padding: 14px 12px;
+  border: 1px solid var(--sk-border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  display: grid;
+  gap: 6px;
+}
+.sk-site .sk-lifecycle strong { color: var(--sk-primary); font-size: 14px; }
+.sk-site .sk-lifecycle span:last-child { font-size: 12px; color: var(--sk-text-muted); }
+
+/* Framework board (multi-diagram layouts) */
+.sk-site .sk-framework-board {
+  display: grid;
+  gap: 24px;
+}
+.sk-site .sk-framework-board--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .sk-site .sk-journey { grid-template-columns: repeat(2, 1fr); }
+  .sk-site .sk-journey::before { display: none; }
+  .sk-site .sk-ai-map { grid-template-columns: repeat(2, 1fr); }
+  .sk-site .sk-lifecycle { grid-template-columns: repeat(3, 1fr); }
+  .sk-site .sk-framework-board--2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .sk-site .sk-diagram { padding: 20px; min-height: 0; }
+  .sk-site .sk-journey { grid-template-columns: 1fr; }
+  .sk-site .sk-journey-stage { cursor: pointer; min-height: 0; }
+  .sk-site .sk-journey-stage:not(.is-open) .sk-journey-hint {
+    display: -webkit-box;
+  }
+  .sk-site .sk-ai-map,
+  .sk-site .sk-lifecycle,
+  .sk-site .sk-integration-ring,
+  .sk-site .sk-diagram-nodes { grid-template-columns: 1fr; }
+  .sk-site .sk-integration { grid-template-columns: 1fr; justify-items: center; }
+  .sk-site .sk-integration-hub { width: 140px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-site .sk-journey-stage { transition: none; }
+}

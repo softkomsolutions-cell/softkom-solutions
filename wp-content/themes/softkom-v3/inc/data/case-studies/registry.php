@@ -1,0 +1,293 @@
+<?php
+/**
+ * Case studies registry — RC2.4 permission-aware selected work.
+ *
+ * Seeded only from material Softkom can defend.
+ * No invented metrics. Permission-pending names are anonymised publicly.
+ *
+ * @package Softkom_V3
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * All case study / selected-work records.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function softkom_v3_case_studies_registry() {
+	return array(
+		array(
+			'slug'            => 'traffic-systems-africa',
+			'title'           => 'Traffic Systems Africa',
+			'status'          => 'published',
+			'project_status'  => 'delivered',
+			'evidence_level'  => 'named',
+			'permission'      => array(
+				'public_name' => true,
+				'metrics'     => false,
+				'quotes'      => false,
+				'screenshots' => false,
+				'logo'        => false,
+			),
+			'client'          => array(
+				'internal_name' => 'Traffic Systems Africa',
+				'public_name'   => 'Traffic Systems Africa',
+				'label'         => 'Client Project',
+			),
+			'industry'        => 'Infrastructure & traffic management',
+			'region'          => 'South Africa / Africa',
+			'engagement_type' => 'Corporate website',
+			'softkom_role'    => 'Website design and content structure',
+			'business_context'=> 'Infrastructure-facing organisation needing a credible digital presence for buyer evaluation.',
+			'business_problem'=> 'Present a credible digital presence for an organisation operating across African transport projects — so capability and enquiry paths matched how buyers evaluate infrastructure partners.',
+			'problem'         => 'Capability and enquiry paths needed to match how buyers evaluate infrastructure partners.',
+			'work_delivered'  => 'Corporate website and content structure aligned to infrastructure positioning, project storytelling and enquiry capture.',
+			'client_context'  => '',
+			'operational_environment' => 'Infrastructure and transport',
+			'approach'        => 'Corporate website and content structure aligned to infrastructure positioning, project storytelling and enquiry capture — so buyers could evaluate capability and reach the right conversation.',
+			'current_outcome' => 'Corporate website delivered for buyer evaluation and enquiry capture.',
+			'what_demonstrates'=> 'Softkom can structure digital presence for infrastructure-facing organisations without inventing delivery metrics.',
+			'frameworks'      => array(),
+			'implementation_stages' => array(),
+			'lessons_learned' => array(),
+			'outcomes'        => array(
+				'Corporate website delivered for capability presentation and enquiry capture.',
+			),
+			'metrics'         => array(),
+			'technologies'    => 'WordPress · Elementor · Astra',
+			'visual'          => array(
+				'title'  => 'Corporate site · Infrastructure',
+				'widths' => array( '100%', '78%', '92%', '64%' ),
+				'nodes'  => array( 'Projects', 'Capabilities', 'Enquiry', 'Content' ),
+			),
+			'url'             => '/case-studies/',
+			'public'          => true,
+			'hub_card_public' => true,
+			'hub_card'        => array(
+				'title'  => 'Traffic Systems Africa',
+				'pills'  => array( array( 'class' => 'pill-client', 'label' => 'Client Project' ) ),
+				'facts'  => array(
+					array( 'label' => 'Industry', 'value' => 'Infrastructure & traffic management' ),
+					array( 'label' => 'Engagement', 'value' => 'Corporate website' ),
+					array( 'label' => 'Challenge', 'value' => 'Present a credible digital presence so capability and enquiry paths matched how buyers evaluate infrastructure partners.' ),
+					array( 'label' => 'Work delivered', 'value' => 'Corporate website and content structure aligned to infrastructure positioning, project storytelling and enquiry capture.' ),
+					array( 'label' => 'Technologies', 'value' => 'WordPress · Elementor · Astra' ),
+				),
+				'visual' => array(
+					'title'  => 'Corporate site · Infrastructure',
+					'widths' => array( '100%', '78%', '92%', '64%' ),
+					'nodes'  => array( 'Projects', 'Capabilities', 'Enquiry', 'Content' ),
+				),
+				'url'    => '/case-studies/',
+			),
+			'notes'           => 'Permission log: public name Yes. Website project — challenge/approach only. No invented metrics.',
+		),
+		array(
+			'slug'            => 'psi-stationery',
+			'title'           => 'Retail ordering platform',
+			'status'          => 'published',
+			'project_status'  => 'delivered',
+			'evidence_level'  => 'anonymous',
+			'permission'      => array(
+				'public_name' => false,
+				'metrics'     => false,
+				'quotes'      => false,
+				'screenshots' => false,
+				'logo'        => false,
+			),
+			'client'          => array(
+				'internal_name' => 'PS&I Stationery Supplies',
+				'public_name'   => '',
+				'label'         => 'Client Project',
+			),
+			'industry'        => 'Retail & distribution',
+			'region'          => '',
+			'engagement_type' => 'Digital ordering platform',
+			'softkom_role'    => 'Platform design and delivery',
+			'business_context'=> 'Stationery distribution ordering depended on manual back-office handling.',
+			'business_problem'=> 'Stationery ordering depended on manual back-office handling — slow for customers, expensive for ops, and hard to scale without adding headcount to every new order volume.',
+			'problem'         => 'Manual ordering was slow for customers and expensive for operations as volume grew.',
+			'work_delivered'  => 'Digital ordering platform spanning web and mobile so catalogue, order capture and fulfilment handoff sit in one controlled flow.',
+			'client_context'  => '',
+			'operational_environment' => 'Retail and distribution',
+			'approach'        => 'Digital ordering platform spanning web and mobile so catalogue, order capture and fulfilment handoff sit in one controlled flow — reducing re-entry and giving ops a single queue to run.',
+			'current_outcome' => 'Ordering workflow digitised across web and mobile.',
+			'what_demonstrates'=> 'Softkom can digitise ordering workflows for retail/distribution operations.',
+			'frameworks'      => array( 'connected-business' ),
+			'implementation_stages' => array(),
+			'lessons_learned' => array(),
+			'outcomes'        => array(
+				'Ordering workflow digitised across web and mobile.',
+			),
+			'metrics'         => array(),
+			'technologies'    => 'Custom web · Mobile · Integrations',
+			'visual'          => array(
+				'title'  => 'Ordering · Web & mobile',
+				'widths' => array( '88%', '70%', '95%', '55%' ),
+				'nodes'  => array( 'Catalogue', 'Orders', 'Mobile', 'Ops' ),
+			),
+			'url'             => '/case-studies/',
+			'public'          => true,
+			'hub_card_public' => true,
+			'hub_card'        => array(
+				'title'  => 'Retail ordering platform',
+				'pills'  => array(
+					array( 'class' => 'pill-client', 'label' => 'Client Project' ),
+					array( 'class' => 'pill-anon', 'label' => 'Anonymised' ),
+				),
+				'facts'  => array(
+					array( 'label' => 'Industry', 'value' => 'Retail & distribution' ),
+					array( 'label' => 'Engagement', 'value' => 'Digital ordering platform' ),
+					array( 'label' => 'Challenge', 'value' => 'Ordering depended on manual back-office handling — slow for customers and expensive for ops as volume grew.' ),
+					array( 'label' => 'Work delivered', 'value' => 'Digital ordering platform spanning web and mobile so catalogue, order capture and fulfilment handoff sit in one controlled flow.' ),
+					array( 'label' => 'Technologies', 'value' => 'Custom web · Mobile · Integrations' ),
+				),
+				'visual' => array(
+					'title'  => 'Ordering · Web & mobile',
+					'widths' => array( '88%', '70%', '95%', '55%' ),
+					'nodes'  => array( 'Catalogue', 'Orders', 'Mobile', 'Ops' ),
+				),
+				'url'    => '/case-studies/',
+			),
+			'notes'           => 'RC2.4: public name Confirm in permission log — anonymised until Softkom logs naming permission. Internal name retained for evidence register only.',
+		),
+		array(
+			'slug'            => 'lekr',
+			'title'           => 'E-commerce systems engagement',
+			'status'          => 'published',
+			'project_status'  => 'delivered',
+			'evidence_level'  => 'anonymous',
+			'permission'      => array(
+				'public_name' => false,
+				'metrics'     => false,
+				'quotes'      => false,
+				'screenshots' => false,
+				'logo'        => false,
+			),
+			'client'          => array(
+				'internal_name' => 'LEKR',
+				'public_name'   => '',
+				'label'         => 'Client Project',
+			),
+			'industry'        => 'Retail / e-commerce',
+			'region'          => '',
+			'engagement_type' => 'E-commerce and systems delivery',
+			'softkom_role'    => 'E-commerce and systems delivery',
+			'business_context'=> 'Storefront activity and operational systems were not aligned as channel volume grew.',
+			'business_problem'=> 'Storefront activity and operational systems were not aligned — orders and inventory risked drifting apart as channel volume grew, creating fulfilment and margin risk.',
+			'problem'         => 'Orders and inventory risked drifting apart as channel volume grew.',
+			'work_delivered'  => 'E-commerce and systems delivery that connected customer-facing sales with the operational record of stock and fulfilment.',
+			'client_context'  => '',
+			'operational_environment' => 'E-commerce',
+			'approach'        => 'E-commerce and systems delivery that connected customer-facing sales with the operational record of stock and fulfilment — so channel activity and warehouse truth stayed aligned.',
+			'current_outcome' => 'Sales activity connected to operational stock and fulfilment records.',
+			'what_demonstrates'=> 'Softkom can connect e-commerce sales activity to operational systems.',
+			'frameworks'      => array( 'connected-business' ),
+			'implementation_stages' => array(),
+			'lessons_learned' => array(),
+			'outcomes'        => array(
+				'Sales activity connected to operational stock and fulfilment records.',
+			),
+			'metrics'         => array(),
+			'technologies'    => 'E-commerce · ERP integration · Custom systems',
+			'visual'          => array(
+				'title'  => 'E-commerce · Systems',
+				'widths' => array( '75%', '90%', '60%', '82%' ),
+				'nodes'  => array( 'Storefront', 'Orders', 'ERP', 'Stock' ),
+			),
+			'url'             => '/case-studies/',
+			'public'          => true,
+			'hub_card_public' => true,
+			'hub_card'        => array(
+				'title'  => 'E-commerce systems engagement',
+				'pills'  => array(
+					array( 'class' => 'pill-client', 'label' => 'Client Project' ),
+					array( 'class' => 'pill-anon', 'label' => 'Anonymised' ),
+				),
+				'facts'  => array(
+					array( 'label' => 'Industry', 'value' => 'Retail / e-commerce' ),
+					array( 'label' => 'Engagement', 'value' => 'E-commerce and systems delivery' ),
+					array( 'label' => 'Challenge', 'value' => 'Storefront activity and operational systems were not aligned — orders and inventory risked drifting apart as channel volume grew.' ),
+					array( 'label' => 'Work delivered', 'value' => 'E-commerce and systems delivery that connected customer-facing sales with the operational record of stock and fulfilment.' ),
+					array( 'label' => 'Technologies', 'value' => 'E-commerce · ERP integration · Custom systems' ),
+				),
+				'visual' => array(
+					'title'  => 'E-commerce · Systems',
+					'widths' => array( '75%', '90%', '60%', '82%' ),
+					'nodes'  => array( 'Storefront', 'Orders', 'ERP', 'Stock' ),
+				),
+				'url'    => '/case-studies/',
+			),
+			'notes'           => 'RC2.4: public name Confirm in permission log — anonymised until Softkom logs naming permission. Internal name retained for evidence register only.',
+		),
+		array(
+			'slug'            => 'myr-accounting',
+			'title'           => 'MYR Accounting',
+			'status'          => 'published',
+			'project_status'  => 'delivered',
+			'evidence_level'  => 'named',
+			'permission'      => array(
+				'public_name' => true,
+				'metrics'     => false,
+				'quotes'      => false,
+				'screenshots' => false,
+				'logo'        => false,
+			),
+			'client'          => array(
+				'internal_name' => 'MYR Accounting',
+				'public_name'   => 'MYR Accounting',
+				'label'         => 'Client Project',
+			),
+			'industry'        => 'Professional services',
+			'region'          => '',
+			'engagement_type' => 'Practice website',
+			'softkom_role'    => 'Website design and content structure',
+			'business_context'=> 'Accounting practice needing a clear digital presence for enquiry and trust.',
+			'business_problem'=> 'An accounting practice needed a clear digital presence that supported client enquiry and professional trust.',
+			'problem'         => 'Digital presence needed to support client enquiry and professional trust.',
+			'work_delivered'  => 'Business website structured around services, credibility and contact pathways.',
+			'client_context'  => '',
+			'operational_environment' => 'Professional services',
+			'approach'        => 'Business website structured around services, credibility and contact pathways so prospects can evaluate fit and reach the right conversation quickly.',
+			'current_outcome' => 'Practice website delivered for services presentation and enquiry.',
+			'what_demonstrates'=> 'Softkom can deliver practice websites for professional-services enquiry and trust.',
+			'frameworks'      => array(),
+			'implementation_stages' => array(),
+			'lessons_learned' => array(),
+			'outcomes'        => array(
+				'Practice website delivered for services presentation and enquiry.',
+			),
+			'metrics'         => array(),
+			'technologies'    => 'WordPress · Elementor · Astra',
+			'visual'          => array(
+				'title'  => 'Practice site · Services',
+				'widths' => array( '82%', '66%', '90%', '48%' ),
+				'nodes'  => array( 'Services', 'About', 'Contact', 'Trust' ),
+			),
+			'url'             => '/case-studies/',
+			'public'          => true,
+			'hub_card_public' => true,
+			'hub_card'        => array(
+				'title'  => 'MYR Accounting',
+				'pills'  => array( array( 'class' => 'pill-client', 'label' => 'Client Project' ) ),
+				'facts'  => array(
+					array( 'label' => 'Industry', 'value' => 'Professional services' ),
+					array( 'label' => 'Engagement', 'value' => 'Practice website' ),
+					array( 'label' => 'Challenge', 'value' => 'An accounting practice needed a clear digital presence that supported client enquiry and professional trust.' ),
+					array( 'label' => 'Work delivered', 'value' => 'Business website structured around services, credibility and contact pathways.' ),
+					array( 'label' => 'Technologies', 'value' => 'WordPress · Elementor · Astra' ),
+				),
+				'visual' => array(
+					'title'  => 'Practice site · Services',
+					'widths' => array( '82%', '66%', '90%', '48%' ),
+					'nodes'  => array( 'Services', 'About', 'Contact', 'Trust' ),
+				),
+				'url'    => '/case-studies/',
+			),
+			'notes'           => 'Permission log: public name Yes. Website project. No invented metrics.',
+		),
+	);
+}
