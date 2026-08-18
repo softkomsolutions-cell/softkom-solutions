@@ -63,3 +63,6 @@ Thumbs.db
 
 # Local-specific MU plugin
 /wp-content/mu-plugins/local-by-flywheel-live-link-helper.php
+
+# WordPress placeholder file
+/wp-content/index.php
