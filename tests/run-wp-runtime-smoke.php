@@ -17,16 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $created_post_ids = array();
-$passed = 0;
-$failed = 0;
+$GLOBALS['softkom_smoke_passed'] = 0;
+$GLOBALS['softkom_smoke_failed'] = 0;
 
 function smoke_assert( $label, $condition ) {
-	global $passed, $failed;
 	if ( $condition ) {
-		$passed++;
+		$GLOBALS['softkom_smoke_passed']++;
 		echo "[PASS] {$label}\n";
 	} else {
-		$failed++;
+		$GLOBALS['softkom_smoke_failed']++;
 		echo "[FAIL] {$label}\n";
 	}
 }
@@ -82,7 +81,7 @@ try {
 	// -------------------------------------------------------------------------
 	// 3. Create & Verify HOT Sales-Eligible Lead with Auto-Pipeline & Attribution
 	// -------------------------------------------------------------------------
-	$test_email = 'runtime_test_' . time() . '@__SOFTKOM_RUNTIME_TEST__.local';
+	$test_email = 'runtime-test-' . time() . '@example.com';
 	$test_title = '__SOFTKOM_RUNTIME_TEST__ Corp - Smoke User';
 
 	$mock_result = array(
@@ -124,8 +123,6 @@ try {
 	$qualification_answers = array( 'company_size' => '51-200', 'urgency' => 'critical' );
 	$security              = array( 'risk_score' => 10, 'risk_level' => 'LOW RISK' );
 
-	$count_before = count( get_posts( array( 'post_type' => 'softkom_lead', 'post_status' => 'any', 'posts_per_page' => -1 ) ) );
-
 	softkom_v3_store_assessment_lead(
 		$mock_result,
 		$assessment_answers,
@@ -157,27 +154,70 @@ try {
 
 		smoke_assert( "HOT lead stored successfully (ID: {$lead_id})", $lead_id > 0 );
 
-		$retrieved_email = get_post_meta( $lead_id, '_softkom_email', true );
-		smoke_assert( "Lead _softkom_email meta correctly set", $retrieved_email === $test_email );
+		// Verify stored metadata
+		$stored_email       = get_post_meta( $lead_id, '_softkom_email', true );
+		$stored_temp        = get_post_meta( $lead_id, '_softkom_lead_temperature', true );
+		$stored_routing_raw = get_post_meta( $lead_id, '_softkom_lead_routing', true );
+		$stored_routing     = is_string( $stored_routing_raw ) ? json_decode( $stored_routing_raw, true ) : $stored_routing_raw;
+		$stored_source      = get_post_meta( $lead_id, '_softkom_utm_source', true );
+		$stored_medium      = get_post_meta( $lead_id, '_softkom_utm_medium', true );
+		$stored_campaign    = get_post_meta( $lead_id, '_softkom_utm_campaign', true );
+
+		smoke_assert( "Lead _softkom_email meta is correct", $stored_email === $test_email );
+		smoke_assert( "Lead _softkom_lead_temperature is HOT", $stored_temp === 'HOT' );
+		smoke_assert( "Lead _softkom_lead_routing indicates sales_eligible true", is_array( $stored_routing ) && ! empty( $stored_routing['sales_eligible'] ) );
+		smoke_assert( "Lead attribution _softkom_utm_source is correct", $stored_source === 'smoke-source' );
+		smoke_assert( "Lead attribution _softkom_utm_medium is correct", $stored_medium === 'cpc' );
+		smoke_assert( "Lead attribution _softkom_utm_campaign is correct", $stored_campaign === $campaign_key );
 
 		// Execute HOT Lead Auto-Pipeline
 		if ( function_exists( 'softkom_v3_auto_pipeline_hot_lead' ) ) {
 			softkom_v3_auto_pipeline_hot_lead( $lead_id, $mock_result, $security );
 		}
 
-		$stage     = get_post_meta( $lead_id, '_softkom_pipeline_stage', true );
-		$mrr       = get_post_meta( $lead_id, '_softkom_estimated_mrr', true );
-		$auto_flag = get_post_meta( $lead_id, '_softkom_recurring_auto_applied', true );
+		$stage      = get_post_meta( $lead_id, '_softkom_pipeline_stage', true );
+		$offer      = get_post_meta( $lead_id, '_softkom_assigned_offer', true );
+		$mrr        = get_post_meta( $lead_id, '_softkom_estimated_mrr', true );
+		$auto_flag  = get_post_meta( $lead_id, '_softkom_recurring_auto_applied', true );
+		$follow_up  = get_post_meta( $lead_id, '_softkom_follow_up_date', true );
+		$history    = get_post_meta( $lead_id, '_softkom_pipeline_history', true );
 
-		smoke_assert( "HOT lead auto-populated pipeline stage", ! empty( $stage ) );
-		smoke_assert( "HOT lead auto-populated estimated MRR", ! empty( $mrr ) && $mrr > 0 );
-		smoke_assert( "HOT lead auto-applied recurring flag set", ! empty( $auto_flag ) );
+		smoke_assert( "HOT lead pipeline stage is qualified", $stage === 'qualified' );
+		smoke_assert( "HOT lead assigned offer is non-empty", ! empty( $offer ) );
+		smoke_assert( "HOT lead estimated MRR is > 0", ! empty( $mrr ) && (float) $mrr > 0 );
+		smoke_assert( "HOT lead recurring auto-applied flag is set", ! empty( $auto_flag ) );
+		smoke_assert( "HOT lead follow-up date is set", ! empty( $follow_up ) );
 
-		// Test Idempotency (re-running auto pipeline should not corrupt or duplicate)
+		$auto_applied_events = 0;
+		if ( is_array( $history ) ) {
+			foreach ( $history as $h ) {
+				if ( isset( $h['event'] ) && 'recommendation_auto_applied' === $h['event'] ) {
+					$auto_applied_events++;
+				}
+			}
+		}
+		smoke_assert( "Pipeline history contains exactly one recommendation_auto_applied event", 1 === $auto_applied_events );
+
+		// Test Idempotency
 		if ( function_exists( 'softkom_v3_auto_pipeline_hot_lead' ) ) {
 			softkom_v3_auto_pipeline_hot_lead( $lead_id, $mock_result, $security );
-			$mrr_after = get_post_meta( $lead_id, '_softkom_estimated_mrr', true );
-			smoke_assert( "Auto-pipeline execution is idempotent", $mrr === $mrr_after );
+
+			$mrr_after     = get_post_meta( $lead_id, '_softkom_estimated_mrr', true );
+			$offer_after   = get_post_meta( $lead_id, '_softkom_assigned_offer', true );
+			$history_after = get_post_meta( $lead_id, '_softkom_pipeline_history', true );
+
+			$events_after = 0;
+			if ( is_array( $history_after ) ) {
+				foreach ( $history_after as $h ) {
+					if ( isset( $h['event'] ) && 'recommendation_auto_applied' === $h['event'] ) {
+						$events_after++;
+					}
+				}
+			}
+
+			smoke_assert( "Auto-pipeline execution is idempotent (MRR unchanged)", $mrr === $mrr_after );
+			smoke_assert( "Auto-pipeline execution is idempotent (offer unchanged)", $offer === $offer_after );
+			smoke_assert( "Auto-pipeline execution is idempotent (history event count unchanged)", 1 === $events_after );
 		}
 	} else {
 		smoke_assert( "HOT lead stored successfully", false );
@@ -188,12 +228,16 @@ try {
 	// -------------------------------------------------------------------------
 	if ( $campaign_id > 0 && function_exists( 'softkom_v3_campaign_performance' ) ) {
 		$perf = softkom_v3_campaign_performance( $campaign_id );
-		smoke_assert( "Campaign performance metrics calculated", is_array( $perf ) && isset( $perf['leads'] ) );
+		smoke_assert( "Campaign performance metrics returned as array", is_array( $perf ) );
+		smoke_assert( "Campaign performance reflects leads >= 1", isset( $perf['leads'] ) && (int) $perf['leads'] >= 1 );
+		smoke_assert( "Campaign performance reflects warm_hot >= 1", isset( $perf['warm_hot'] ) && (int) $perf['warm_hot'] >= 1 );
+		smoke_assert( "Campaign performance reflects pipeline_leads >= 1", isset( $perf['pipeline_leads'] ) && (int) $perf['pipeline_leads'] >= 1 );
+		smoke_assert( "Campaign performance reflects estimated_mrr > 0", isset( $perf['estimated_mrr'] ) && (float) $perf['estimated_mrr'] > 0 );
 	}
 
 } catch ( Throwable $e ) {
 	echo "[EXCEPTION] " . $e->getMessage() . "\nTrace:\n" . $e->getTraceAsString() . "\n";
-	$failed++;
+	$GLOBALS['softkom_smoke_failed']++;
 } finally {
 	// -------------------------------------------------------------------------
 	// Cleanup Block - Guarantee All Temporary Records Are Deleted
@@ -249,10 +293,10 @@ try {
 // Summary
 // -----------------------------------------------------------------------------
 echo "\n=========================================================\n";
-echo sprintf( "Runtime Smoke Results: %d Passed, %d Failed\n", $passed, $failed );
+echo sprintf( "Runtime Smoke Results: %d Passed, %d Failed\n", $GLOBALS['softkom_smoke_passed'], $GLOBALS['softkom_smoke_failed'] );
 echo "=========================================================\n";
 
-if ( $failed > 0 ) {
+if ( $GLOBALS['softkom_smoke_failed'] > 0 ) {
 	exit( 1 );
 }
 exit( 0 );
