@@ -10,6 +10,32 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+/*
+ * Ensure CTA helpers are available before the homepage masthead is composed.
+ * The normal data loader should provide these, but hosted staging can reach
+ * this partial before the registry has been loaded. Keep the homepage
+ * defensive so a missing helper cannot fatal the entire front page.
+ */
+if ( ! function_exists( 'softkom_v3_cta_url' ) || ! function_exists( 'softkom_v3_cta_label' ) ) {
+	$softkom_cta_file = get_stylesheet_directory() . '/inc/data/cta.php';
+	if ( is_readable( $softkom_cta_file ) ) {
+		require_once $softkom_cta_file;
+	}
+}
+
+$start_discovery_label = function_exists( 'softkom_v3_cta_label' )
+	? softkom_v3_cta_label( 'start-discovery' )
+	: 'Book a Discovery Call';
+$start_discovery_url = function_exists( 'softkom_v3_cta_url' )
+	? softkom_v3_cta_url( 'start-discovery' )
+	: home_url( '/contact/#discovery' );
+$explore_platforms_label = function_exists( 'softkom_v3_cta_label' )
+	? softkom_v3_cta_label( 'explore-platforms' )
+	: 'Explore Our Platforms';
+$explore_platforms_url = function_exists( 'softkom_v3_cta_url' )
+	? softkom_v3_cta_url( 'explore-platforms' )
+	: home_url( '/platforms/' );
 ?>
 <div class="sk-site sk-home sk-home--product">
   <?php softkom_v3_component_e( 'header' ); ?>
@@ -23,11 +49,11 @@ if ( ! defined( 'ABSPATH' ) ) {
       'eyebrow'         => 'Specialised Software Platforms',
       'title'           => 'Softkom builds specialised software platforms.',
       'lead'            => 'Purpose-built products for industries where generic tools force permanent workarounds.',
-      'primary_label'   => softkom_v3_cta_label( 'start-discovery' ),
-      'primary_url'     => softkom_v3_cta_url( 'start-discovery' ),
-      'secondary_label' => softkom_v3_cta_label( 'explore-platforms' ),
-      'secondary_url'   => softkom_v3_cta_url( 'explore-platforms' ),
-      'media'           => softkom_v3_graphic_platforms_hero(),
+      'primary_label'   => $start_discovery_label,
+      'primary_url'     => $start_discovery_url,
+      'secondary_label' => $explore_platforms_label,
+      'secondary_url'   => $explore_platforms_url,
+      'media'           => function_exists( 'softkom_v3_graphic_platforms_hero' ) ? softkom_v3_graphic_platforms_hero() : '',
     )
   );
   ?>
