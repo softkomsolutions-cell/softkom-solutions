@@ -1,6 +1,6 @@
 <?php
 /**
- * Softkom V3 shared footer â€” premium, product-led.
+ * Softkom V3 shared footer — premium, product-led.
  *
  * @package Softkom_V3
  */
@@ -9,7 +9,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/*
+ * The footer can render on error/404 paths before the canonical data loader
+ * has registered CTA helpers. Load the CTA registry defensively and provide
+ * safe fallbacks so shared chrome cannot fatal.
+ */
+if ( ! function_exists( 'softkom_v3_cta_url' ) || ! function_exists( 'softkom_v3_cta_label' ) ) {
+	$softkom_cta_file = get_stylesheet_directory() . '/inc/data/cta.php';
+	if ( is_readable( $softkom_cta_file ) ) {
+		require_once $softkom_cta_file;
+	}
+}
+
 $home_url = home_url( '/' );
+$read_insights_url = function_exists( 'softkom_v3_cta_url' )
+	? softkom_v3_cta_url( 'read-insights' )
+	: home_url( '/insights/' );
+$read_insights_label = function_exists( 'softkom_v3_cta_label' )
+	? softkom_v3_cta_label( 'read-insights' )
+	: 'Read Insights';
 ?>
 <footer class="sk-footer">
   <div class="container">
@@ -45,7 +63,7 @@ $home_url = home_url( '/' );
       <div>
         <strong>Insights</strong>
         <a href="/insights/">All Insights</a>
-        <a href="<?php echo esc_url( softkom_v3_cta_url( 'read-insights' ) ); ?>"><?php echo esc_html( softkom_v3_cta_label( 'read-insights' ) ); ?></a>
+        <a href="<?php echo esc_url( $read_insights_url ); ?>"><?php echo esc_html( $read_insights_label ); ?></a>
       </div>
       <div>
         <strong>Trust</strong>
@@ -71,5 +89,4 @@ $home_url = home_url( '/' );
     </div>
   </div>
 </footer>
-
 
