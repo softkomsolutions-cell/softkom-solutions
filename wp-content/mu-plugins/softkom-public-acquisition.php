@@ -23,6 +23,21 @@ function softkom_public_acquisition_enabled() {
 	return '1' !== $pilot && 'true' !== $pilot;
 }
 
+/**
+ * The industry adapter is for internal/pilot profile wording. The public
+ * assessment must use the proven core question UI untouched; running both DOM
+ * adapters can race the dynamically-rendered option buttons. Keep the pilot
+ * available through ?pilot=1 and remove only its frontend adapter publicly.
+ */
+function softkom_public_acquisition_isolate_core_ui() {
+	if ( ! softkom_public_acquisition_enabled() ) {
+		return;
+	}
+
+	wp_dequeue_script( 'softkom-industry-funnel' );
+}
+add_action( 'wp_enqueue_scripts', 'softkom_public_acquisition_isolate_core_ui', 55 );
+
 function softkom_public_acquisition_enqueue() {
 	if ( ! softkom_public_acquisition_enabled() ) {
 		return;
@@ -30,16 +45,11 @@ function softkom_public_acquisition_enqueue() {
 
 	$path = WPMU_PLUGIN_DIR . '/softkom-public-acquisition.js';
 	$src  = content_url( '/mu-plugins/softkom-public-acquisition.js' );
-	$dependencies = array();
-
-	if ( wp_script_is( 'softkom-industry-funnel', 'registered' ) || wp_script_is( 'softkom-industry-funnel', 'enqueued' ) ) {
-		$dependencies[] = 'softkom-industry-funnel';
-	}
 
 	wp_enqueue_script(
 		'softkom-public-acquisition',
 		$src,
-		$dependencies,
+		array(),
 		is_readable( $path ) ? (string) filemtime( $path ) : '1',
 		true
 	);
@@ -82,7 +92,7 @@ function softkom_public_acquisition_fast_track( $lead_id, $result, $security ) {
 	$overall    = (int) get_post_meta( $lead_id, '_softkom_score_overall_lead', true );
 	$ai         = (int) get_post_meta( $lead_id, '_softkom_score_ai_opportunity', true );
 
-	$strong_buyer       = ( $commercial >= 75 && $intent >= 85 && $overall >= 70 );
+	$strong_buyer        = ( $commercial >= 75 && $intent >= 85 && $overall >= 70 );
 	$high_value_ai_buyer = ( $commercial >= 70 && $intent >= 90 && $ai >= 75 );
 
 	if ( ! $strong_buyer && ! $high_value_ai_buyer ) {
@@ -100,8 +110,6 @@ add_action( 'softkom_v3_assessment_lead_stored', 'softkom_public_acquisition_fas
 
 /**
  * Alert Softkom immediately when an assessment creates a sales-eligible lead.
- * The notification deliberately runs after fast-track/auto-pipeline processing
- * so the email reflects the final temperature and commercial state.
  */
 function softkom_public_acquisition_notify( $lead_id, $result, $security ) {
 	unset( $result );
@@ -138,7 +146,7 @@ function softkom_public_acquisition_notify( $lead_id, $result, $security ) {
 	$source      = (string) get_post_meta( $lead_id, '_softkom_traffic_source', true );
 	$campaign    = (string) get_post_meta( $lead_id, '_softkom_utm_campaign', true );
 	$offer       = (string) get_post_meta( $lead_id, '_softkom_assigned_offer', true );
-	$mrr         = (float) get_post_meta( $lead_id, '_softkom_estimated_monthly_revenue', true );
+	$mrr         = (float) get_post_meta( $lead_id, '_softkom_estimated_mrr', true );
 
 	$name = trim( $first . ' ' . $last );
 	if ( '' === $name ) {
