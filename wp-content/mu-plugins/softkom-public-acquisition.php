@@ -32,10 +32,20 @@ function softkom_public_acquisition_enqueue() {
 	$path = WPMU_PLUGIN_DIR . '/softkom-public-acquisition.js';
 	$src  = content_url( '/mu-plugins/softkom-public-acquisition.js' );
 
+	/*
+	 * The public adapter must run after the industry/assessment adapter has
+	 * attached its click handlers. Loading it as a dependency also prevents
+	 * the prospect-facing copy layer from racing the working assessment UI.
+	 */
+	$dependencies = array();
+	if ( wp_script_is( 'softkom-industry-funnel', 'registered' ) || wp_script_is( 'softkom-industry-funnel', 'enqueued' ) ) {
+		$dependencies[] = 'softkom-industry-funnel';
+	}
+
 	wp_enqueue_script(
 		'softkom-public-acquisition',
 		$src,
-		array(),
+		$dependencies,
 		is_readable( $path ) ? (string) filemtime( $path ) : '1',
 		true
 	);
