@@ -26,6 +26,34 @@
             if (href) el.setAttribute('href', href);
         }
 
+        function currentLeadEmail() {
+            var form = document.querySelector('[data-assessment-lead] form');
+            if (!form) return '';
+            var email = form.querySelector('input[type="email"], input[name="email"]');
+            return email ? String(email.value || '').trim() : '';
+        }
+
+        function trackConversion(eventName) {
+            var email = currentLeadEmail();
+            if (!email || !config.ajaxUrl || !config.nonce) return;
+
+            var data = new FormData();
+            data.append('action', 'softkom_public_conversion');
+            data.append('nonce', config.nonce);
+            data.append('event', eventName);
+            data.append('email', email);
+            data.append('industry', config.industry || 'softkom');
+
+            fetch(config.ajaxUrl, {
+                method: 'POST',
+                body: data,
+                credentials: 'same-origin',
+                keepalive: true
+            }).catch(function () {
+                /* Conversion tracking must never block navigation. */
+            });
+        }
+
         var hero = document.querySelector('.sk-assessment-hero');
         if (hero) {
             setText(hero, '.sk-assessment-eyebrow', 'Free Business Systems & AI Readiness Assessment');
@@ -99,8 +127,15 @@
                 attributes: true,
                 attributeFilter: ['hidden']
             });
+
+            results.addEventListener('click', function (event) {
+                var link = event.target.closest('[data-assessment-next-step-link]');
+                if (!link) return;
+                trackConversion('strategy_call_clicked');
+            });
         }
 
         document.documentElement.setAttribute('data-softkom-acquisition-mode', 'public');
+        document.documentElement.setAttribute('data-softkom-industry', config.industry || 'softkom');
     });
 }());
