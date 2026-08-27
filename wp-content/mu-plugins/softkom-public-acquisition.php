@@ -39,6 +39,10 @@ function softkom_public_acquisition_enqueue() {
 
 	$path = WPMU_PLUGIN_DIR . '/softkom-public-acquisition.js';
 	$src  = content_url( '/mu-plugins/softkom-public-acquisition.js' );
+	$industry = isset( $_GET['industry'] ) ? sanitize_key( wp_unslash( $_GET['industry'] ) ) : 'softkom';
+	if ( '' === $industry ) {
+		$industry = 'softkom';
+	}
 
 	wp_enqueue_script(
 		'softkom-public-acquisition',
@@ -52,7 +56,16 @@ function softkom_public_acquisition_enqueue() {
 		'softkom-public-acquisition',
 		'softkomPublicAcquisition',
 		array(
-			'contactUrl' => add_query_arg( array( 'source' => 'assessment' ), home_url( '/contact/' ) ),
+			'contactUrl' => add_query_arg(
+				array(
+					'source'   => 'assessment',
+					'industry' => $industry,
+				),
+				home_url( '/contact/' )
+			),
+			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+			'nonce'      => wp_create_nonce( 'softkom_public_conversion' ),
+			'industry'   => $industry,
 		)
 	);
 }
@@ -77,6 +90,72 @@ function softkom_public_acquisition_activity( $lead_id, $event, $from = '', $to 
 
 	update_post_meta( $lead_id, '_softkom_pipeline_history', $history );
 }
+
+/**
+ * Resolve the most recent assessment lead by email for public conversion events.
+ */
+function softkom_public_acquisition_find_lead_by_email( $email ) {
+	$email = sanitize_email( $email );
+	if ( ! is_email( $email ) ) {
+		return 0;
+	}
+
+	$ids = get_posts(
+		array(
+			'post_type'      => 'softkom_lead',
+			'post_status'    => 'private',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+			'meta_query'     => array(
+				array(
+					'key'   => '_softkom_email',
+					'value' => $email,
+				),
+			),
+		)
+	);
+
+	return $ids ? (int) $ids[0] : 0;
+}
+
+/**
+ * Record prospect conversion intent from the results CTA.
+ */
+function softkom_public_acquisition_track_conversion() {
+	check_ajax_referer( 'softkom_public_conversion', 'nonce' );
+
+	$email = isset( $_POST['email'] ) && is_scalar( $_POST['email'] )
+		? sanitize_email( wp_unslash( (string) $_POST['email'] ) )
+		: '';
+	$event = isset( $_POST['event'] ) && is_scalar( $_POST['event'] )
+		? sanitize_key( wp_unslash( (string) $_POST['event'] ) )
+		: '';
+	$industry = isset( $_POST['industry'] ) && is_scalar( $_POST['industry'] )
+		? sanitize_key( wp_unslash( (string) $_POST['industry'] ) )
+		: 'softkom';
+
+	$allowed = array( 'strategy_call_clicked' );
+	if ( ! is_email( $email ) || ! in_array( $event, $allowed, true ) ) {
+		wp_send_json_error( array( 'message' => 'Invalid conversion event.' ), 400 );
+	}
+
+	$lead_id = softkom_public_acquisition_find_lead_by_email( $email );
+	if ( ! $lead_id ) {
+		wp_send_json_error( array( 'message' => 'Lead not found.' ), 404 );
+	}
+
+	update_post_meta( $lead_id, '_softkom_last_conversion_event', $event );
+	update_post_meta( $lead_id, '_softkom_last_conversion_time_gmt', current_time( 'mysql', true ) );
+	update_post_meta( $lead_id, '_softkom_conversion_industry', $industry );
+	update_post_meta( $lead_id, '_softkom_strategy_call_clicked', 'yes' );
+	softkom_public_acquisition_activity( $lead_id, $event, '', $industry );
+
+	wp_send_json_success( array( 'recorded' => true ) );
+}
+add_action( 'wp_ajax_softkom_public_conversion', 'softkom_public_acquisition_track_conversion' );
+add_action( 'wp_ajax_nopriv_softkom_public_conversion', 'softkom_public_acquisition_track_conversion' );
 
 /**
  * Fast-track genuinely sales-ready prospects.
