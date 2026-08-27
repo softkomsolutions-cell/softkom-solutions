@@ -33,24 +33,72 @@
             return email ? String(email.value || '').trim() : '';
         }
 
-        function trackConversion(eventName) {
+        function postConversion(action, eventName) {
             var email = currentLeadEmail();
-            if (!email || !config.ajaxUrl || !config.nonce) return;
+            if (!email || !config.ajaxUrl || !config.nonce) {
+                return Promise.reject(new Error('Assessment email unavailable.'));
+            }
 
             var data = new FormData();
-            data.append('action', 'softkom_public_conversion');
+            data.append('action', action);
             data.append('nonce', config.nonce);
-            data.append('event', eventName);
+            if (eventName) data.append('event', eventName);
             data.append('email', email);
             data.append('industry', config.industry || 'softkom');
 
-            fetch(config.ajaxUrl, {
+            return fetch(config.ajaxUrl, {
                 method: 'POST',
                 body: data,
                 credentials: 'same-origin',
                 keepalive: true
+            }).then(function (response) {
+                return response.json().then(function (payload) {
+                    if (!response.ok || !payload || !payload.success) {
+                        var message = payload && payload.data && payload.data.message
+                            ? payload.data.message
+                            : 'We could not submit your request.';
+                        throw new Error(message);
+                    }
+                    return payload.data || {};
+                });
+            });
+        }
+
+        function trackConversion(eventName) {
+            postConversion('softkom_public_conversion', eventName).catch(function () {
+                /* Tracking must never interfere with the prospect journey. */
+            });
+        }
+
+        function requestStrategyCall(link) {
+            if (!link || link.getAttribute('data-request-busy') === '1') return;
+
+            var originalLabel = link.textContent;
+            link.setAttribute('data-request-busy', '1');
+            link.setAttribute('aria-busy', 'true');
+            link.textContent = 'Sending Request…';
+
+            postConversion('softkom_strategy_request').then(function (data) {
+                link.removeAttribute('href');
+                link.setAttribute('role', 'status');
+                link.setAttribute('aria-busy', 'false');
+                link.setAttribute('data-request-complete', '1');
+                link.textContent = data.already_requested ? 'Request Already Received' : 'Request Sent ✓';
+
+                var panel = link.closest('.sk-assessment-next-step, [data-assessment-next-step]');
+                if (!panel) panel = link.parentElement;
+                if (panel) {
+                    var body = panel.querySelector('[data-assessment-next-step-body]');
+                    if (body) {
+                        body.textContent = data.message || 'Your strategy call request has been received. Softkom will contact you shortly.';
+                    }
+                }
             }).catch(function () {
-                /* Conversion tracking must never block navigation. */
+                link.setAttribute('aria-busy', 'false');
+                link.removeAttribute('data-request-busy');
+                link.textContent = originalLabel;
+                /* Safe fallback while the contact-page form is being repaired. */
+                window.location.href = 'mailto:info@softkomsolutions.com?subject=' + encodeURIComponent('Softkom Strategy Call Request');
             });
         }
 
@@ -98,13 +146,13 @@
             setText(
                 results,
                 '[data-assessment-next-step-body]',
-                'Book a strategy conversation with Softkom to review the highest-value opportunities across systems, automation, AI and growth.'
+                'Request a strategy conversation with Softkom to review the highest-value opportunities across systems, automation, AI and growth.'
             );
             setLink(
                 results,
                 '[data-assessment-next-step-link]',
-                'Book a Strategy Call',
-                config.contactUrl || '/contact/'
+                'Request a Strategy Call',
+                '#request-strategy-call'
             );
         }
 
@@ -112,8 +160,12 @@
             if (!results) return;
             setText(results, '.sk-assessment-eyebrow', 'Your Business Systems & AI Readiness Results');
             setText(results, '[data-assessment-next-step-title]', 'Want help turning these findings into a practical improvement plan?');
-            setText(results, '[data-assessment-next-step-body]', 'Book a strategy conversation with Softkom to review the highest-value opportunities across systems, automation, AI and growth.');
-            setLink(results, '[data-assessment-next-step-link]', 'Book a Strategy Call', config.contactUrl || '/contact/');
+
+            var link = results.querySelector('[data-assessment-next-step-link]');
+            if (link && link.getAttribute('data-request-complete') === '1') return;
+
+            setText(results, '[data-assessment-next-step-body]', 'Request a strategy conversation with Softkom to review the highest-value opportunities across systems, automation, AI and growth.');
+            setLink(results, '[data-assessment-next-step-link]', 'Request a Strategy Call', '#request-strategy-call');
         }
 
         if (results) {
@@ -131,7 +183,10 @@
             results.addEventListener('click', function (event) {
                 var link = event.target.closest('[data-assessment-next-step-link]');
                 if (!link) return;
+                event.preventDefault();
+                if (link.getAttribute('data-request-complete') === '1') return;
                 trackConversion('strategy_call_clicked');
+                requestStrategyCall(link);
             });
         }
 
