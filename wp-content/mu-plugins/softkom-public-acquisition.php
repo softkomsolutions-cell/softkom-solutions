@@ -23,12 +23,6 @@ function softkom_public_acquisition_enabled() {
 	return '1' !== $pilot && 'true' !== $pilot;
 }
 
-/**
- * The industry adapter is for internal/pilot profile wording. The public
- * assessment must use the proven core question UI untouched; running both DOM
- * adapters can race the dynamically-rendered option buttons. Keep the pilot
- * available through ?pilot=1 and remove only its frontend adapter publicly.
- */
 function softkom_public_acquisition_isolate_core_ui() {
 	if ( ! softkom_public_acquisition_enabled() ) {
 		return;
@@ -65,6 +59,26 @@ function softkom_public_acquisition_enqueue() {
 add_action( 'wp_enqueue_scripts', 'softkom_public_acquisition_enqueue', 60 );
 
 /**
+ * Append an item to the existing lead activity timeline.
+ */
+function softkom_public_acquisition_activity( $lead_id, $event, $from = '', $to = '' ) {
+	$history = get_post_meta( $lead_id, '_softkom_pipeline_history', true );
+	if ( ! is_array( $history ) ) {
+		$history = array();
+	}
+
+	$history[] = array(
+		'timestamp_gmt' => current_time( 'mysql', true ),
+		'event'         => sanitize_key( $event ),
+		'from'          => sanitize_text_field( $from ),
+		'to'            => sanitize_text_field( $to ),
+		'user_id'       => 0,
+	);
+
+	update_post_meta( $lead_id, '_softkom_pipeline_history', $history );
+}
+
+/**
  * Fast-track genuinely sales-ready prospects.
  */
 function softkom_public_acquisition_fast_track( $lead_id, $result, $security ) {
@@ -99,14 +113,37 @@ function softkom_public_acquisition_fast_track( $lead_id, $result, $security ) {
 		return;
 	}
 
+	$old_temperature = (string) get_post_meta( $lead_id, '_softkom_lead_temperature', true );
 	update_post_meta( $lead_id, '_softkom_lead_temperature', 'HOT' );
 	update_post_meta( $lead_id, '_softkom_fast_track_reason', 'high-commercial-fit-and-purchase-intent' );
+
+	softkom_public_acquisition_activity( $lead_id, 'lead_fast_tracked', $old_temperature, 'HOT' );
 
 	if ( function_exists( 'softkom_v3_auto_pipeline_hot_lead' ) ) {
 		softkom_v3_auto_pipeline_hot_lead( $lead_id, $result, $security );
 	}
 }
 add_action( 'softkom_v3_assessment_lead_stored', 'softkom_public_acquisition_fast_track', 19, 3 );
+
+/**
+ * Always record the completed assessment in Lead Activity.
+ */
+function softkom_public_acquisition_record_submission( $lead_id ) {
+	if ( ! $lead_id || 'softkom_lead' !== get_post_type( $lead_id ) ) {
+		return;
+	}
+
+	$stage = (string) get_post_meta( $lead_id, '_softkom_pipeline_stage', true );
+	$temp  = (string) get_post_meta( $lead_id, '_softkom_lead_temperature', true );
+
+	softkom_public_acquisition_activity(
+		$lead_id,
+		'assessment_submitted',
+		$temp,
+		$stage ? $stage : 'new'
+	);
+}
+add_action( 'softkom_v3_assessment_lead_stored', 'softkom_public_acquisition_record_submission', 90, 1 );
 
 /**
  * Alert Softkom immediately when an assessment creates a sales-eligible lead.
@@ -186,5 +223,50 @@ function softkom_public_acquisition_notify( $lead_id, $result, $security ) {
 	$sent = wp_mail( $admin_email, $subject, implode( "\n", $lines ) );
 	update_post_meta( $lead_id, '_softkom_acquisition_notification_sent', $sent ? 'yes' : 'failed' );
 	update_post_meta( $lead_id, '_softkom_acquisition_notification_time_gmt', current_time( 'mysql', true ) );
+	softkom_public_acquisition_activity( $lead_id, $sent ? 'internal_notification_sent' : 'internal_notification_failed', '', $admin_email );
 }
 add_action( 'softkom_v3_assessment_lead_stored', 'softkom_public_acquisition_notify', 100, 3 );
+
+/**
+ * Send a simple prospect acknowledgement after a successful submission.
+ */
+function softkom_public_acquisition_acknowledge( $lead_id ) {
+	if ( ! $lead_id || 'softkom_lead' !== get_post_type( $lead_id ) ) {
+		return;
+	}
+
+	if ( get_post_meta( $lead_id, '_softkom_prospect_ack_sent', true ) ) {
+		return;
+	}
+
+	$email = sanitize_email( get_post_meta( $lead_id, '_softkom_email', true ) );
+	if ( ! is_email( $email ) ) {
+		return;
+	}
+
+	$first = sanitize_text_field( get_post_meta( $lead_id, '_softkom_first_name', true ) );
+	$name  = $first ? $first : 'there';
+
+	$subject = 'Your Softkom Business Systems & AI Readiness Assessment';
+	$body = implode(
+		"\n",
+		array(
+			'Hi ' . $name . ',',
+			'',
+			'Thanks for completing the Softkom Business Systems & AI Readiness Assessment.',
+			'',
+			'Your results have been recorded. If you would like help turning the findings into a practical systems, automation or AI improvement plan, you can book a strategy conversation with Softkom.',
+			'',
+			'Book a strategy conversation: ' . add_query_arg( array( 'source' => 'assessment-follow-up' ), home_url( '/contact/' ) ),
+			'',
+			'Regards,',
+			'Softkom Solutions',
+		)
+	);
+
+	$sent = wp_mail( $email, $subject, $body );
+	update_post_meta( $lead_id, '_softkom_prospect_ack_sent', $sent ? 'yes' : 'failed' );
+	update_post_meta( $lead_id, '_softkom_prospect_ack_time_gmt', current_time( 'mysql', true ) );
+	softkom_public_acquisition_activity( $lead_id, $sent ? 'prospect_ack_sent' : 'prospect_ack_failed', '', $email );
+}
+add_action( 'softkom_v3_assessment_lead_stored', 'softkom_public_acquisition_acknowledge', 110, 1 );
