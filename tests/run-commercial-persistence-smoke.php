@@ -12,16 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $created_ids = array();
-$passed = 0;
-$failed = 0;
+$GLOBALS['softkom_cp_passed'] = 0;
+$GLOBALS['softkom_cp_failed'] = 0;
 
 function softkom_cp_assert( $label, $condition ) {
-	global $passed, $failed;
 	if ( $condition ) {
-		$passed++;
+		$GLOBALS['softkom_cp_passed']++;
 		echo "[PASS] {$label}\n";
 	} else {
-		$failed++;
+		$GLOBALS['softkom_cp_failed']++;
 		echo "[FAIL] {$label}\n";
 	}
 }
@@ -95,7 +94,7 @@ try {
 
 } catch ( Throwable $e ) {
 	echo '[EXCEPTION] ' . $e->getMessage() . "\n";
-	$failed++;
+	$GLOBALS['softkom_cp_failed']++;
 } finally {
 	foreach ( $created_ids as $id ) {
 		wp_delete_post( $id, true );
@@ -103,9 +102,13 @@ try {
 }
 
 echo "\n=========================================================\n";
-echo sprintf( "Commercial Persistence Results: %d Passed, %d Failed\n", $passed, $failed );
+echo sprintf(
+	"Commercial Persistence Results: %d Passed, %d Failed\n",
+	$GLOBALS['softkom_cp_passed'],
+	$GLOBALS['softkom_cp_failed']
+);
 echo "=========================================================\n";
 
-if ( $failed > 0 ) {
+if ( $GLOBALS['softkom_cp_failed'] > 0 ) {
 	exit( 1 );
 }
