@@ -21,9 +21,6 @@ function softkom_assessment_runtime_base_url() {
     return content_url( '/softkom-assessment-runtime' );
 }
 
-/**
- * Load the assessment data engine in the same dependency order used by V3.
- */
 function softkom_assessment_runtime_load_data() {
     static $loaded = false;
     if ( $loaded ) {
@@ -36,27 +33,11 @@ function softkom_assessment_runtime_load_data() {
     }
 
     $priority = array(
-        'schema.php',
-        'taxonomy.php',
-        'evidence-levels.php',
-        'library.php',
-        'sections.php',
-        'scoring.php',
-        'funnel-scoring.php',
-        'recommendations.php',
-        'question-bank.php',
-        'funnel-questions.php',
-        'funnel-solutions.php',
-        'funnel-signals.php',
-        'funnel-qualification.php',
-        'funnel-security.php',
-        'funnel-leads.php',
-        'commercial-catalogue.php',
-        'commercial-catalogue-admin.php',
-        'funnel-recurring-revenue.php',
-        'funnel-ajax.php',
-        'profile.php',
-        'registry.php',
+        'schema.php','taxonomy.php','evidence-levels.php','library.php','sections.php','scoring.php',
+        'funnel-scoring.php','recommendations.php','question-bank.php','funnel-questions.php',
+        'funnel-solutions.php','funnel-signals.php','funnel-qualification.php','funnel-security.php',
+        'funnel-leads.php','commercial-catalogue.php','commercial-catalogue-admin.php',
+        'funnel-recurring-revenue.php','funnel-ajax.php','profile.php','registry.php',
     );
 
     $seen = array();
@@ -77,9 +58,6 @@ function softkom_assessment_runtime_load_data() {
     $loaded = true;
 }
 
-/**
- * Ensure the AJAX submission handler exists for frontend submissions.
- */
 function softkom_assessment_runtime_ajax_boot() {
     if ( ! wp_doing_ajax() ) {
         return;
@@ -93,34 +71,38 @@ function softkom_assessment_runtime_ajax_boot() {
 add_action( 'init', 'softkom_assessment_runtime_ajax_boot', 1 );
 
 /**
- * Register the production assessment shortcode if the active theme does not.
+ * Render the standalone assessment template.
+ */
+function softkom_assessment_runtime_render() {
+    softkom_assessment_runtime_load_data();
+
+    $template = softkom_assessment_runtime_base_dir() . '/page-assessment.php';
+    if ( ! is_readable( $template ) ) {
+        return '<p>Assessment runtime is not available.</p>';
+    }
+
+    ob_start();
+    include $template;
+    return ob_get_clean();
+}
+
+/**
+ * Take ownership of the shortcode after themes/plugins have registered theirs.
+ *
+ * The live site still contains an older shortcode implementation. Returning
+ * early when that shortcode existed caused production to keep rendering the
+ * legacy assessment. We intentionally replace only this shortcode and only
+ * with the packaged, tested V3 assessment runtime.
  */
 function softkom_assessment_runtime_register_shortcode() {
     if ( shortcode_exists( 'softkom_assessment_v3' ) ) {
-        return;
+        remove_shortcode( 'softkom_assessment_v3' );
     }
 
-    add_shortcode(
-        'softkom_assessment_v3',
-        function () {
-            softkom_assessment_runtime_load_data();
-
-            $template = softkom_assessment_runtime_base_dir() . '/page-assessment.php';
-            if ( ! is_readable( $template ) ) {
-                return '<p>Assessment runtime is not available.</p>';
-            }
-
-            ob_start();
-            include $template;
-            return ob_get_clean();
-        }
-    );
+    add_shortcode( 'softkom_assessment_v3', 'softkom_assessment_runtime_render' );
 }
-add_action( 'init', 'softkom_assessment_runtime_register_shortcode', 20 );
+add_action( 'init', 'softkom_assessment_runtime_register_shortcode', 999 );
 
-/**
- * Load only the assessment assets on the assessment page.
- */
 function softkom_assessment_runtime_assets() {
     if ( ! is_page( 'assessment' ) ) {
         return;
@@ -128,7 +110,6 @@ function softkom_assessment_runtime_assets() {
 
     $base_dir = softkom_assessment_runtime_base_dir();
     $base_url = softkom_assessment_runtime_base_url();
-
     $css = $base_dir . '/softkom-assessment.css';
     $js  = $base_dir . '/softkom-assessment.js';
 
@@ -168,10 +149,6 @@ function softkom_assessment_runtime_assets() {
         );
     }
 
-    /*
-     * Isolate the funnel from the legacy live-theme chrome. The rest of the
-     * production site is untouched.
-     */
     $isolation = '
         body.softkom-assessment-live { margin:0; background:#f8fafc; font-family:Inter,system-ui,sans-serif; }
         body.softkom-assessment-live #masthead,
