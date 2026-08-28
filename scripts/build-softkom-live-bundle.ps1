@@ -46,6 +46,7 @@ $runtimeFiles = @{
     (Join-Path $theme 'template-parts\page-assessment.php') = (Join-Path $runtime 'page-assessment.php')
     (Join-Path $theme 'assets\js\softkom-assessment.js') = (Join-Path $runtime 'softkom-assessment.js')
     (Join-Path $theme 'assets\css\softkom-assessment.css') = (Join-Path $runtime 'softkom-assessment.css')
+    (Join-Path $root 'tests\run-live-readiness.php') = (Join-Path $runtime 'live-readiness.php')
 }
 
 foreach ($source in $runtimeFiles.Keys) {
@@ -69,5 +70,5 @@ Write-Host ("Size: {0:N0} bytes" -f $zip.Length)
 Write-Host ("Updated: {0}" -f $zip.LastWriteTime)
 Write-Host ''
 Write-Host 'Deploy by uploading this ZIP to public_html and extracting with overwrite enabled.' -ForegroundColor Cyan
-Write-Host 'Bundle includes the standalone assessment runtime plus Softkom acquisition and commercial-persistence MU plugins.' -ForegroundColor Cyan
+Write-Host 'Bundle includes the standalone assessment runtime, read-only live readiness check, acquisition and commercial-persistence MU plugins.' -ForegroundColor Cyan
 Write-Host 'It does not replace the active live theme or WordPress database.' -ForegroundColor Cyan
