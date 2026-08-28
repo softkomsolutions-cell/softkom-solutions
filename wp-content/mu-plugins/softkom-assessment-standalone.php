@@ -3,8 +3,10 @@
  * Softkom standalone assessment runtime.
  *
  * Allows the proven V3 assessment engine to run even when the active site
- * theme is not softkom-v3. This is intentionally scoped to /assessment/ so
- * production can launch the funnel without switching the entire live theme.
+ * theme is not softkom-v3. This is intentionally scoped to /assessment/ for
+ * public rendering, while the internal data/admin layer is also loaded in
+ * wp-admin so Softkom Leads, pipeline and commercial management remain
+ * available on the live site.
  *
  * @package Softkom
  */
@@ -57,6 +59,20 @@ function softkom_assessment_runtime_load_data() {
 
     $loaded = true;
 }
+
+/**
+ * Load the internal data/admin layer on normal WordPress admin requests.
+ *
+ * The public runtime used to load data only while rendering /assessment/ or
+ * handling its AJAX request. That allowed live submissions to be stored but
+ * meant the softkom_lead post type and its admin UI were absent from wp-admin.
+ */
+function softkom_assessment_runtime_admin_boot() {
+    if ( is_admin() && ! wp_doing_ajax() ) {
+        softkom_assessment_runtime_load_data();
+    }
+}
+add_action( 'init', 'softkom_assessment_runtime_admin_boot', 1 );
 
 function softkom_assessment_runtime_ajax_boot() {
     if ( ! wp_doing_ajax() ) {
