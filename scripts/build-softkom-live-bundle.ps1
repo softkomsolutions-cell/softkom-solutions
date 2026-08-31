@@ -25,7 +25,8 @@ $muFiles = @(
     'softkom-assessment-standalone.php',
     'softkom-commercial-persistence.php',
     'softkom-campaign-admin-redirect.php',
-    'softkom-organic-ai-discovery.php'
+    'softkom-organic-ai-discovery.php',
+    'softkom-organic-growth-pages.php'
 )
 
 foreach ($file in $muFiles) {
@@ -72,6 +73,6 @@ Write-Host ("Path: {0}" -f $zip.FullName)
 Write-Host ("Size: {0:N0} bytes" -f $zip.Length)
 Write-Host ("Updated: {0}" -f $zip.LastWriteTime)
 Write-Host ''
-Write-Host 'Deploy by uploading this ZIP to public_html and extracting with overwrite enabled.' -ForegroundColor Cyan
-Write-Host 'Bundle includes the standalone assessment runtime, explicit organic/AI loader, organic/AI discovery layer, read-only live readiness check, acquisition, commercial-persistence and campaign-admin MU plugins.' -ForegroundColor Cyan
+Write-Host 'Deploy by uploading this ZIP to the LIVE WORDPRESS ROOT (the directory containing wp-admin, wp-content and wp-includes) and extracting with overwrite enabled.' -ForegroundColor Cyan
+Write-Host 'Bundle includes assessment runtime, organic/AI discovery, high-intent organic growth pages, acquisition, commercial persistence and campaign admin MU plugins.' -ForegroundColor Cyan
 Write-Host 'It does not replace the active live theme or WordPress database.' -ForegroundColor Cyan
