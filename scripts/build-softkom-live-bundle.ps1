@@ -15,6 +15,7 @@ New-Item $mu -ItemType Directory -Force | Out-Null
 New-Item $runtimeData -ItemType Directory -Force | Out-Null
 
 $muFiles = @(
+    '000-softkom-organic-loader.php',
     'softkom-public-acquisition.php',
     'softkom-public-acquisition.js',
     'softkom-strategy-request.php',
@@ -72,5 +73,5 @@ Write-Host ("Size: {0:N0} bytes" -f $zip.Length)
 Write-Host ("Updated: {0}" -f $zip.LastWriteTime)
 Write-Host ''
 Write-Host 'Deploy by uploading this ZIP to public_html and extracting with overwrite enabled.' -ForegroundColor Cyan
-Write-Host 'Bundle includes the standalone assessment runtime, organic/AI discovery layer, read-only live readiness check, acquisition, commercial-persistence and campaign-admin MU plugins.' -ForegroundColor Cyan
+Write-Host 'Bundle includes the standalone assessment runtime, explicit organic/AI loader, organic/AI discovery layer, read-only live readiness check, acquisition, commercial-persistence and campaign-admin MU plugins.' -ForegroundColor Cyan
 Write-Host 'It does not replace the active live theme or WordPress database.' -ForegroundColor Cyan
