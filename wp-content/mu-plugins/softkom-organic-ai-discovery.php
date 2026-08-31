@@ -80,18 +80,18 @@ function softkom_organic_assessment_schema() {
 }
 add_action( 'wp_head', 'softkom_organic_assessment_schema', 30 );
 
-function softkom_organic_assessment_content() {
-    if ( ! softkom_organic_is_assessment() ) { return; }
+function softkom_organic_assessment_markup() {
     list( $source, $medium ) = softkom_organic_source();
+    ob_start();
     ?>
-    <section id="softkom-organic-discovery" aria-labelledby="softkom-organic-title" style="max-width:1120px;margin:48px auto;padding:0 24px;color:#1E293B;font-family:Inter,system-ui,sans-serif;">
+    <section id="softkom-organic-discovery" aria-labelledby="softkom-organic-title" style="max-width:1120px;margin:48px auto 72px;padding:0 24px;color:#1E293B;font-family:Inter,system-ui,sans-serif;box-sizing:border-box;">
       <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:20px;padding:32px;">
-        <p style="margin:0 0 8px;font-weight:700;color:#2563EB;letter-spacing:.04em;text-transform:uppercase;font-size:13px;">AI Automation & Business Systems · South Africa</p>
+        <p style="margin:0 0 8px;font-weight:700;color:#2563EB;letter-spacing:.04em;text-transform:uppercase;font-size:13px;">AI Automation &amp; Business Systems · South Africa</p>
         <h2 id="softkom-organic-title" style="margin:0 0 14px;color:#0F172A;font-size:clamp(28px,4vw,40px);line-height:1.15;">Find where AI and automation can create the most value in your business</h2>
         <p style="font-size:18px;line-height:1.65;max-width:850px;">Softkom Solutions helps South African businesses replace repetitive manual work, disconnected spreadsheets and slow follow-up with practical automation, AI workflows and custom business systems. The free assessment above identifies the opportunities worth prioritising before you invest in technology.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:28px 0;">
-          <div><strong>Sales & lead automation</strong><br><span>Capture, qualify, route and follow up opportunities faster.</span></div>
-          <div><strong>Operations & workflows</strong><br><span>Connect systems and remove repetitive administration.</span></div>
+          <div><strong>Sales &amp; lead automation</strong><br><span>Capture, qualify, route and follow up opportunities faster.</span></div>
+          <div><strong>Operations &amp; workflows</strong><br><span>Connect systems and remove repetitive administration.</span></div>
           <div><strong>AI customer service</strong><br><span>Improve response times while keeping human escalation.</span></div>
           <div><strong>Custom business systems</strong><br><span>Replace fragmented tools with systems built around your processes.</span></div>
         </div>
@@ -103,8 +103,23 @@ function softkom_organic_assessment_content() {
       <span hidden data-softkom-acquisition-source="<?php echo esc_attr( $source ); ?>" data-softkom-acquisition-medium="<?php echo esc_attr( $medium ); ?>"></span>
     </section>
     <?php
+    return ob_get_clean();
 }
-add_action( 'wp_footer', 'softkom_organic_assessment_content', 8 );
+
+/**
+ * Append to the final WordPress page content after shortcodes have rendered.
+ * This is deliberately independent of the assessment shortcode implementation.
+ */
+function softkom_organic_append_to_assessment_content( $content ) {
+    if ( ! softkom_organic_is_assessment() || ! in_the_loop() || ! is_main_query() ) {
+        return $content;
+    }
+    if ( false !== strpos( $content, 'id="softkom-organic-discovery"' ) ) {
+        return $content;
+    }
+    return $content . softkom_organic_assessment_markup();
+}
+add_filter( 'the_content', 'softkom_organic_append_to_assessment_content', 99 );
 
 function softkom_organic_robots( $robots ) {
     if ( softkom_organic_is_assessment() ) {
