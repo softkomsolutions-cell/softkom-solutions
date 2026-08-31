@@ -77,12 +77,6 @@ function softkom_organic_append_to_assessment_content( $content ) {
 }
 add_filter( 'the_content', 'softkom_organic_append_to_assessment_content', 99 );
 
-function softkom_organic_assessment_footer_fallback() {
-    if ( ! softkom_organic_is_assessment() ) { return; }
-    echo softkom_organic_assessment_markup();
-}
-add_action( 'wp_footer', 'softkom_organic_assessment_footer_fallback', 8 );
-
 function softkom_organic_robots( $robots ) {
     if ( softkom_organic_is_assessment() ) { $robots['index']=true; $robots['follow']=true; unset($robots['noindex'],$robots['nofollow']); }
     return $robots;
