@@ -27,7 +27,7 @@ function softkom_indexnow_submit_urls($urls){
     $body=array('host'=>$host,'key'=>softkom_indexnow_key(),'keyLocation'=>softkom_indexnow_key_location(),'urlList'=>$urls);
     $response=wp_remote_post('https://api.indexnow.org/indexnow',array('timeout'=>10,'headers'=>array('Content-Type'=>'application/json; charset=utf-8'),'body'=>wp_json_encode($body),'user-agent'=>'SoftkomSolutions-IndexNow/1.0'));
     if(is_wp_error($response)){update_option('softkom_indexnow_last_error',$response->get_error_message(),false);return false;}
-    $code=(int)wp_remote_retrieve_response_code($response);update_option('softkom_indexnow_last_code',$code,false);update_option('softkom_indexnow_last_submit_gmt',current_time('mysql',true),false);update_option('softkom_indexnow_last_urls',$urls,false);return in_array($code,array(200,202),true);
+    $code=(int)wp_remote_retrieve_response_code($response);update_option('softkom_indexnow_last_code',$code,false);update_option('softkom_indexnow_last_submit_gmt',current_time('mysql',true),false);update_option('softkom_indexnow_last_urls',$urls,false);delete_option('softkom_indexnow_last_error');return in_array($code,array(200,202),true);
 }
 function softkom_indexnow_post_saved($post_id,$post,$update){
     if(wp_is_post_revision($post_id)||wp_is_post_autosave($post_id)||'page'!==$post->post_type||'publish'!==$post->post_status)return;
@@ -43,3 +43,20 @@ add_action('init',function(){
     if($urls)wp_schedule_single_event(time()+60,'softkom_indexnow_submit_event',array($urls));
     update_option('softkom_indexnow_cluster_version',$version,false);
 },99);
+
+/* Admin-only diagnostics. No public layout or funnel changes. */
+add_action('admin_menu',function(){
+    add_management_page('Softkom IndexNow','Softkom IndexNow','manage_options','softkom-indexnow','softkom_indexnow_diagnostics_page');
+});
+function softkom_indexnow_diagnostics_page(){
+    if(!current_user_can('manage_options'))return;
+    $key=softkom_indexnow_key();$location=softkom_indexnow_key_location();$code=get_option('softkom_indexnow_last_code','Not submitted yet');$when=get_option('softkom_indexnow_last_submit_gmt','Not submitted yet');$urls=get_option('softkom_indexnow_last_urls',array());$error=get_option('softkom_indexnow_last_error','');
+    echo '<div class="wrap"><h1>Softkom IndexNow</h1><table class="widefat striped" style="max-width:1000px"><tbody>';
+    echo '<tr><th style="width:220px">Verification key</th><td><code>'.esc_html($key).'</code></td></tr>';
+    echo '<tr><th>Verification URL</th><td><a href="'.esc_url($location).'" target="_blank" rel="noopener">'.esc_html($location).'</a></td></tr>';
+    echo '<tr><th>Last HTTP response</th><td><strong>'.esc_html((string)$code).'</strong> <span style="color:#64748b">(200 or 202 = accepted)</span></td></tr>';
+    echo '<tr><th>Last submission (GMT)</th><td>'.esc_html((string)$when).'</td></tr>';
+    echo '<tr><th>Last URL count</th><td>'.esc_html((string)count((array)$urls)).'</td></tr>';
+    if($error)echo '<tr><th>Last error</th><td style="color:#b91c1c">'.esc_html((string)$error).'</td></tr>';
+    echo '</tbody></table><p>This diagnostics screen is visible only to WordPress administrators. IndexNow continues to run automatically when acquisition pages are published or updated.</p></div>';
+}
