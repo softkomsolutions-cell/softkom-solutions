@@ -28,5 +28,6 @@ qa_check(strpos($bundle,'softkom-organic-growth-expansion.php')!==false,'Product
 qa_check(strpos($search,'FAQPage')!==false||strpos(qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-expansion.php'),'FAQPage')!==false,'AI/search FAQ structured data is present');
 qa_check(strpos($attr,'ai-search')!==false&&strpos($attr,'chatgpt.com')!==false&&strpos($attr,'perplexity.ai')!==false,'AI-search attribution sources are configured');
 qa_check(strpos($indexnow,'api.indexnow.org/indexnow')!==false,'IndexNow endpoint configured');
-qa_check(strpos($indexnow,'Submit All 9 Acquisition URLs Now')!==false,'Manual IndexNow recovery control present');
+qa_check(strpos($indexnow,'Queue All 9 Acquisition URLs')!==false&&strpos($indexnow,'softkom_indexnow_submit_all')!==false,'Manual IndexNow recovery control present');
+qa_check(strpos($indexnow,'wp_schedule_single_event')!==false&&strpos($indexnow,'spawn_cron')!==false,'Manual IndexNow recovery uses queued background submission');
 echo "\nStatic Acquisition QA: $pass passed, $fail failed.\n";exit($fail?1:0);
