@@ -1,0 +1,52 @@
+name: Softkom Automated QA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '15 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: softkom-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-acquisition-qa:
+    name: Static acquisition QA
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - name: PHP syntax check release code
+        shell: bash
+        run: |
+          set -euo pipefail
+          find wp-content/mu-plugins tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Run acquisition release QA
+        run: php tests/run-static-acquisition-qa.php
+
+  live-http-qa:
+    name: Live website QA
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - name: Test live Softkom acquisition site
+        env:
+          SOFTKOM_QA_BASE_URL: https://softkomsolutions.com
+        run: php tests/run-live-http-qa.php
