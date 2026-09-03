@@ -10,7 +10,8 @@ function softkom_qa_result($checks,$started){
     return array('ran_gmt'=>current_time('mysql',true),'started_gmt'=>$started,'passed'=>$passed,'failed'=>$failed,'checks'=>$checks,'status'=>$failed?'FAIL':'PASS');
 }
 function softkom_qa_check(&$checks,$ok,$label,$detail=''){$checks[]=array('ok'=>(bool)$ok,'label'=>$label,'detail'=>$detail);}
-function softkom_qa_suppress_mail($null,$atts){return true;}
+/* WordPress pre_wp_mail passes two arguments; both must be optional for cross-version compatibility. */
+function softkom_qa_suppress_mail($return=null,$atts=array()){return true;}
 
 function softkom_qa_run(){
     $started=current_time('mysql',true);$checks=array();$created=array();$mail_filter='softkom_qa_suppress_mail';
