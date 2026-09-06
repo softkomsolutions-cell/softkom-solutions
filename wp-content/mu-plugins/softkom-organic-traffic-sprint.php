@@ -401,13 +401,17 @@ function softkom_traffic_sprint_html( $p ) {
 	}
 
 	$why = '';
-	foreach ( $p['why_replace'] as $block ) {
-		$why .= '<div class="sks-card"><h3>' . esc_html( $block['head'] ) . '</h3><p>' . esc_html( $block['body'] ) . '</p></div>';
+	if ( ! empty( $p['why_replace'] ) ) {
+		foreach ( $p['why_replace'] as $block ) {
+			$why .= '<div class="sks-card"><h3>' . esc_html( $block['head'] ) . '</h3><p>' . esc_html( $block['body'] ) . '</p></div>';
+		}
 	}
 
 	$options = '';
-	foreach ( $p['options'] as $opt ) {
-		$options .= '<div class="sks-opt"><h3>' . esc_html( $opt['head'] ) . '</h3><p>' . esc_html( $opt['body'] ) . '</p></div>';
+	if ( ! empty( $p['options'] ) ) {
+		foreach ( $p['options'] as $opt ) {
+			$options .= '<div class="sks-opt"><h3>' . esc_html( $opt['head'] ) . '</h3><p>' . esc_html( $opt['body'] ) . '</p></div>';
+		}
 	}
 
 	$framework = '';
@@ -416,13 +420,17 @@ function softkom_traffic_sprint_html( $p ) {
 	}
 
 	$what = '';
-	foreach ( $p['what_points'] as $w ) {
-		$what .= '<div class="sks-card"><h3>' . esc_html( $w['head'] ) . '</h3><p>' . esc_html( $w['body'] ) . '</p></div>';
+	if ( ! empty( $p['what_points'] ) ) {
+		foreach ( $p['what_points'] as $w ) {
+			$what .= '<div class="sks-card"><h3>' . esc_html( $w['head'] ) . '</h3><p>' . esc_html( $w['body'] ) . '</p></div>';
+		}
 	}
 
 	$sa = '';
-	foreach ( $p['sa_points'] as $x ) {
-		$sa .= '<li>' . esc_html( $x ) . '</li>';
+	if ( ! empty( $p['sa_points'] ) ) {
+		foreach ( $p['sa_points'] as $x ) {
+			$sa .= '<li>' . esc_html( $x ) . '</li>';
+		}
 	}
 
 	$decision = '';
@@ -450,7 +458,9 @@ function softkom_traffic_sprint_html( $p ) {
 		$html .= '<section class="sks-white"><div class="sks-inner"><p class="sks-label">WHY IT MATTERS</p><h2>' . esc_html( $p['why_replace_title'] ) . '</h2><div class="sks-grid">' . $why . '</div></div></section>';
 	}
 
-	$html .= '<section class="sks-main"><div class="sks-inner"><p class="sks-label">THE OPTIONS</p><h2>' . esc_html( $p['options_title'] ) . '</h2><p class="sks-sub">' . esc_html( $p['options_intro'] ) . '</p><div class="sks-grid">' . $options . '</div></div></section>';
+	if ( ! empty( $p['options'] ) ) {
+		$html .= '<section class="sks-main"><div class="sks-inner"><p class="sks-label">THE OPTIONS</p><h2>' . esc_html( $p['options_title'] ) . '</h2><p class="sks-sub">' . esc_html( $p['options_intro'] ) . '</p><div class="sks-grid">' . $options . '</div></div></section>';
+	}
 
 	if ( ! empty( $p['what_points'] ) ) {
 		$html .= '<section class="sks-white"><div class="sks-inner"><p class="sks-label">WHERE TO START</p><h2>' . esc_html( $p['what_title'] ) . '</h2><div class="sks-grid">' . $what . '</div></div></section>';
