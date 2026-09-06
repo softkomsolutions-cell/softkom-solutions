@@ -13,9 +13,36 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function softkom_assessment_runtime_base_dir() { return WP_CONTENT_DIR . '/softkom-assessment-runtime'; }
 function softkom_assessment_runtime_base_url() { return content_url( '/softkom-assessment-runtime' ); }
 
+/**
+ * True when the active theme already provides the V3 assessment runtime.
+ *
+ * The softkom-v3 theme loads its own assessment data copies at startup and
+ * via softkom_v3_load_data(). Loading the bundle runtime data on top of the
+ * theme redeclares softkom_v3_* functions and fatals. When the theme provides
+ * the runtime the standalone layer must stay out of the way, while sites with
+ * a non-softkom-v3 active theme keep using the bundle runtime fallback.
+ */
+function softkom_assessment_runtime_theme_provides_runtime() {
+    if (
+        defined( 'SOFTKOM_V3_VERSION' )
+        && function_exists( 'softkom_v3_load_data' )
+        && function_exists( 'softkom_v3_register_lead_post_type' )
+        && function_exists( 'softkom_v3_register_campaign_post_type' )
+        && function_exists( 'softkom_v3_commercial_catalogue' )
+        && function_exists( 'softkom_v3_recurring_service_catalogue' )
+    ) {
+        $theme_assessment = get_stylesheet_directory() . '/inc/data/assessment/funnel-leads.php';
+        if ( is_readable( $theme_assessment ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function softkom_assessment_runtime_load_data() {
     static $loaded = false;
     if ( $loaded ) { return; }
+    if ( softkom_assessment_runtime_theme_provides_runtime() ) { $loaded = true; return; }
     $dir = softkom_assessment_runtime_base_dir() . '/data';
     if ( ! is_dir( $dir ) ) { return; }
     $priority = array(
@@ -37,11 +64,13 @@ function softkom_assessment_runtime_load_data() {
 }
 
 function softkom_assessment_runtime_admin_boot() {
+    if ( softkom_assessment_runtime_theme_provides_runtime() ) { return; }
     if ( is_admin() && ! wp_doing_ajax() ) { softkom_assessment_runtime_load_data(); }
 }
 add_action( 'init', 'softkom_assessment_runtime_admin_boot', 1 );
 
 function softkom_assessment_runtime_ajax_boot() {
+    if ( softkom_assessment_runtime_theme_provides_runtime() ) { return; }
     if ( ! wp_doing_ajax() ) { return; }
     $action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : '';
     if ( 'softkom_assessment_submit' === $action ) { softkom_assessment_runtime_load_data(); }
@@ -49,6 +78,10 @@ function softkom_assessment_runtime_ajax_boot() {
 add_action( 'init', 'softkom_assessment_runtime_ajax_boot', 1 );
 
 function softkom_assessment_runtime_render() {
+    if ( softkom_assessment_runtime_theme_provides_runtime() ) {
+        if ( function_exists( 'softkom_v3_assessment_shortcode' ) ) { return softkom_v3_assessment_shortcode(); }
+        return '<p>Assessment is provided by the active theme.</p>';
+    }
     softkom_assessment_runtime_load_data();
     $template = softkom_assessment_runtime_base_dir() . '/page-assessment.php';
     if ( ! is_readable( $template ) ) { return '<p>Assessment runtime is not available.</p>'; }
@@ -58,12 +91,14 @@ function softkom_assessment_runtime_render() {
 }
 
 function softkom_assessment_runtime_register_shortcode() {
+    if ( softkom_assessment_runtime_theme_provides_runtime() ) { return; }
     if ( shortcode_exists( 'softkom_assessment_v3' ) ) { remove_shortcode( 'softkom_assessment_v3' ); }
     add_shortcode( 'softkom_assessment_v3', 'softkom_assessment_runtime_render' );
 }
 add_action( 'init', 'softkom_assessment_runtime_register_shortcode', 999 );
 
 function softkom_assessment_runtime_assets() {
+    if ( softkom_assessment_runtime_theme_provides_runtime() ) { return; }
     if ( ! is_page( 'assessment' ) ) { return; }
     $base_dir = softkom_assessment_runtime_base_dir();
     $base_url = softkom_assessment_runtime_base_url();
@@ -94,6 +129,7 @@ function softkom_assessment_runtime_assets() {
 add_action( 'wp_enqueue_scripts', 'softkom_assessment_runtime_assets', 25 );
 
 function softkom_assessment_runtime_body_class( $classes ) {
+    if ( softkom_assessment_runtime_theme_provides_runtime() ) { return $classes; }
     if ( is_page( 'assessment' ) ) { $classes[] = 'softkom-assessment-live'; }
     return $classes;
 }
