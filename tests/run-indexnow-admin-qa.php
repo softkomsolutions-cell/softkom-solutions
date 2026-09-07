@@ -5,7 +5,7 @@
  * Runs via WP-CLI:
  * wp eval-file tests/run-indexnow-admin-qa.php
  *
- * Verifies the Tools-page "Queue All 13 Acquisition URLs" action is
+ * Verifies the Tools-page "Queue All 19 Acquisition URLs" action is
  * production-safe: it must run inline on the Tools page (no admin-post.php),
  * verify permissions, verify the CSRF nonce, queue exactly the cluster URLs in
  * the background, tolerate a refresh without double-submitting, and keep the
@@ -141,7 +141,7 @@ try {
 	$page = softkom_idx_render_tools_page();
 	softkom_idx_assert( 'Tools page renders without a fatal', is_string( $page ) && '' !== $page );
 	softkom_idx_assert( 'Tools page shows the IndexNow panel title', false !== strpos( $page, 'Softkom IndexNow' ) );
-	softkom_idx_assert( 'Tools page shows the verified control button', false !== strpos( $page, 'Queue All 13 Acquisition URLs' ) );
+	softkom_idx_assert( 'Tools page shows the verified control button', false !== strpos( $page, 'Queue All 19 Acquisition URLs' ) );
 	softkom_idx_assert( 'Tools page shows verification key row', false !== strpos( $page, 'Verification key' ) );
 	softkom_idx_assert( 'Tools page posts inline (no admin-post action)', false === strpos( $page, 'admin-post.php' ) );
 
@@ -165,20 +165,20 @@ try {
 	$after     = softkom_idx_event_count( 'softkom_indexnow_submit_event' );
 	softkom_idx_assert( 'Queue action does not blank/fatal and renders the page', is_string( $req ) && false !== strpos( $req, 'acquisition URLs queued for background submission' ) );
 	softkom_idx_assert( 'Queue action schedules one background event', $after === $before_events + 1 );
-	softkom_idx_assert( 'Exactly 13 slugs are in the cluster', 13 === $slugcount );
-	softkom_idx_assert( 'Exactly 13 published URLs are queued', 13 === count( $cluster ) );
+	softkom_idx_assert( 'Exactly 19 slugs are in the cluster', 19 === $slugcount );
+	softkom_idx_assert( 'Exactly 19 published URLs are queued', 19 === count( $cluster ) );
 
 	$queued_payloads = softkom_idx_event_payloads( 'softkom_indexnow_submit_event' );
-	$has_13          = false;
+	$has_19          = false;
 	foreach ( $queued_payloads as $payload ) {
-		if ( isset( $payload[0] ) && is_array( $payload[0] ) && count( $payload[0] ) === 13 ) {
-			$has_13 = true;
+		if ( isset( $payload[0] ) && is_array( $payload[0] ) && count( $payload[0] ) === 19 ) {
+			$has_19 = true;
 		}
 	}
-	softkom_idx_assert( 'Queued background payload carries all 13 URLs', $has_13 );
+	softkom_idx_assert( 'Queued background payload carries all 19 URLs', $has_19 );
 	$queued_gmt = get_option( 'softkom_indexnow_last_queued_gmt', '' );
 	softkom_idx_assert( 'Last queued timestamp is recorded', '' !== $queued_gmt );
-	softkom_idx_assert( 'Last queued count is recorded as 13', 13 === (int) get_option( 'softkom_indexnow_last_queued_count', 0 ) );
+	softkom_idx_assert( 'Last queued count is recorded as 19', 19 === (int) get_option( 'softkom_indexnow_last_queued_count', 0 ) );
 
 	// ---------------------------------------------------------------------
 	// 4. Nonce validation: a bad nonce must not queue anything.
@@ -232,14 +232,14 @@ try {
 	softkom_idx_assert( 'Browser-request handler does not record a submission response', get_option( 'softkom_indexnow_last_code', 'Not submitted yet' ) === $before_code );
 
 	// ---------------------------------------------------------------------
-	// 7. The async cron callback still records HTTP 202 and stores 13 URLs.
+	// 7. The async cron callback still records HTTP 202 and stores 19 URLs.
 	// ---------------------------------------------------------------------
 	$GLOBALS['softkom_idx_mock_http_code'] = 202;
 	$ok202 = softkom_indexnow_submit_urls( $cluster );
 	softkom_idx_assert( 'Async submission accepts HTTP 202', true === $ok202 );
 	softkom_idx_assert( 'Async submission records last HTTP response 202', 202 === (int) get_option( 'softkom_indexnow_last_code', 0 ) );
 	softkom_idx_assert( 'Async submission records last submission time', '' !== (string) get_option( 'softkom_indexnow_last_submit_gmt', '' ) );
-	softkom_idx_assert( 'Stored last URL count becomes 13', 13 === count( (array) get_option( 'softkom_indexnow_last_urls', array() ) ) );
+	softkom_idx_assert( 'Stored last URL count becomes 19', 19 === count( (array) get_option( 'softkom_indexnow_last_urls', array() ) ) );
 
 	// ---------------------------------------------------------------------
 	// 8. HTTP 200 is also still accepted and recorded.
@@ -248,7 +248,7 @@ try {
 	$ok200 = softkom_indexnow_submit_urls( $cluster );
 	softkom_idx_assert( 'Async submission accepts HTTP 200', true === $ok200 );
 	softkom_idx_assert( 'Async submission records last HTTP response 200', 200 === (int) get_option( 'softkom_indexnow_last_code', 0 ) );
-	softkom_idx_assert( 'Stored last URL count remains 13 after 200', 13 === count( (array) get_option( 'softkom_indexnow_last_urls', array() ) ) );
+	softkom_idx_assert( 'Stored last URL count remains 19 after 200', 19 === count( (array) get_option( 'softkom_indexnow_last_urls', array() ) ) );
 } catch ( Throwable $e ) {
 	softkom_idx_assert( 'Test suite ran without a fatal exception: ' . $e->getMessage(), false );
 }
