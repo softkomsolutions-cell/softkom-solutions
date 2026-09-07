@@ -40,20 +40,39 @@ add_action('init',function(){
 },99);
 
 add_action('admin_menu',function(){add_management_page('Softkom IndexNow','Softkom IndexNow','manage_options','softkom-indexnow','softkom_indexnow_diagnostics_page');});
-add_action('admin_post_softkom_indexnow_submit_all',function(){
-    if(!current_user_can('manage_options'))wp_die('Not permitted.');check_admin_referer('softkom_indexnow_submit_all');
+function softkom_indexnow_queue_token(){
+    $token=wp_generate_password(32,false,false);
+    update_option('softkom_indexnow_queue_token',array('token'=>$token,'expires'=>time()+600),false);
+    return $token;
+}
+function softkom_indexnow_queue_token_valid($token){
+    $stored=get_option('softkom_indexnow_queue_token',array());
+    return is_array($stored)&&isset($stored['token'])&&is_string($token)&&!empty($stored['token'])&&hash_equals((string)$stored['token'],$token)&&time()<=(int)$stored['expires'];
+}
+function softkom_indexnow_handle_queue_submit(){
+    if(!current_user_can('manage_options')||!isset($_POST['softkom_indexnow_submit_all']))return '';
+    $nonce=isset($_POST['_wpnonce'])?sanitize_text_field(wp_unslash($_POST['_wpnonce'])):'';
+    if(!wp_verify_nonce($nonce,'softkom_indexnow_submit_all'))return 'bad-nonce';
+    $token=isset($_POST['softkom_indexnow_submit_token'])?sanitize_text_field(wp_unslash($_POST['softkom_indexnow_submit_token'])):'';
+    if(!softkom_indexnow_queue_token_valid($token))return 'duplicate';
     $urls=softkom_indexnow_cluster_urls();
-    if($urls){
-        wp_schedule_single_event(time()+5,'softkom_indexnow_submit_event',array($urls));
-        update_option('softkom_indexnow_last_queued_gmt',current_time('mysql',true),false);
-        if(function_exists('spawn_cron')){spawn_cron(time());}
-    }
-    wp_safe_redirect(add_query_arg(array('page'=>'softkom-indexnow','indexnow_submit'=>'queued'),admin_url('tools.php')));exit;
-});
+    if(!$urls)return 'no-urls';
+    wp_schedule_single_event(time()+5,'softkom_indexnow_submit_event',array($urls));
+    update_option('softkom_indexnow_last_queued_gmt',current_time('mysql',true),false);
+    update_option('softkom_indexnow_last_queued_count',count($urls),false);
+    if(function_exists('spawn_cron')){spawn_cron(time());}
+    return 'queued';
+}
 function softkom_indexnow_diagnostics_page(){
-    if(!current_user_can('manage_options'))return;$key=softkom_indexnow_key();$location=softkom_indexnow_key_location();$code=get_option('softkom_indexnow_last_code','Not submitted yet');$when=get_option('softkom_indexnow_last_submit_gmt','Not submitted yet');$queued=get_option('softkom_indexnow_last_queued_gmt','');$urls=get_option('softkom_indexnow_last_urls',array());$error=get_option('softkom_indexnow_last_error','');$result=isset($_GET['indexnow_submit'])?sanitize_key(wp_unslash($_GET['indexnow_submit'])):'';
-    echo '<div class="wrap"><h1>Softkom IndexNow</h1>';if('queued'===$result)echo '<div class="notice notice-success is-dismissible"><p>IndexNow submission queued safely. Refresh this page in a few seconds to see the response.</p></div>';
+    if(!current_user_can('manage_options'))return;
+    $result=softkom_indexnow_handle_queue_submit();
+    $key=softkom_indexnow_key();$location=softkom_indexnow_key_location();$code=get_option('softkom_indexnow_last_code','Not submitted yet');$when=get_option('softkom_indexnow_last_submit_gmt','Not submitted yet');$queued=get_option('softkom_indexnow_last_queued_gmt','');$queued_count=(int)get_option('softkom_indexnow_last_queued_count',0);$urls=get_option('softkom_indexnow_last_urls',array());$error=get_option('softkom_indexnow_last_error','');
+    echo '<div class="wrap"><h1>Softkom IndexNow</h1>';
+    if('queued'===$result)echo '<div class="notice notice-success is-dismissible"><p>All '.esc_html($queued_count).' acquisition URLs queued for background submission. Refresh this page in about a minute to see the response.</p></div>';
+    elseif('duplicate'===$result)echo '<div class="notice notice-warning is-dismissible"><p>This submission was already queued; it was not submitted twice. Open this page fresh to queue again.</p></div>';
+    elseif('bad-nonce'===$result)echo '<div class="notice notice-error is-dismissible"><p>Security check failed. Please open the page fresh and try again.</p></div>';
+    elseif('no-urls'===$result)echo '<div class="notice notice-error is-dismissible"><p>No published acquisition URLs were found to queue.</p></div>';
     echo '<table class="widefat striped" style="max-width:1000px"><tbody>';
-    echo '<tr><th style="width:220px">Verification key</th><td><code>'.esc_html($key).'</code></td></tr><tr><th>Verification URL</th><td><a href="'.esc_url($location).'" target="_blank" rel="noopener">'.esc_html($location).'</a></td></tr><tr><th>Last HTTP response</th><td><strong>'.esc_html((string)$code).'</strong> <span style="color:#64748b">(200 or 202 = accepted)</span></td></tr><tr><th>Last submission (GMT)</th><td>'.esc_html((string)$when).'</td></tr><tr><th>Last queued (GMT)</th><td>'.esc_html((string)$queued).'</td></tr><tr><th>Last URL count</th><td>'.esc_html((string)count((array)$urls)).'</td></tr>';if($error)echo '<tr><th>Last error</th><td style="color:#b91c1c">'.esc_html((string)$error).'</td></tr>';echo '</tbody></table>';
-    echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="margin-top:20px"><input type="hidden" name="action" value="softkom_indexnow_submit_all">';wp_nonce_field('softkom_indexnow_submit_all');submit_button('Queue All 13 Acquisition URLs','primary','submit',false);echo '</form><p>This admin action only queues the request and redirects immediately, avoiding long-running outbound HTTP calls inside the browser request.</p></div>';
+    echo '<tr><th style="width:220px">Verification key</th><td><code>'.esc_html($key).'</code></td></tr><tr><th>Verification URL</th><td><a href="'.esc_url($location).'" target="_blank" rel="noopener">'.esc_html($location).'</a></td></tr><tr><th>Last HTTP response</th><td><strong>'.esc_html((string)$code).'</strong> <span style="color:#64748b">(200 or 202 = accepted)</span></td></tr><tr><th>Last submission (GMT)</th><td>'.esc_html((string)$when).'</td></tr><tr><th>Last queued (GMT)</th><td>'.esc_html((string)$queued).'</td></tr><tr><th>Last queued count</th><td>'.esc_html((string)$queued_count).'</td></tr><tr><th>Last URL count</th><td>'.esc_html((string)count((array)$urls)).'</td></tr>';if($error)echo '<tr><th>Last error</th><td style="color:#b91c1c">'.esc_html((string)$error).'</td></tr>';echo '</tbody></table>';
+    echo '<form method="post" action="" style="margin-top:20px"><input type="hidden" name="softkom_indexnow_submit_all" value="1">';wp_nonce_field('softkom_indexnow_submit_all');echo '<input type="hidden" name="softkom_indexnow_submit_token" value="'.esc_attr(softkom_indexnow_queue_token()).'">';submit_button('Queue All 13 Acquisition URLs','primary','submit',false);echo '</form><p>This Tools-page action verifies permissions and a CSRF nonce, then only queues a background submission. No long-running outbound IndexNow HTTP request happens inside the browser request, and refreshing cannot double-submit.</p></div>';
 }
