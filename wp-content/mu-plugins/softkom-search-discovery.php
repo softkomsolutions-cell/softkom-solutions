@@ -12,6 +12,42 @@ function softkom_search_has_seo_plugin(){return defined('AIOSEO_VERSION')||defin
 add_filter('wp_robots',function($robots){if(softkom_search_is_legacy_catalog()){$robots['noindex']=true;$robots['nofollow']=true;unset($robots['index'],$robots['follow']);return $robots;}if(softkom_search_is_money_page()){unset($robots['noindex'],$robots['nofollow']);$robots['index']=true;$robots['follow']=true;$robots['max-image-preview']='large';$robots['max-snippet']=-1;$robots['max-video-preview']=-1;}return $robots;},100);
 add_action('wp_head',function(){if(softkom_search_is_legacy_catalog())echo '<meta name="robots" content="noindex,nofollow,noarchive">'."\n";},0);
 add_action('wp_head',function(){if(!softkom_search_is_money_page()||softkom_search_has_seo_plugin())return;echo '<link rel="canonical" href="'.esc_url(get_permalink()).'">'."\n";},2);
+
+function softkom_search_priority_meta(){
+	return array(
+		'ai-automation-south-africa'=>array(
+			'title'=>'AI Automation South Africa | Softkom Solutions',
+			'description'=>'Practical AI automation for South African businesses. Automate lead follow-up, reporting, customer service and repetitive admin. Start with a free assessment.'
+		),
+		'business-process-automation-south-africa'=>array(
+			'title'=>'Business Process Automation South Africa | Softkom',
+			'description'=>'Replace manual admin, spreadsheet hand-offs and slow approvals with connected business workflows. See where automation can save time and reduce errors.'
+		),
+		'custom-business-systems-south-africa'=>array(
+			'title'=>'Custom Business Systems South Africa | Softkom',
+			'description'=>'Custom business systems for South African companies that have outgrown spreadsheets and disconnected tools. Improve control, visibility and scalability.'
+		),
+		'connect-business-software-south-africa'=>array(
+			'title'=>'Business Software Integration South Africa | Softkom',
+			'description'=>'Connect CRM, accounting, ecommerce and operational software so data moves automatically. Reduce duplicate capture, errors and manual re-entry.'
+		),
+	);
+}
+function softkom_search_current_slug(){
+	return is_page() ? (string) get_post_field('post_name',get_queried_object_id()) : '';
+}
+add_filter('rank_math/frontend/title',function($title){
+	$meta=softkom_search_priority_meta();$slug=softkom_search_current_slug();
+	return isset($meta[$slug])?$meta[$slug]['title']:$title;
+},90);
+add_filter('rank_math/frontend/description',function($description){
+	$meta=softkom_search_priority_meta();$slug=softkom_search_current_slug();
+	return isset($meta[$slug])?$meta[$slug]['description']:$description;
+},90);
+add_filter('astra_the_title_enabled',function($enabled){
+	return softkom_search_is_money_page()?false:$enabled;
+},90);
+
 function softkom_search_sitemap_url(){return home_url('/softkom-sitemap.xml');}
 add_action('init',function(){add_rewrite_rule('^softkom-sitemap\.xml$','index.php?softkom_acquisition_sitemap=1','top');},1);
 add_filter('query_vars',function($vars){$vars[]='softkom_acquisition_sitemap';return $vars;});
