@@ -19,11 +19,26 @@ function softkom_funnel_cc_is_qualified( $id ) {
     if ( is_string( $routing ) ) { $routing = json_decode( $routing, true ); }
     return is_array( $routing ) && ! empty( $routing['sales_eligible'] );
 }
+function softkom_funnel_cc_priority( $id, $temperature, $score, $qualified, $mrr, $implementation ) {
+    $points = min( 100, max( 0, (float) $score ) );
+    if ( 'HOT' === $temperature ) { $points += 35; } elseif ( 'WARM' === $temperature ) { $points += 18; }
+    if ( $qualified ) { $points += 20; }
+    $points += min( 25, (float) $mrr / 1000 );
+    $points += min( 15, (float) $implementation / 10000 );
+    return round( $points, 1 );
+}
+function softkom_funnel_cc_next_action( $temperature, $qualified, $stage ) {
+    if ( $stage ) { return 'Progress ' . $stage; }
+    if ( 'HOT' === $temperature && $qualified ) { return 'Contact now'; }
+    if ( 'WARM' === $temperature && $qualified ) { return 'Follow up today'; }
+    if ( $qualified ) { return 'Review and qualify'; }
+    return 'Nurture';
+}
 function softkom_funnel_cc_snapshot() {
     $out = array(
         'leads'=>0,'qualified'=>0,'hot'=>0,'warm'=>0,'pipeline'=>0,
         'estimated_mrr'=>0.0,'implementation_value'=>0.0,'score_total'=>0.0,
-        'sources'=>array(),'stages'=>array(),'recent'=>array(),
+        'sources'=>array(),'stages'=>array(),'recent'=>array(),'priority'=>array(),
     );
     foreach ( softkom_funnel_cc_leads() as $id ) {
         $out['leads']++;
@@ -34,22 +49,31 @@ function softkom_funnel_cc_snapshot() {
         if ( 'WARM' === $temperature ) { $out['warm']++; }
         $stage = softkom_funnel_cc_text( $id, '_softkom_pipeline_stage' );
         if ( $stage ) { $out['pipeline']++; $out['stages'][ $stage ] = isset($out['stages'][$stage]) ? $out['stages'][$stage]+1 : 1; }
-        $out['estimated_mrr'] += (float) get_post_meta( $id, '_softkom_estimated_mrr', true );
-        $out['implementation_value'] += (float) get_post_meta( $id, '_softkom_implementation_price_from', true );
-        $out['score_total'] += (float) get_post_meta( $id, '_softkom_score_overall_lead', true );
+        $lead_mrr = (float) get_post_meta( $id, '_softkom_estimated_mrr', true );
+        $lead_implementation = (float) get_post_meta( $id, '_softkom_implementation_price_from', true );
+        $lead_score = (float) get_post_meta( $id, '_softkom_score_overall_lead', true );
+        $out['estimated_mrr'] += $lead_mrr;
+        $out['implementation_value'] += $lead_implementation;
+        $out['score_total'] += $lead_score;
         $source = softkom_funnel_cc_text( $id, '_softkom_traffic_source' );
         if ( ! $source ) { $source = 'direct'; }
         if ( ! isset( $out['sources'][$source] ) ) { $out['sources'][$source] = array('leads'=>0,'qualified'=>0,'mrr'=>0.0); }
         $out['sources'][$source]['leads']++;
         if ( $qualified ) { $out['sources'][$source]['qualified']++; }
-        $out['sources'][$source]['mrr'] += (float) get_post_meta( $id, '_softkom_estimated_mrr', true );
+        $out['sources'][$source]['mrr'] += $lead_mrr;
+        $priority = softkom_funnel_cc_priority( $id, $temperature, $lead_score, $qualified, $lead_mrr, $lead_implementation );
+        $out['priority'][] = array(
+            'id'=>$id,'title'=>get_the_title($id),'temperature'=>$temperature ?: '—','score'=>$lead_score,
+            'qualified'=>$qualified,'mrr'=>$lead_mrr,'implementation'=>$lead_implementation,'stage'=>$stage,
+            'source'=>$source,'priority'=>$priority,'action'=>softkom_funnel_cc_next_action($temperature,$qualified,$stage),
+        );
         if ( count( $out['recent'] ) < 12 ) {
             $out['recent'][] = array(
                 'id'=>$id, 'title'=>get_the_title($id), 'date'=>get_the_date('Y-m-d H:i',$id),
-                'temperature'=>$temperature ?: '—', 'score'=>(float)get_post_meta($id,'_softkom_score_overall_lead',true),
+                'temperature'=>$temperature ?: '—', 'score'=>$lead_score,
                 'source'=>$source, 'channel'=>softkom_funnel_cc_text($id,'_softkom_acquisition_channel'),
                 'plan'=>softkom_funnel_cc_text($id,'_softkom_commercial_plan_name'),
-                'mrr'=>(float)get_post_meta($id,'_softkom_estimated_mrr',true), 'stage'=>$stage ?: 'New',
+                'mrr'=>$lead_mrr, 'stage'=>$stage ?: 'New',
             );
         }
     }
@@ -57,6 +81,8 @@ function softkom_funnel_cc_snapshot() {
     $out['qualification_rate'] = $out['leads'] ? round(($out['qualified']/$out['leads'])*100,1) : 0;
     $out['pipeline_rate'] = $out['leads'] ? round(($out['pipeline']/$out['leads'])*100,1) : 0;
     uasort($out['sources'],function($a,$b){ return $b['mrr'] <=> $a['mrr']; });
+    usort($out['priority'],function($a,$b){ return $b['priority'] <=> $a['priority']; });
+    $out['priority']=array_slice($out['priority'],0,10);
     arsort($out['stages']);
     return $out;
 }
@@ -84,6 +110,9 @@ function softkom_funnel_cc_render() {
     .skcc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:18px 0 24px}.skcc-card{background:#fff;border:1px solid #dcdcde;border-radius:8px;padding:16px}.skcc-label{font-size:11px;text-transform:uppercase;color:#646970;font-weight:700}.skcc-value{font-size:25px;font-weight:700;margin-top:5px}.skcc-panels{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.skcc-panel{background:#fff;border:1px solid #dcdcde;border-radius:8px;padding:18px}.skcc-panel h2{margin-top:0}@media(max-width:900px){.skcc-panels{grid-template-columns:1fr}}.skcc-hot{font-weight:700}.skcc-muted{color:#646970}
     </style>
     <div class="skcc-grid"><?php foreach($cards as $label=>$value): ?><div class="skcc-card"><div class="skcc-label"><?php echo esc_html($label); ?></div><div class="skcc-value"><?php echo esc_html($value); ?></div></div><?php endforeach; ?></div>
+    <div class="skcc-panel" style="margin-bottom:18px"><h2>Priority Opportunities</h2><p class="skcc-muted">Automatically ordered using lead score, HOT/WARM status, sales eligibility and commercial value.</p><table class="widefat striped"><thead><tr><th>Priority</th><th>Lead</th><th>Heat</th><th>Score</th><th>Potential</th><th>Source</th><th>Next Action</th></tr></thead><tbody>
+    <?php if(!$s['priority']): ?><tr><td colspan="7">No leads to prioritise yet.</td></tr><?php else: foreach($s['priority'] as $lead): ?><tr><td><strong><?php echo esc_html(number_format_i18n($lead['priority'],1)); ?></strong></td><td><a href="<?php echo esc_url(get_edit_post_link($lead['id'])); ?>"><strong><?php echo esc_html($lead['title'] ?: '#'.$lead['id']); ?></strong></a></td><td><?php echo esc_html($lead['temperature']); ?></td><td><?php echo esc_html(number_format_i18n($lead['score'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($lead['implementation']).' + '.softkom_funnel_cc_money($lead['mrr']).'/mo'); ?></td><td><?php echo esc_html($lead['source']); ?></td><td><strong><?php echo esc_html($lead['action']); ?></strong></td></tr><?php endforeach; endif; ?>
+    </tbody></table></div>
     <div class="skcc-panels"><div class="skcc-panel"><h2>Acquisition → Revenue</h2><table class="widefat striped"><thead><tr><th>Source</th><th>Leads</th><th>Qualified</th><th>Qual. rate</th><th>Estimated MRR</th></tr></thead><tbody>
     <?php if(!$s['sources']): ?><tr><td colspan="5">No attributed leads yet.</td></tr><?php else: foreach($s['sources'] as $source=>$row): $rate=$row['leads']?round(($row['qualified']/$row['leads'])*100,1):0; ?><tr><td><strong><?php echo esc_html(ucwords(str_replace('-',' ',$source))); ?></strong></td><td><?php echo esc_html(number_format_i18n($row['leads'])); ?></td><td><?php echo esc_html(number_format_i18n($row['qualified'])); ?></td><td><?php echo esc_html($rate.'%'); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($row['mrr'])); ?></td></tr><?php endforeach; endif; ?>
     </tbody></table></div><div class="skcc-panel"><h2>Pipeline Stages</h2><?php if(!$s['stages']): ?><p class="skcc-muted">No leads have entered a pipeline stage yet.</p><?php else: ?><table class="widefat striped"><thead><tr><th>Stage</th><th>Leads</th></tr></thead><tbody><?php foreach($s['stages'] as $stage=>$count): ?><tr><td><?php echo esc_html($stage); ?></td><td><?php echo esc_html(number_format_i18n($count)); ?></td></tr><?php endforeach; ?></tbody></table><?php endif; ?></div></div>
