@@ -34,6 +34,8 @@ jobs:
           find wp-content/mu-plugins tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Run acquisition release QA
         run: php tests/run-static-acquisition-qa.php
+      - name: Run funnel command centre QA
+        run: php tests/run-funnel-command-centre-qa.php
 
   live-http-qa:
     name: Live website QA
