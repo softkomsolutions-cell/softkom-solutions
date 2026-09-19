@@ -1,0 +1,52 @@
+name: Softkom Production Bundle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: softkom-production-bundle
+  cancel-in-progress: true
+
+jobs:
+  build-production-bundle:
+    name: Build verified production bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build production ZIP
+        shell: pwsh
+        run: ./scripts/build-softkom-live-bundle.ps1 -Output ./softkom-live-production-bundle.zip
+
+      - name: Verify critical bundle contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          unzip -l softkom-live-production-bundle.zip > bundle-contents.txt
+          grep -q "wp-content/mu-plugins/softkom-organic-growth-pages.php" bundle-contents.txt
+          grep -q "wp-content/mu-plugins/softkom-search-discovery.php" bundle-contents.txt
+          grep -q "wp-content/mu-plugins/softkom-organic-attribution.php" bundle-contents.txt
+          grep -q "wp-content/mu-plugins/softkom-public-acquisition.php" bundle-contents.txt
+          grep -q "wp-content/mu-plugins/softkom-funnel-command-centre.php" bundle-contents.txt
+          grep -q "softkom-sitemap.xml" bundle-contents.txt
+          grep -q "robots.txt" bundle-contents.txt
+
+      - name: Write SHA256 checksum
+        shell: bash
+        run: sha256sum softkom-live-production-bundle.zip | tee softkom-live-production-bundle.sha256
+
+      - name: Upload production bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: softkom-live-production-bundle
+          path: |
+            softkom-live-production-bundle.zip
+            softkom-live-production-bundle.sha256
+            bundle-contents.txt
+          if-no-files-found: error
+          retention-days: 14
