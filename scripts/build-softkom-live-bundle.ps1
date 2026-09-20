@@ -3,7 +3,9 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$deploy = Join-Path $env:TEMP 'softkom-live-production-bundle'
+$tempRoot = [System.IO.Path]::GetTempPath()
+if (-not $tempRoot) { throw 'Unable to resolve a temporary directory for the production bundle.' }
+$deploy = Join-Path $tempRoot 'softkom-live-production-bundle'
 $mu = Join-Path $deploy 'wp-content\mu-plugins'
 $runtime = Join-Path $deploy 'wp-content\softkom-assessment-runtime'
 $runtimeData = Join-Path $runtime 'data'
