@@ -1130,17 +1130,9 @@ add_action( 'wp_head', function () {
 			array(
 				'@type' => 'Service',
 				'name'  => $p['title'],
-				'provider' => array( '@type' => 'Organization', 'name' => 'Softkom Solutions', 'url' => home_url( '/' ) ),
+				'provider' => array( '@id' => home_url( '/#organization' ) ),
 				'areaServed' => array( '@type' => 'Country', 'name' => 'South Africa' ),
 				'url' => get_permalink(),
-			),
-			array(
-				'@type'      => 'Organization',
-				'@id'        => home_url( '/#organization' ),
-				'name'       => 'Softkom Solutions',
-				'url'        => home_url( '/' ),
-				'address'    => array( '@type' => 'PostalAddress', 'addressLocality' => 'Johannesburg', 'addressCountry' => 'ZA' ),
-				'areaServed' => array( '@type' => 'Country', 'name' => 'South Africa' ),
 			),
 			array( '@type' => 'FAQPage', 'mainEntity' => $faq ),
 		),
