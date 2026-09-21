@@ -76,7 +76,7 @@ function softkom_funnel_cc_snapshot() {
         'leads'=>0,'qualified'=>0,'hot'=>0,'warm'=>0,'pipeline'=>0,
         'estimated_mrr'=>0.0,'implementation_value'=>0.0,'score_total'=>0.0,
         'active_pipeline_value'=>0.0,'weighted_pipeline_value'=>0.0,'won_value'=>0.0,'active_pipeline_mrr'=>0.0,'weighted_pipeline_mrr'=>0.0,'won_mrr'=>0.0,'overdue'=>0,'due_today'=>0,
-        'sources'=>array(),'stages'=>array(),'recent'=>array(),'priority'=>array(),
+        'sources'=>array(),'stages'=>array(),'recent'=>array(),'priority'=>array(),'followups'=>array(),
     );
     foreach ( softkom_funnel_cc_leads() as $id ) {
         $out['leads']++;
@@ -112,6 +112,9 @@ function softkom_funnel_cc_snapshot() {
         if ( $qualified ) { $out['sources'][$source]['qualified']++; }
         $out['sources'][$source]['mrr'] += $lead_mrr;
         $priority = softkom_funnel_cc_priority( $id, $temperature, $lead_score, $qualified, $lead_mrr, $lead_implementation );
+        if($follow_up && !in_array($stage,array('Won','Lost'),true)){
+            $out['followups'][]=array('id'=>$id,'title'=>get_the_title($id),'date'=>$follow_up,'due_state'=>$due_state,'temperature'=>$temperature ?: '—','stage'=>$stage ?: 'New','implementation'=>$lead_implementation,'mrr'=>$lead_mrr);
+        }
         $out['priority'][] = array(
             'id'=>$id,'title'=>get_the_title($id),'temperature'=>$temperature ?: '—','score'=>$lead_score,
             'qualified'=>$qualified,'mrr'=>$lead_mrr,'implementation'=>$lead_implementation,'stage'=>$stage,
@@ -132,6 +135,7 @@ function softkom_funnel_cc_snapshot() {
     $out['pipeline_rate'] = $out['leads'] ? round(($out['pipeline']/$out['leads'])*100,1) : 0;
     uasort($out['sources'],function($a,$b){ return $b['mrr'] <=> $a['mrr']; });
     usort($out['priority'],function($a,$b){ return $b['priority'] <=> $a['priority']; });
+    usort($out['followups'],function($a,$b){ return strcmp($a['date'],$b['date']); });
     $out['priority']=array_slice($out['priority'],0,10);
     arsort($out['stages']);
     return $out;
@@ -167,6 +171,7 @@ function softkom_funnel_cc_render() {
     <div class="skcc-panel" style="margin-bottom:18px"><h2>Priority Opportunities</h2><p class="skcc-muted">Automatically ordered using lead score, HOT/WARM status, sales eligibility and commercial value.</p><table class="widefat striped"><thead><tr><th>Priority</th><th>Lead</th><th>Heat</th><th>Score</th><th>Potential</th><th>Source</th><th>Follow-up</th><th>Next Action</th></tr></thead><tbody>
     <?php if(!$s['priority']): ?><tr><td colspan="8">No leads to prioritise yet.</td></tr><?php else: foreach($s['priority'] as $lead): ?><tr><td><strong><?php echo esc_html(number_format_i18n($lead['priority'],1)); ?></strong></td><td><a href="<?php echo esc_url(get_edit_post_link($lead['id'])); ?>"><strong><?php echo esc_html($lead['title'] ?: '#'.$lead['id']); ?></strong></a></td><td><?php echo esc_html($lead['temperature']); ?></td><td><?php echo esc_html(number_format_i18n($lead['score'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($lead['implementation']).' + '.softkom_funnel_cc_money($lead['mrr']).'/mo'); ?></td><td><?php echo esc_html($lead['source']); ?></td><td><?php echo esc_html($lead['follow_up'] ?: '—'); ?><?php if($lead['due_state']): ?> <strong>(<?php echo esc_html($lead['due_state']); ?>)</strong><?php endif; ?></td><td><strong><?php echo esc_html($lead['action']); ?></strong></td></tr><?php endforeach; endif; ?>
     </tbody></table></div>
+    <div class="skcc-panel" style="margin-bottom:18px"><h2>Follow-up Action Queue</h2><p class="skcc-muted">Open opportunities ordered by next follow-up date. Overdue and due-today items are surfaced first.</p><table class="widefat striped"><thead><tr><th>Due</th><th>Lead</th><th>Heat</th><th>Stage</th><th>Potential</th><th>Action</th></tr></thead><tbody><?php if(!$s['followups']): ?><tr><td colspan="6">No follow-ups scheduled.</td></tr><?php else: foreach(array_slice($s['followups'],0,15) as $lead): ?><tr><td><strong><?php echo esc_html($lead['date']); ?></strong><?php if($lead['due_state']): ?> — <strong><?php echo esc_html($lead['due_state']); ?></strong><?php endif; ?></td><td><a href="<?php echo esc_url(get_edit_post_link($lead['id'])); ?>"><strong><?php echo esc_html($lead['title'] ?: '#'.$lead['id']); ?></strong></a></td><td><?php echo esc_html($lead['temperature']); ?></td><td><?php echo esc_html($lead['stage']); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($lead['implementation']).' + '.softkom_funnel_cc_money($lead['mrr']).'/mo'); ?></td><td><a class="button button-small" href="<?php echo esc_url(get_edit_post_link($lead['id'])); ?>">Open lead</a></td></tr><?php endforeach; endif; ?></tbody></table></div>
     <div class="skcc-panel" style="margin-bottom:18px"><h2>Revenue Forecast</h2><p class="skcc-muted">Weighted by current sales stage: Contacted 10%, Discovery 25%, Proposal 50%, Negotiation 75%, Won 100%. Lost and Nurture are excluded.</p><table class="widefat striped"><thead><tr><th>Measure</th><th>Implementation</th><th>Recurring MRR</th></tr></thead><tbody><tr><td><strong>Active pipeline</strong></td><td><?php echo esc_html(softkom_funnel_cc_money($s['active_pipeline_value'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($s['active_pipeline_mrr'])); ?>/mo</td></tr><tr><td><strong>Weighted forecast</strong></td><td><?php echo esc_html(softkom_funnel_cc_money($s['weighted_pipeline_value'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($s['weighted_pipeline_mrr'])); ?>/mo</td></tr><tr><td><strong>Won</strong></td><td><?php echo esc_html(softkom_funnel_cc_money($s['won_value'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($s['won_mrr'])); ?>/mo</td></tr></tbody></table></div>
     <div class="skcc-panels"><div class="skcc-panel"><h2>Acquisition → Revenue</h2><table class="widefat striped"><thead><tr><th>Source</th><th>Leads</th><th>Qualified</th><th>Qual. rate</th><th>Estimated MRR</th></tr></thead><tbody>
     <?php if(!$s['sources']): ?><tr><td colspan="5">No attributed leads yet.</td></tr><?php else: foreach($s['sources'] as $source=>$row): $rate=$row['leads']?round(($row['qualified']/$row['leads'])*100,1):0; ?><tr><td><strong><?php echo esc_html(ucwords(str_replace('-',' ',$source))); ?></strong></td><td><?php echo esc_html(number_format_i18n($row['leads'])); ?></td><td><?php echo esc_html(number_format_i18n($row['qualified'])); ?></td><td><?php echo esc_html($rate.'%'); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($row['mrr'])); ?></td></tr><?php endforeach; endif; ?>
