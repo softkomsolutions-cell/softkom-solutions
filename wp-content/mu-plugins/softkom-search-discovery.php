@@ -98,8 +98,8 @@ function softkom_search_normalise_priority_head($html){
 	if(preg_match('/<title\\b[^>]*>.*?<\\/title>/is',$html)){
 		$html=preg_replace('/<title\\b[^>]*>.*?<\\/title>/is',$title,$html,1);
 	}
-	if(preg_match('/<meta\\s+[^>]*name=[\\'"]description[\\'"][^>]*>/i',$html)){
-		$html=preg_replace('/<meta\\s+[^>]*name=[\\'"]description[\\'"][^>]*>/i',$description,$html,1);
+	if(preg_match("~<meta\\s+[^>]*name=['\"]description['\"][^>]*>~i",$html)){
+		$html=preg_replace("~<meta\\s+[^>]*name=['\"]description['\"][^>]*>~i",$description,$html,1);
 	}elseif(false!==stripos($html,'</head>')){
 		$html=preg_replace('/<\\/head>/i',$description."\\n</head>",$html,1);
 	}
