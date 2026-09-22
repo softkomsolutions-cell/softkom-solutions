@@ -75,7 +75,7 @@ function softkom_funnel_cc_snapshot() {
     $out = array(
         'leads'=>0,'qualified'=>0,'hot'=>0,'warm'=>0,'pipeline'=>0,
         'estimated_mrr'=>0.0,'implementation_value'=>0.0,'score_total'=>0.0,
-        'active_pipeline_value'=>0.0,'weighted_pipeline_value'=>0.0,'won_value'=>0.0,'active_pipeline_mrr'=>0.0,'weighted_pipeline_mrr'=>0.0,'won_mrr'=>0.0,'overdue'=>0,'due_today'=>0,
+        'active_pipeline_value'=>0.0,'weighted_pipeline_value'=>0.0,'won_value'=>0.0,'active_pipeline_mrr'=>0.0,'weighted_pipeline_mrr'=>0.0,'won_mrr'=>0.0,'overdue'=>0,'due_today'=>0,'strategy_clicks'=>0,'high_intent_uncontacted'=>0,
         'sources'=>array(),'stages'=>array(),'recent'=>array(),'priority'=>array(),'followups'=>array(),
     );
     foreach ( softkom_funnel_cc_leads() as $id ) {
@@ -87,6 +87,9 @@ function softkom_funnel_cc_snapshot() {
         if ( 'WARM' === $temperature ) { $out['warm']++; }
         $stage = softkom_funnel_cc_text( $id, '_softkom_pipeline_stage' );
         if ( $stage ) { $out['pipeline']++; $out['stages'][ $stage ] = isset($out['stages'][$stage]) ? $out['stages'][$stage]+1 : 1; }
+        $strategy_clicked='yes'===softkom_funnel_cc_text($id,'_softkom_strategy_call_clicked');
+        if($strategy_clicked)$out['strategy_clicks']++;
+        if($strategy_clicked && (!$stage || 'New'===$stage))$out['high_intent_uncontacted']++;
         $follow_up=softkom_funnel_cc_text($id,'_softkom_next_follow_up');
         $due_state=softkom_funnel_cc_due_state($follow_up,$stage ?: 'New');
         if('Overdue'===$due_state)$out['overdue']++;
@@ -159,6 +162,8 @@ function softkom_funnel_cc_render() {
         'Weighted Forecast'=>softkom_funnel_cc_money($s['weighted_pipeline_value']).' + '.softkom_funnel_cc_money($s['weighted_pipeline_mrr']).'/mo',
         'Won Revenue'=>softkom_funnel_cc_money($s['won_value']).' + '.softkom_funnel_cc_money($s['won_mrr']).'/mo',
         'Follow-ups Due'=>$s['due_today'].' today / '.$s['overdue'].' overdue',
+        'Strategy Call Intent'=>number_format_i18n($s['strategy_clicks']),
+        'High Intent Uncontacted'=>number_format_i18n($s['high_intent_uncontacted']),
         'Average Lead Score'=>number_format_i18n($s['average_score']),
     );
     ?>
@@ -171,6 +176,7 @@ function softkom_funnel_cc_render() {
     <div class="skcc-panel" style="margin-bottom:18px"><h2>Priority Opportunities</h2><p class="skcc-muted">Automatically ordered using lead score, HOT/WARM status, sales eligibility and commercial value.</p><table class="widefat striped"><thead><tr><th>Priority</th><th>Lead</th><th>Heat</th><th>Score</th><th>Potential</th><th>Source</th><th>Follow-up</th><th>Next Action</th></tr></thead><tbody>
     <?php if(!$s['priority']): ?><tr><td colspan="8">No leads to prioritise yet.</td></tr><?php else: foreach($s['priority'] as $lead): ?><tr><td><strong><?php echo esc_html(number_format_i18n($lead['priority'],1)); ?></strong></td><td><a href="<?php echo esc_url(get_edit_post_link($lead['id'])); ?>"><strong><?php echo esc_html($lead['title'] ?: '#'.$lead['id']); ?></strong></a></td><td><?php echo esc_html($lead['temperature']); ?></td><td><?php echo esc_html(number_format_i18n($lead['score'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($lead['implementation']).' + '.softkom_funnel_cc_money($lead['mrr']).'/mo'); ?></td><td><?php echo esc_html($lead['source']); ?></td><td><?php echo esc_html($lead['follow_up'] ?: '—'); ?><?php if($lead['due_state']): ?> <strong>(<?php echo esc_html($lead['due_state']); ?>)</strong><?php endif; ?></td><td><strong><?php echo esc_html($lead['action']); ?></strong></td></tr><?php endforeach; endif; ?>
     </tbody></table></div>
+    <?php if($s['high_intent_uncontacted']): ?><div class="notice notice-warning inline"><p><strong><?php echo esc_html(number_format_i18n($s['high_intent_uncontacted'])); ?> high-intent lead(s) have clicked the strategy-call CTA but are still New.</strong> Open Priority Opportunities below and contact these prospects first.</p></div><?php endif; ?>
     <div class="skcc-panel" style="margin-bottom:18px"><h2>Follow-up Action Queue</h2><p class="skcc-muted">Open opportunities ordered by next follow-up date. Overdue and due-today items are surfaced first.</p><table class="widefat striped"><thead><tr><th>Due</th><th>Lead</th><th>Heat</th><th>Stage</th><th>Potential</th><th>Action</th></tr></thead><tbody><?php if(!$s['followups']): ?><tr><td colspan="6">No follow-ups scheduled.</td></tr><?php else: foreach(array_slice($s['followups'],0,15) as $lead): ?><tr><td><strong><?php echo esc_html($lead['date']); ?></strong><?php if($lead['due_state']): ?> — <strong><?php echo esc_html($lead['due_state']); ?></strong><?php endif; ?></td><td><a href="<?php echo esc_url(get_edit_post_link($lead['id'])); ?>"><strong><?php echo esc_html($lead['title'] ?: '#'.$lead['id']); ?></strong></a></td><td><?php echo esc_html($lead['temperature']); ?></td><td><?php echo esc_html($lead['stage']); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($lead['implementation']).' + '.softkom_funnel_cc_money($lead['mrr']).'/mo'); ?></td><td><a class="button button-small" href="<?php echo esc_url(get_edit_post_link($lead['id'])); ?>">Open lead</a></td></tr><?php endforeach; endif; ?></tbody></table></div>
     <div class="skcc-panel" style="margin-bottom:18px"><h2>Revenue Forecast</h2><p class="skcc-muted">Weighted by current sales stage: Contacted 10%, Discovery 25%, Proposal 50%, Negotiation 75%, Won 100%. Lost and Nurture are excluded.</p><table class="widefat striped"><thead><tr><th>Measure</th><th>Implementation</th><th>Recurring MRR</th></tr></thead><tbody><tr><td><strong>Active pipeline</strong></td><td><?php echo esc_html(softkom_funnel_cc_money($s['active_pipeline_value'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($s['active_pipeline_mrr'])); ?>/mo</td></tr><tr><td><strong>Weighted forecast</strong></td><td><?php echo esc_html(softkom_funnel_cc_money($s['weighted_pipeline_value'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($s['weighted_pipeline_mrr'])); ?>/mo</td></tr><tr><td><strong>Won</strong></td><td><?php echo esc_html(softkom_funnel_cc_money($s['won_value'])); ?></td><td><?php echo esc_html(softkom_funnel_cc_money($s['won_mrr'])); ?>/mo</td></tr></tbody></table></div>
     <div class="skcc-panels"><div class="skcc-panel"><h2>Acquisition → Revenue</h2><table class="widefat striped"><thead><tr><th>Source</th><th>Leads</th><th>Qualified</th><th>Qual. rate</th><th>Estimated MRR</th></tr></thead><tbody>
