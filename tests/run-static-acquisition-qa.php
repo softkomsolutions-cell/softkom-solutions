@@ -21,7 +21,7 @@ $required=array(
  'softkom-sitemap.xml','robots.txt','scripts/build-softkom-live-bundle.ps1'
 );
 foreach($required as $rel)qa_check(is_readable($root.'/'.$rel),'Required release file: '.$rel);
-$search=qa_read($root.'/wp-content/mu-plugins/softkom-search-discovery.php');$attr=qa_read($root.'/wp-content/mu-plugins/softkom-organic-attribution.php');$indexnow=qa_read($root.'/wp-content/mu-plugins/softkom-indexnow.php');$sitemap=qa_read($root.'/softkom-sitemap.xml');$bundle=qa_read($root.'/scripts/build-softkom-live-bundle.ps1');$reinforcement=qa_read($root.'/wp-content/mu-plugins/softkom-acquisition-reinforcement.php');$robots=qa_read($root.'/robots.txt');$growth=qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-pages.php');
+$search=qa_read($root.'/wp-content/mu-plugins/softkom-search-discovery.php');$attr=qa_read($root.'/wp-content/mu-plugins/softkom-organic-attribution.php');$indexnow=qa_read($root.'/wp-content/mu-plugins/softkom-indexnow.php');$sitemap=qa_read($root.'/softkom-sitemap.xml');$bundle=qa_read($root.'/scripts/build-softkom-live-bundle.ps1');$reinforcement=qa_read($root.'/wp-content/mu-plugins/softkom-acquisition-reinforcement.php');$robots=qa_read($root.'/robots.txt');$growth=qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-pages.php');$expansion=qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-expansion.php');
 foreach($slugs as $slug){qa_check(strpos($search,$slug)!==false,'Search discovery covers /'.$slug.'/');qa_check(strpos($attr,$slug)!==false,'Attribution covers /'.$slug.'/');qa_check(strpos($indexnow,$slug)!==false||strpos($indexnow,'softkom_search_money_slugs')!==false,'IndexNow covers /'.$slug.'/');qa_check(strpos($sitemap,'/'.$slug.'/')!==false,'Physical sitemap covers /'.$slug.'/');}
 qa_check(substr_count($sitemap,'<loc>')===19,'Physical sitemap contains exactly 19 acquisition URLs');
 qa_check(strpos($robots,'softkom-sitemap.xml')!==false,'robots.txt references acquisition sitemap');
@@ -34,6 +34,7 @@ qa_check(strpos($search,'FAQPage')!==false||strpos(qa_read($root.'/wp-content/mu
 qa_check(strpos($attr,'ai-search')!==false&&strpos($attr,'chatgpt.com')!==false&&strpos($attr,'perplexity.ai')!==false,'AI-search attribution sources are configured');
 qa_check(strpos($growth,"utm_campaign'=>'buyer-intent'")!==false&&strpos($growth,"utm_campaign'=>'strategy-call'")!==false,'Priority buyer pages preserve conversion attribution');
 qa_check(strpos($growth,'No obligation')!==false,'Priority buyer pages include low-friction assessment reassurance');
+qa_check(strpos($expansion,"utm_campaign'=>'buyer-intent'")!==false&&strpos($expansion,"utm_campaign'=>'strategy-call'")!==false,'Expansion buyer pages preserve conversion attribution');
 qa_check(strpos($indexnow,'api.indexnow.org/indexnow')!==false,'IndexNow endpoint configured');
 qa_check(strpos($indexnow,'Queue All 19 Acquisition URLs')!==false&&strpos($indexnow,'softkom_indexnow_submit_all')!==false,'Manual IndexNow recovery control present');
 qa_check(strpos($indexnow,'wp_schedule_single_event')!==false&&strpos($indexnow,'spawn_cron')!==false,'Manual IndexNow recovery uses queued background submission');
