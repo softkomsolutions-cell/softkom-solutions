@@ -60,6 +60,55 @@ add_filter('rank_math/frontend/description',function($description){
 	$meta=softkom_search_priority_meta();$slug=softkom_search_current_slug();
 	return isset($meta[$slug])?$meta[$slug]['description']:$description;
 },90);
+
+/**
+ * Keep buyer-page search snippets deterministic regardless of the active SEO
+ * plugin. The live site has used more than one SEO/title layer over time, so
+ * relying on a single plugin-specific filter can leave stale titles/descriptions.
+ */
+function softkom_search_priority_current_meta(){
+	$meta=softkom_search_priority_meta();$slug=softkom_search_current_slug();
+	return isset($meta[$slug])?$meta[$slug]:null;
+}
+function softkom_search_priority_title($title){
+	$current=softkom_search_priority_current_meta();
+	return $current?$current['title']:$title;
+}
+function softkom_search_priority_description($description){
+	$current=softkom_search_priority_current_meta();
+	return $current?$current['description']:$description;
+}
+add_filter('pre_get_document_title','softkom_search_priority_title',999);
+add_filter('wpseo_title','softkom_search_priority_title',999);
+add_filter('aioseo_title','softkom_search_priority_title',999);
+add_filter('wpseo_metadesc','softkom_search_priority_description',999);
+add_filter('aioseo_description','softkom_search_priority_description',999);
+
+/**
+ * Final safeguard for priority buyer pages. This runs after WordPress and SEO
+ * plugins render the document and normalises only the title and primary meta
+ * description. It is intentionally scoped to URLs present in
+ * softkom_search_priority_meta().
+ */
+function softkom_search_normalise_priority_head($html){
+	$current=softkom_search_priority_current_meta();
+	if(!$current||!is_string($html)||''===$html)return $html;
+	$title='<title>'.esc_html($current['title']).'</title>';
+	$description='<meta name="description" content="'.esc_attr($current['description']).'">';
+	if(preg_match('/<title\\b[^>]*>.*?<\\/title>/is',$html)){
+		$html=preg_replace('/<title\\b[^>]*>.*?<\\/title>/is',$title,$html,1);
+	}
+	if(preg_match('/<meta\\s+[^>]*name=[\\'"]description[\\'"][^>]*>/i',$html)){
+		$html=preg_replace('/<meta\\s+[^>]*name=[\\'"]description[\\'"][^>]*>/i',$description,$html,1);
+	}elseif(false!==stripos($html,'</head>')){
+		$html=preg_replace('/<\\/head>/i',$description."\\n</head>",$html,1);
+	}
+	return $html;
+}
+add_action('template_redirect',function(){
+	if(is_admin()||is_feed()||wp_doing_ajax()||!softkom_search_priority_current_meta())return;
+	ob_start('softkom_search_normalise_priority_head');
+},999);
 add_filter('astra_the_title_enabled',function($enabled){
 	return softkom_search_is_money_page()?false:$enabled;
 },90);
