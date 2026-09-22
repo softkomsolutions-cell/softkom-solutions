@@ -84,12 +84,13 @@ add_filter( 'the_content', function ( $content ) {
 		$links .= '<a href="' . esc_url( home_url( '/' . $target . '/' ) ) . '">' . esc_html( $label ) . '<span>→</span></a>';
 	}
 
-	$assessment = esc_url( home_url( '/assessment/' ) );
+	$assessment = esc_url( add_query_arg( array( 'utm_source' => 'softkom-organic', 'utm_medium' => 'website', 'utm_campaign' => 'buyer-intent', 'utm_content' => $slug ), home_url( '/assessment/' ) ) );
+	$strategy   = esc_url( add_query_arg( array( 'source' => 'organic-buyer-page', 'utm_source' => 'softkom-organic', 'utm_medium' => 'website', 'utm_campaign' => 'strategy-call', 'utm_content' => $slug ), home_url( '/contact/' ) ) );
 	$projects   = esc_url( home_url( '/projects/' ) );
 	$block  = '<section class="sks-white ska-buyer" aria-label="Buyer questions"><div class="sks-inner">';
 	$block .= '<p class="sks-label">BEFORE YOU INVEST</p><h2>Questions buyers usually ask before automating this process</h2>';
 	$block .= '<div class="sks-grid">' . $items . '</div>';
-	$block .= '<div class="ska-proof"><p><strong>Softkom focuses on practical business outcomes first.</strong> Delivery examples include ecommerce, mobile ordering and business-system work for South African clients. Review the project portfolio or run the free assessment to identify the highest-value next step.</p><div class="sks-actions"><a class="sks-secondary" href="' . $projects . '">View Softkom Projects</a><a class="sks-primary" href="' . $assessment . '">Start My Free Assessment →</a></div></div>';
+	$block .= '<div class="ska-proof"><p><strong>Softkom focuses on practical business outcomes first.</strong> Delivery examples include ecommerce, mobile ordering and business-system work for South African clients. Review the project portfolio or run the free assessment to identify the highest-value next step.</p><div class="sks-actions"><a class="sks-secondary" href="' . $projects . '">View Softkom Projects</a><a class="sks-primary" href="' . $assessment . '">Start My Free Assessment →</a><a class="sks-secondary" href="' . $strategy . '">Book a Strategy Call</a></div></div>';
 	$block .= '<div class="ska-related"><p class="sks-label">RELATED OPERATIONAL PROBLEMS</p><nav class="sks-proof">' . $links . '</nav></div>';
 	$block .= '</div></section>';
 

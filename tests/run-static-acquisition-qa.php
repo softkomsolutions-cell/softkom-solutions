@@ -29,6 +29,8 @@ qa_check(strpos($bundle,'softkom-indexnow.php')!==false,'Production bundle inclu
 qa_check(strpos($bundle,'softkom-organic-traffic-sprint.php')!==false,'Production bundle includes organic traffic sprint');
 qa_check(strpos($bundle,'softkom-organic-growth-expansion.php')!==false,'Production bundle includes growth expansion');
 qa_check(strpos($bundle,'softkom-acquisition-reinforcement.php')!==false,'Production bundle includes Sprint 2 acquisition reinforcement');
+qa_check(strpos($reinforcement,"utm_campaign' => 'buyer-intent'")!==false&&strpos($reinforcement,"utm_campaign' => 'strategy-call'")!==false,'Problem-led buyer pages preserve assessment and strategy-call attribution');
+qa_check(strpos($reinforcement,'Book a Strategy Call')!==false,'Problem-led buyer pages expose a direct strategy-call path');
 qa_check(strpos($reinforcement,'automate-data-entry-south-africa')!==false&&strpos($reinforcement,'automate-business-reporting-south-africa')!==false&&strpos($reinforcement,'automate-approvals-workflows-south-africa')!==false&&strpos($reinforcement,'connect-business-software-south-africa')!==false&&strpos($reinforcement,'automate-lead-follow-up-south-africa')!==false&&strpos($reinforcement,'operations-management-system-south-africa')!==false,'Sprint 2 acquisition reinforcement covers all six problem-led pages');
 qa_check(strpos($search,'FAQPage')!==false||strpos(qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-expansion.php'),'FAQPage')!==false,'AI/search FAQ structured data is present');
 qa_check(strpos($attr,'ai-search')!==false&&strpos($attr,'chatgpt.com')!==false&&strpos($attr,'perplexity.ai')!==false,'AI-search attribution sources are configured');
