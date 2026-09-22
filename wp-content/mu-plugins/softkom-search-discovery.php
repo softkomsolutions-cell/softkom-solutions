@@ -31,6 +31,22 @@ function softkom_search_priority_meta(){
 			'title'=>'Business Software Integration South Africa | Softkom',
 			'description'=>'Connect CRM, accounting, ecommerce and operational software so data moves automatically. Reduce duplicate capture, errors and manual re-entry.'
 		),
+		'sales-lead-generation-automation-south-africa'=>array(
+			'title'=>'Sales & Lead Automation South Africa | Softkom',
+			'description'=>'Stop good enquiries going cold. Automate lead capture, qualification, routing and follow-up, with source-to-revenue visibility for South African businesses.'
+		),
+		'automate-lead-follow-up-south-africa'=>array(
+			'title'=>'Automate Lead Follow-Up South Africa | Softkom',
+			'description'=>'Respond to new leads faster with automated acknowledgement, routing, reminders and follow-up across web, email and connected sales workflows.'
+		),
+		'operations-management-system-south-africa'=>array(
+			'title'=>'Operations Management System South Africa | Softkom',
+			'description'=>'Replace fragmented spreadsheets and manual updates with a connected operations system for jobs, orders, workflows, reporting and management visibility.'
+		),
+		'replace-excel-with-custom-software-south-africa'=>array(
+			'title'=>'Replace Excel with Custom Software South Africa | Softkom',
+			'description'=>'Outgrown Excel as an operational system? See when custom software is justified, what to automate first and how to move without disrupting the business.'
+		),
 	);
 }
 function softkom_search_current_slug(){
