@@ -47,6 +47,22 @@ function softkom_search_priority_meta(){
 			'title'=>'Replace Excel with Custom Software South Africa | Softkom',
 			'description'=>'Outgrown Excel as an operational system? See when custom software is justified, what to automate first and how to move without disrupting the business.'
 		),
+		'automate-data-entry-south-africa'=>array(
+			'title'=>'Automate Data Entry South Africa | Softkom',
+			'description'=>'Reduce repetitive data capture from forms, email, PDFs and business systems. Softkom designs practical automation that cuts re-entry, errors and admin time.'
+		),
+		'automate-business-reporting-south-africa'=>array(
+			'title'=>'Automate Business Reporting South Africa | Softkom',
+			'description'=>'Automate recurring management reports and combine data from accounting, CRM and operational systems without replacing the tools that already work.'
+		),
+		'automate-approvals-workflows-south-africa'=>array(
+			'title'=>'Approval Workflow Automation South Africa | Softkom',
+			'description'=>'Replace slow email and WhatsApp approval chains with tracked workflows, reminders, ownership and a reliable approval history.'
+		),
+		'ai-readiness-assessment-south-africa'=>array(
+			'title'=>'Free AI Readiness Assessment South Africa | Softkom',
+			'description'=>'Find practical AI and automation opportunities in your business before you invest. Get a prioritised assessment of workflows, systems and next steps.'
+		),
 	);
 }
 function softkom_search_current_slug(){
