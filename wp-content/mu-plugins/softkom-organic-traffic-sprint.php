@@ -947,8 +947,23 @@ function softkom_traffic_sprint_pages() {
 /**
  * Build full HTML for a traffic-sprint page from its definition.
  */
-function softkom_traffic_sprint_html( $p ) {
-	$assessment = esc_url( home_url( '/assessment/' ) );
+function softkom_traffic_sprint_html( $p, $slug = '' ) {
+	if ( ! $slug ) {
+		$slug = sanitize_title( $p['title'] );
+	}
+	$assessment = esc_url( add_query_arg( array(
+		'utm_source'   => 'softkom-organic',
+		'utm_medium'   => 'website',
+		'utm_campaign' => 'buyer-intent',
+		'utm_content'  => $slug,
+	), home_url( '/assessment/' ) ) );
+	$strategy_call = esc_url( add_query_arg( array(
+		'source'       => 'organic-buyer-page',
+		'utm_source'   => 'softkom-organic',
+		'utm_medium'   => 'website',
+		'utm_campaign' => 'strategy-call',
+		'utm_content'  => $slug,
+	), home_url( '/contact/' ) ) );
 
 	$problems = '';
 	foreach ( $p['problems'] as $x ) {
@@ -1005,7 +1020,7 @@ function softkom_traffic_sprint_html( $p ) {
 
 	$html  = '<div class="sks-page">';
 
-	$html .= '<section class="sks-hero"><div class="sks-inner"><div class="sks-pill">' . esc_html( $p['eyebrow'] ) . '</div><h1>' . esc_html( $p['headline'] ) . '</h1><p class="sks-lead">' . esc_html( $p['intro'] ) . '</p><div class="sks-actions"><a class="sks-primary" href="' . $assessment . '">Start My Free Assessment →</a><a class="sks-secondary" href="' . esc_url( home_url( '/contact/' ) ) . '">Book a Strategy Call</a></div><div class="sks-proof"><span>✓ South African business focus</span><span>✓ Practical recommendations</span><span>✓ No-obligation assessment</span></div></div></section>';
+	$html .= '<section class="sks-hero"><div class="sks-inner"><div class="sks-pill">' . esc_html( $p['eyebrow'] ) . '</div><h1>' . esc_html( $p['headline'] ) . '</h1><p class="sks-lead">' . esc_html( $p['intro'] ) . '</p><div class="sks-actions"><a class="sks-primary" href="' . $assessment . '">Start My Free Assessment →</a><a class="sks-secondary" href="' . $strategy_call . '">Book a Strategy Call</a></div><div class="sks-proof"><span>✓ South African business focus</span><span>✓ Practical recommendations</span><span>✓ No-obligation assessment</span></div></div></section>';
 
 	$html .= '<section class="sks-main"><div class="sks-inner"><p class="sks-label">THE PROBLEM</p><h2>' . esc_html( $p['problem_block_title'] ) . '</h2><ul class="sks-problems">' . $problems . '</ul></div></section>';
 
@@ -1047,7 +1062,7 @@ function softkom_traffic_sprint_html( $p ) {
  * Sync the four traffic pages.
  */
 function softkom_traffic_sprint_sync() {
-	$version = '2.0.0';
+	$version = '2.1.0';
 	if ( get_option( 'softkom_traffic_sprint_version' ) === $version ) {
 		return;
 	}
@@ -1058,7 +1073,7 @@ function softkom_traffic_sprint_sync() {
 			'post_name'    => $slug,
 			'post_type'    => 'page',
 			'post_status'  => 'publish',
-			'post_content' => softkom_traffic_sprint_html( $p ),
+			'post_content' => softkom_traffic_sprint_html( $p, $slug ),
 		);
 		if ( $page ) {
 			$post['ID'] = $page->ID;
