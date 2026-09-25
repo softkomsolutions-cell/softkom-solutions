@@ -45,3 +45,4 @@ qa_check(strpos($indexnow,'api.indexnow.org/indexnow')!==false,'IndexNow endpoin
 qa_check(strpos($indexnow,'Queue All 19 Acquisition URLs')!==false&&strpos($indexnow,'softkom_indexnow_submit_all')!==false,'Manual IndexNow recovery control present');
 qa_check(strpos($indexnow,'wp_schedule_single_event')!==false&&strpos($indexnow,'spawn_cron')!==false,'Manual IndexNow recovery uses queued background submission');
 echo "\nStatic Acquisition QA: $pass passed, $fail failed.\n";exit($fail?1:0);
+qa_check(strpos($search,'Automate Data Entry South Africa | Softkom')!==false&&strpos($search,'Automate Business Reporting South Africa | Softkom')!==false&&strpos($search,'Approval Workflow Automation South Africa | Softkom')!==false&&strpos($search,'Free AI Readiness Assessment South Africa | Softkom')!==false,'Buyer-focused search snippets cover additional high-intent acquisition pages');
