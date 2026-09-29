@@ -47,7 +47,7 @@ qa_check(strpos($indexnow,'wp_schedule_single_event')!==false&&strpos($indexnow,
 
 qa_check(strpos($search,'Automate Data Entry South Africa | Softkom')!==false&&strpos($search,'Automate Business Reporting South Africa | Softkom')!==false&&strpos($search,'Approval Workflow Automation South Africa | Softkom')!==false&&strpos($search,'Free AI Readiness Assessment South Africa | Softkom')!==false,'Buyer-focused search snippets cover additional high-intent acquisition pages');
 
-qa_check(strpos($sprint,"utm_campaign' => 'buyer-intent")!==false&&strpos($sprint,"utm_campaign' => 'strategy-call")!==false&&strpos($sprint,"'utm_content'  => $slug")!==false,'Traffic-sprint buyer pages preserve source-to-conversion attribution');
+qa_check(strpos($sprint,"'utm_campaign' => 'buyer-intent'")!==false&&strpos($sprint,"'utm_campaign' => 'strategy-call'")!==false&&strpos($sprint,"'utm_content'  => $slug")!==false,'Traffic-sprint buyer pages preserve source-to-conversion attribution');
 
 qa_check(strpos($search,'softkom_search_is_discovery_bridge_page')!==false&&strpos($search,"'utm_campaign'=>'authority-bridge'")!==false,'Homepage and Insights bridge discovery traffic into attributable lead capture');
 echo "\nStatic Acquisition QA: $pass passed, $fail failed.\n";exit($fail?1:0);
