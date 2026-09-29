@@ -21,7 +21,7 @@ $required=array(
  'softkom-sitemap.xml','robots.txt','scripts/build-softkom-live-bundle.ps1'
 );
 foreach($required as $rel)qa_check(is_readable($root.'/'.$rel),'Required release file: '.$rel);
-$search=qa_read($root.'/wp-content/mu-plugins/softkom-search-discovery.php');$attr=qa_read($root.'/wp-content/mu-plugins/softkom-organic-attribution.php');$indexnow=qa_read($root.'/wp-content/mu-plugins/softkom-indexnow.php');$sitemap=qa_read($root.'/softkom-sitemap.xml');$bundle=qa_read($root.'/scripts/build-softkom-live-bundle.ps1');$reinforcement=qa_read($root.'/wp-content/mu-plugins/softkom-acquisition-reinforcement.php');$robots=qa_read($root.'/robots.txt');$growth=qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-pages.php');$expansion=qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-expansion.php');
+$search=qa_read($root.'/wp-content/mu-plugins/softkom-search-discovery.php');$attr=qa_read($root.'/wp-content/mu-plugins/softkom-organic-attribution.php');$indexnow=qa_read($root.'/wp-content/mu-plugins/softkom-indexnow.php');$sitemap=qa_read($root.'/softkom-sitemap.xml');$bundle=qa_read($root.'/scripts/build-softkom-live-bundle.ps1');$reinforcement=qa_read($root.'/wp-content/mu-plugins/softkom-acquisition-reinforcement.php');$robots=qa_read($root.'/robots.txt');$growth=qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-pages.php');$expansion=qa_read($root.'/wp-content/mu-plugins/softkom-organic-growth-expansion.php');$sprint=qa_read($root.'/wp-content/mu-plugins/softkom-organic-traffic-sprint.php');
 foreach($slugs as $slug){qa_check(strpos($search,$slug)!==false,'Search discovery covers /'.$slug.'/');qa_check(strpos($attr,$slug)!==false,'Attribution covers /'.$slug.'/');qa_check(strpos($indexnow,$slug)!==false||strpos($indexnow,'softkom_search_money_slugs')!==false,'IndexNow covers /'.$slug.'/');qa_check(strpos($sitemap,'/'.$slug.'/')!==false,'Physical sitemap covers /'.$slug.'/');}
 qa_check(substr_count($sitemap,'<loc>')===19,'Physical sitemap contains exactly 19 acquisition URLs');
 qa_check(strpos($robots,'softkom-sitemap.xml')!==false,'robots.txt references acquisition sitemap');
@@ -44,7 +44,10 @@ qa_check(strpos($expansion,"utm_campaign'=>'buyer-intent'")!==false&&strpos($exp
 qa_check(strpos($indexnow,'api.indexnow.org/indexnow')!==false,'IndexNow endpoint configured');
 qa_check(strpos($indexnow,'Queue All 19 Acquisition URLs')!==false&&strpos($indexnow,'softkom_indexnow_submit_all')!==false,'Manual IndexNow recovery control present');
 qa_check(strpos($indexnow,'wp_schedule_single_event')!==false&&strpos($indexnow,'spawn_cron')!==false,'Manual IndexNow recovery uses queued background submission');
-echo "\nStatic Acquisition QA: $pass passed, $fail failed.\n";exit($fail?1:0);
+
 qa_check(strpos($search,'Automate Data Entry South Africa | Softkom')!==false&&strpos($search,'Automate Business Reporting South Africa | Softkom')!==false&&strpos($search,'Approval Workflow Automation South Africa | Softkom')!==false&&strpos($search,'Free AI Readiness Assessment South Africa | Softkom')!==false,'Buyer-focused search snippets cover additional high-intent acquisition pages');
 
-qa_check(strpos($sprint,"utm_campaign' => 'buyer-intent")!==false&&strpos($sprint,"utm_campaign' => 'strategy-call")!==false&&strpos($sprint,"'utm_content'  => $slug")!==false,'Traffic-sprint buyer pages preserve source-to-conversion attribution');
+qa_check(strpos($sprint,"'utm_campaign' => 'buyer-intent'")!==false&&strpos($sprint,"'utm_campaign' => 'strategy-call'")!==false&&strpos($sprint,"'utm_content'  => \$slug")!==false,'Traffic-sprint buyer pages preserve source-to-conversion attribution');
+
+qa_check(strpos($search,'softkom_search_is_discovery_bridge_page')!==false&&strpos($search,"'utm_campaign'=>'authority-bridge'")!==false,'Homepage and Insights bridge discovery traffic into attributable lead capture');
+echo "\nStatic Acquisition QA: $pass passed, $fail failed.\n";exit($fail?1:0);

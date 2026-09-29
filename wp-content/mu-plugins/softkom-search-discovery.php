@@ -153,3 +153,29 @@ function softkom_search_org_logo_url(){
 	return home_url('/wp-content/themes/softkom-v3/assets/images/softkom-logo-header.png');
 }
 add_action('wp_head',function(){if(!softkom_search_is_money_page())return;$graph=array('@context'=>'https://schema.org','@graph'=>array(array('@type'=>'Organization','@id'=>home_url('/#organization'),'name'=>'Softkom Solutions','url'=>home_url('/'),'logo'=>array('@type'=>'ImageObject','url'=>softkom_search_org_logo_url()),'description'=>'South African business systems, AI automation and digital infrastructure company helping growing organisations replace manual processes and disconnected tools with scalable systems.','areaServed'=>array('@type'=>'Country','name'=>'South Africa'),'knowsAbout'=>array('AI automation','business process automation','custom business systems','workflow automation','sales automation','WhatsApp automation','AI readiness','systems integration','business systems')),array('@type'=>'WebPage','@id'=>get_permalink().'#webpage','url'=>get_permalink(),'name'=>wp_get_document_title(),'isPartOf'=>array('@type'=>'WebSite','@id'=>home_url('/#website'),'url'=>home_url('/'),'name'=>'Softkom Solutions'),'about'=>array('@id'=>home_url('/#organization')),'inLanguage'=>'en-ZA')));echo '<script type="application/ld+json">'.wp_json_encode($graph,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE).'</script>'."\n";},45);
+
+
+/** Bridge public authority entry points into attributable lead capture. */
+function softkom_search_is_discovery_bridge_page(){
+	if(is_admin()||!is_page())return false;
+	if(is_front_page())return true;
+	return 'insights'===(string)get_post_field('post_name',get_queried_object_id());
+}
+add_action('wp_footer',function(){
+	if(!softkom_search_is_discovery_bridge_page())return;
+	$assessment=add_query_arg(array('utm_source'=>'softkom-organic','utm_medium'=>'website','utm_campaign'=>'authority-bridge','utm_content'=>is_front_page()?'homepage':'insights'),home_url('/assessment/'));
+	echo '<section class="sk-authority-bridge" aria-label="Business automation solutions"><div class="sk-authority-bridge__inner">';
+	echo '<p class="sk-authority-bridge__eyebrow">SOLVE A BUSINESS BOTTLENECK</p><h2>Turn manual work into a connected business system</h2>';
+	echo '<p class="sk-authority-bridge__intro">If spreadsheets, duplicate data, slow approvals or disconnected software are holding your team back, start with the problem you need to solve.</p>';
+	echo '<div class="sk-authority-bridge__grid">';
+	echo '<a href="'.esc_url(home_url('/automate-manual-business-processes/')).'"><strong>Automate manual processes</strong><span>Remove repetitive admin and workflow delays →</span></a>';
+	echo '<a href="'.esc_url(home_url('/replace-excel-with-custom-software-south-africa/')).'"><strong>Replace operational spreadsheets</strong><span>Move critical Excel workflows into a reliable system →</span></a>';
+	echo '<a href="'.esc_url(home_url('/business-system-integration-south-africa/')).'"><strong>Connect business software</strong><span>Stop re-entering data between disconnected tools →</span></a>';
+	echo '</div><a class="sk-authority-bridge__cta" href="'.esc_url($assessment).'">Find your best automation opportunity <span>→</span></a><small>Free assessment · No obligation</small>';
+	echo '</div></section>';
+},25);
+add_action('wp_enqueue_scripts',function(){
+	if(!softkom_search_is_discovery_bridge_page())return;
+	wp_register_style('softkom-authority-bridge',false,array(),'1.0.0');wp_enqueue_style('softkom-authority-bridge');
+	wp_add_inline_style('softkom-authority-bridge','.sk-authority-bridge{font-family:Inter,system-ui,sans-serif;padding:72px 24px;background:#0f172a;color:#fff}.sk-authority-bridge__inner{max-width:1180px;margin:auto}.sk-authority-bridge__eyebrow{margin:0 0 12px;color:#60a5fa;font-size:12px;font-weight:800;letter-spacing:.1em}.sk-authority-bridge h2{max-width:820px;margin:0 0 16px;color:#fff;font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.035em}.sk-authority-bridge__intro{max-width:760px;margin:0 0 30px;color:#cbd5e1;font-size:18px;line-height:1.65}.sk-authority-bridge__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}.sk-authority-bridge__grid a{display:flex;min-height:128px;flex-direction:column;justify-content:space-between;padding:22px;border:1px solid #334155;border-radius:14px;background:#111c31;color:#fff!important;text-decoration:none!important}.sk-authority-bridge__grid a:hover{border-color:#60a5fa;transform:translateY(-2px)}.sk-authority-bridge__grid strong{font-size:18px}.sk-authority-bridge__grid span{color:#cbd5e1;font-size:14px;line-height:1.5}.sk-authority-bridge__cta{display:inline-flex;align-items:center;gap:10px;padding:15px 20px;border-radius:10px;background:#2563eb;color:#fff!important;text-decoration:none!important;font-weight:800}.sk-authority-bridge small{display:block;margin-top:10px;color:#94a3b8}@media(max-width:760px){.sk-authority-bridge__grid{grid-template-columns:1fr}}');
+},41);
