@@ -18,6 +18,41 @@ $questions = function_exists( 'softkom_v3_assessment_question_bank' )
 $sections = function_exists( 'softkom_v3_assessment_sections' )
     ? softkom_v3_assessment_sections()
     : array();
+
+$campaign = isset( $_GET['utm_campaign'] ) ? sanitize_key( wp_unslash( $_GET['utm_campaign'] ) ) : '';
+$term     = isset( $_GET['utm_term'] ) ? sanitize_key( wp_unslash( $_GET['utm_term'] ) ) : '';
+
+$hero_copy = array(
+    'eyebrow' => 'Free Business Systems Assessment',
+    'title'   => 'How mature are your business systems?',
+    'lead'    => 'Discover where disconnected tools, manual processes, reporting gaps and missed automation opportunities may be holding your business back.',
+);
+
+if ( 'lead-engine-pilot' === $campaign ) {
+    $pilot_copy = array(
+        'operations-system' => array(
+            'eyebrow' => 'Operations Systems Assessment',
+            'title'   => 'Where is manual work slowing your operation down?',
+            'lead'    => 'Identify the workflows, spreadsheets and disconnected tools creating the most operational friction, then see which improvements are worth prioritising first.',
+        ),
+        'manufacturing-automation' => array(
+            'eyebrow' => 'Manufacturing Automation Assessment',
+            'title'   => 'Where can automation improve control as you scale?',
+            'lead'    => 'Assess production, stock, approvals, reporting and system hand-offs to identify practical automation opportunities without replacing what already works.',
+        ),
+        'manufacturing-integration' => array(
+            'eyebrow' => 'Manufacturing Systems Assessment',
+            'title'   => 'Which systems and workflows should be connected first?',
+            'lead'    => 'Find where disconnected production, inventory, service and reporting processes are creating re-entry, delays or poor management visibility.',
+        ),
+    );
+
+    $hero_copy = isset( $pilot_copy[ $term ] ) ? $pilot_copy[ $term ] : array(
+        'eyebrow' => 'Business Growth Systems Assessment',
+        'title'   => 'Where can better systems create the fastest operational gain?',
+        'lead'    => 'Identify the manual processes, reporting gaps and disconnected tools most worth improving as your business grows.',
+    );
+}
 ?>
 
 <main class="sk-assessment">
@@ -28,17 +63,15 @@ $sections = function_exists( 'softkom_v3_assessment_sections' )
             <div class="sk-assessment-hero__content">
 
                 <span class="sk-assessment-eyebrow">
-                    Free Business Systems Assessment
+                    <?php echo esc_html( $hero_copy['eyebrow'] ); ?>
                 </span>
 
                 <h1>
-                    How mature are your business systems?
+                    <?php echo esc_html( $hero_copy['title'] ); ?>
                 </h1>
 
                 <p class="sk-assessment-lead">
-                    Discover where disconnected tools, manual processes,
-                    reporting gaps and missed automation opportunities may
-                    be holding your business back.
+                    <?php echo esc_html( $hero_copy['lead'] ); ?>
                 </p>
 
                 <div class="sk-assessment-benefits">
