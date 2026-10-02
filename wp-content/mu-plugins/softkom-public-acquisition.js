@@ -119,9 +119,15 @@
 
         var hero = document.querySelector('.sk-assessment-hero');
         if (hero) {
-            setText(hero, '.sk-assessment-eyebrow', 'Free Business Systems & AI Readiness Assessment');
-            setText(hero, 'h1', 'How ready is your business to scale with better systems and AI?');
-            setText(hero, '.sk-assessment-lead', 'Discover where manual processes, disconnected tools, reporting gaps and missed automation opportunities may be costing your business time, margin and growth.');
+            var params = new URLSearchParams(window.location.search);
+            var isLeadEnginePilot = params.get('utm_campaign') === 'lead-engine-pilot';
+
+            if (!isLeadEnginePilot) {
+                setText(hero, '.sk-assessment-eyebrow', 'Free Business Systems & AI Readiness Assessment');
+                setText(hero, 'h1', 'How ready is your business to scale with better systems and AI?');
+                setText(hero, '.sk-assessment-lead', 'Discover where manual processes, disconnected tools, reporting gaps and missed automation opportunities may be costing your business time, margin and growth.');
+            }
+
             setText(hero, '[data-assessment-start]', 'Start My Free Assessment');
             setText(hero, '.sk-assessment-note', 'Takes about 3 minutes. You’ll receive an instant maturity score and practical recommendations.');
         }
