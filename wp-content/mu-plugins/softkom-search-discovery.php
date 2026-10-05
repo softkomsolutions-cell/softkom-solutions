@@ -167,15 +167,39 @@ add_action('wp_footer',function(){
 	echo '<section class="sk-authority-bridge" aria-label="Business automation solutions"><div class="sk-authority-bridge__inner">';
 	echo '<p class="sk-authority-bridge__eyebrow">SOLVE A BUSINESS BOTTLENECK</p><h2>Turn manual work into a connected business system</h2>';
 	echo '<p class="sk-authority-bridge__intro">If spreadsheets, duplicate data, slow approvals or disconnected software are holding your team back, start with the problem you need to solve.</p>';
+	$priority_links=array(
+		'automate-data-entry-south-africa'=>array('Automate data entry','Reduce repetitive capture, re-entry and admin errors'),
+		'automate-business-reporting-south-africa'=>array('Automate business reporting','Turn recurring management reporting into a connected workflow'),
+		'automate-approvals-workflows-south-africa'=>array('Automate approvals','Replace email and WhatsApp approval chasing with tracked workflows'),
+		'connect-business-software-south-africa'=>array('Connect business software','Move data automatically between the systems you already use'),
+		'automate-lead-follow-up-south-africa'=>array('Automate lead follow-up','Respond, route and follow up before good enquiries go cold'),
+		'operations-management-system-south-africa'=>array('Operations management system','Replace fragmented spreadsheets with one operational view'),
+	);
 	echo '<div class="sk-authority-bridge__grid">';
-	echo '<a href="'.esc_url(home_url('/automate-manual-business-processes/')).'"><strong>Automate manual processes</strong><span>Remove repetitive admin and workflow delays →</span></a>';
-	echo '<a href="'.esc_url(home_url('/replace-excel-with-custom-software-south-africa/')).'"><strong>Replace operational spreadsheets</strong><span>Move critical Excel workflows into a reliable system →</span></a>';
-	echo '<a href="'.esc_url(home_url('/business-system-integration-south-africa/')).'"><strong>Connect business software</strong><span>Stop re-entering data between disconnected tools →</span></a>';
-	echo '</div><a class="sk-authority-bridge__cta" href="'.esc_url($assessment).'">Find your best automation opportunity <span>→</span></a><small>Free assessment · No obligation</small>';
+	foreach($priority_links as $target=>$copy){echo '<a href="'.esc_url(home_url('/'.$target.'/')).'"><strong>'.esc_html($copy[0]).'</strong><span>'.esc_html($copy[1]).' →</span></a>';}
+	echo '</div>';
+	$guide_links=array(
+		'ai-automation-south-africa'=>'AI automation South Africa',
+		'business-process-automation-south-africa'=>'Business process automation',
+		'custom-business-systems-south-africa'=>'Custom business systems',
+		'ai-automation-for-smes-south-africa'=>'AI automation for SMEs',
+		'replace-spreadsheets-manual-processes-south-africa'=>'Replace spreadsheets and manual processes',
+		'sales-lead-generation-automation-south-africa'=>'Sales and lead automation',
+		'whatsapp-customer-service-automation-south-africa'=>'WhatsApp customer service automation',
+		'ai-readiness-assessment-south-africa'=>'AI readiness assessment',
+		'replace-excel-with-custom-software-south-africa'=>'Replace Excel with custom software',
+		'custom-software-vs-spreadsheets'=>'Custom software vs spreadsheets',
+		'automate-manual-business-processes'=>'Automate manual business processes',
+		'business-system-integration-south-africa'=>'Business system integration',
+	);
+	echo '<nav class="sk-authority-bridge__guides" aria-label="Business systems guides">';
+	foreach($guide_links as $target=>$label){echo '<a href="'.esc_url(home_url('/'.$target.'/')).'">'.esc_html($label).'</a>';}
+	echo '</nav>';
+	echo '<a class="sk-authority-bridge__cta" href="'.esc_url($assessment).'">Find your best automation opportunity <span>→</span></a><small>Free assessment · No obligation</small>';
 	echo '</div></section>';
 },25);
 add_action('wp_enqueue_scripts',function(){
 	if(!softkom_search_is_discovery_bridge_page())return;
 	wp_register_style('softkom-authority-bridge',false,array(),'1.0.0');wp_enqueue_style('softkom-authority-bridge');
-	wp_add_inline_style('softkom-authority-bridge','.sk-authority-bridge{font-family:Inter,system-ui,sans-serif;padding:72px 24px;background:#0f172a;color:#fff}.sk-authority-bridge__inner{max-width:1180px;margin:auto}.sk-authority-bridge__eyebrow{margin:0 0 12px;color:#60a5fa;font-size:12px;font-weight:800;letter-spacing:.1em}.sk-authority-bridge h2{max-width:820px;margin:0 0 16px;color:#fff;font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.035em}.sk-authority-bridge__intro{max-width:760px;margin:0 0 30px;color:#cbd5e1;font-size:18px;line-height:1.65}.sk-authority-bridge__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}.sk-authority-bridge__grid a{display:flex;min-height:128px;flex-direction:column;justify-content:space-between;padding:22px;border:1px solid #334155;border-radius:14px;background:#111c31;color:#fff!important;text-decoration:none!important}.sk-authority-bridge__grid a:hover{border-color:#60a5fa;transform:translateY(-2px)}.sk-authority-bridge__grid strong{font-size:18px}.sk-authority-bridge__grid span{color:#cbd5e1;font-size:14px;line-height:1.5}.sk-authority-bridge__cta{display:inline-flex;align-items:center;gap:10px;padding:15px 20px;border-radius:10px;background:#2563eb;color:#fff!important;text-decoration:none!important;font-weight:800}.sk-authority-bridge small{display:block;margin-top:10px;color:#94a3b8}@media(max-width:760px){.sk-authority-bridge__grid{grid-template-columns:1fr}}');
+	wp_add_inline_style('softkom-authority-bridge','.sk-authority-bridge{font-family:Inter,system-ui,sans-serif;padding:72px 24px;background:#0f172a;color:#fff}.sk-authority-bridge__inner{max-width:1180px;margin:auto}.sk-authority-bridge__eyebrow{margin:0 0 12px;color:#60a5fa;font-size:12px;font-weight:800;letter-spacing:.1em}.sk-authority-bridge h2{max-width:820px;margin:0 0 16px;color:#fff;font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.035em}.sk-authority-bridge__intro{max-width:760px;margin:0 0 30px;color:#cbd5e1;font-size:18px;line-height:1.65}.sk-authority-bridge__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}.sk-authority-bridge__grid a{display:flex;min-height:128px;flex-direction:column;justify-content:space-between;padding:22px;border:1px solid #334155;border-radius:14px;background:#111c31;color:#fff!important;text-decoration:none!important}.sk-authority-bridge__grid a:hover{border-color:#60a5fa;transform:translateY(-2px)}.sk-authority-bridge__grid strong{font-size:18px}.sk-authority-bridge__grid span{color:#cbd5e1;font-size:14px;line-height:1.5}.sk-authority-bridge__guides{display:flex;flex-wrap:wrap;gap:8px 16px;margin:0 0 28px;padding:18px 0;border-top:1px solid #334155;border-bottom:1px solid #334155}.sk-authority-bridge__guides a{color:#bfdbfe!important;text-decoration:none!important;font-size:13px;font-weight:700}.sk-authority-bridge__guides a:hover{text-decoration:underline!important}.sk-authority-bridge__cta{display:inline-flex;align-items:center;gap:10px;padding:15px 20px;border-radius:10px;background:#2563eb;color:#fff!important;text-decoration:none!important;font-weight:800}.sk-authority-bridge small{display:block;margin-top:10px;color:#94a3b8}@media(max-width:760px){.sk-authority-bridge__grid{grid-template-columns:1fr}}');
 },41);
