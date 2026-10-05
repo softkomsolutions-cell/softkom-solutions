@@ -55,7 +55,7 @@ function softkom_organic_assessment_markup() {
       <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:20px;padding:32px;">
         <p style="margin:0 0 8px;font-weight:700;color:#2563EB;letter-spacing:.04em;text-transform:uppercase;font-size:13px;">AI Automation &amp; Business Systems · South Africa</p>
         <h2 id="softkom-organic-title" style="margin:0 0 14px;color:#0F172A;font-size:clamp(28px,4vw,40px);line-height:1.15;">Find where AI and automation can create the most value in your business</h2>
-        <p style="font-size:18px;line-height:1.65;max-width:850px;">Softkom Solutions helps South African businesses replace repetitive manual work, disconnected spreadsheets and slow follow-up with practical automation, AI workflows and custom business systems. The free assessment above identifies the opportunities worth prioritising before you invest in technology.</p>
+        <p style="font-size:18px;line-height:1.65;max-width:850px;">Softkom helps South African businesses replace repetitive manual work, disconnected spreadsheets and slow follow-up with practical automation, AI workflows and custom business systems. The free assessment above identifies the opportunities worth prioritising before you invest in technology.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:28px 0;">
           <div><strong>Sales &amp; lead automation</strong><br><span>Capture, qualify, route and follow up opportunities faster.</span></div>
           <div><strong>Operations &amp; workflows</strong><br><span>Connect systems and remove repetitive administration.</span></div>
