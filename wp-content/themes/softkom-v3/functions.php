@@ -321,6 +321,7 @@ function softkom_v3_legacy_slug_redirects() {
 
 	$map = array(
 		'services-4' => '/services/',
+		'solutions'  => '/services/',
 	);
 
 	foreach ( array_unique( array_filter( $candidates ) ) as $path ) {
@@ -863,7 +864,7 @@ add_shortcode( 'softkom_service_compliance_platforms_v3', function () {
  */
 function softkom_v3_document_title_parts( $parts ) {
 	if ( is_front_page() ) {
-		$parts['title']   = 'Specialised Software Platforms';
+		$parts['title']   = 'Business Systems, AI Automation & Integration';
 		$parts['site']    = 'Softkom';
 		$parts['tagline'] = '';
 	}
@@ -903,8 +904,8 @@ function softkom_v3_head_meta() {
 		return;
 	}
 
-	$desc  = 'Softkom builds specialised software platforms for businesses and industries where generic software isn\'t enough Ã¢â‚¬â€ MarketplaceOS, Brick Alpha, Product Studio, and a growing product portfolio.';
-	$title = 'Specialised Software Platforms | Softkom';
+	$desc  = 'Softkom builds custom business systems, AI automation and integrations that help growing companies replace manual work, connect operations and scale with better control.';
+	$title = 'Business Systems, AI Automation & Integration | Softkom';
 	$url   = home_url( '/' );
 
 	if ( is_front_page() ) {

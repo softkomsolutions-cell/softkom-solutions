@@ -78,9 +78,9 @@ function softkom_v3_cta_registry() {
 		'start-discovery'       => array(
 			'id'    => 'start-discovery',
 			'level' => 2,
-			'label' => 'Book a Discovery Call',
+			'label' => 'Book a Strategy Call',
 			'url'   => '/contact/#discovery',
-			'notes' => 'Preferred discuss CTA â€” product-led wording.',
+			'notes' => 'Primary service-led strategy conversation.',
 		),
 		'start-conversation'    => array(
 			'id'    => 'start-conversation',
@@ -106,9 +106,9 @@ function softkom_v3_cta_registry() {
 		'book-strategy-call'    => array(
 			'id'    => 'book-strategy-call',
 			'level' => 3,
-			'label' => 'Book a Discovery Call',
+			'label' => 'Book a Strategy Call',
 			'url'   => '/contact/#discovery',
-			'notes' => 'Header commit CTA â€” aligned to discovery wording.',
+			'notes' => 'Header commit CTA for a focused strategy conversation.',
 		),
 		'request-scoped-proposal' => array(
 			'id'    => 'request-scoped-proposal',

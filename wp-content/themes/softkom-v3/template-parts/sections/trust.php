@@ -17,23 +17,6 @@ $muted = isset( $muted ) ? (bool) $muted : false;
 $title = isset( $title ) ? $title : 'Security & Reliability';
 $body  = isset( $body ) ? $body : 'How Softkom builds platforms organisations can run with confidence.';
 
-$evidence = array(
-	array(
-		'label'  => 'Customer stories',
-		'detail' => 'Named delivery narratives with permission.',
-		'status' => 'Coming soon',
-	),
-	array(
-		'label'  => 'Partner logos',
-		'detail' => 'Technology and channel partners Softkom works with.',
-		'status' => 'Coming soon',
-	),
-	array(
-		'label'  => 'Testimonials',
-		'detail' => 'Operator and investor quotes once cleared for publication.',
-		'status' => 'Coming soon',
-	),
-);
 ?>
 <section class="section<?php echo $muted ? ' section-muted' : ''; ?>" id="<?php echo esc_attr( $id ); ?>">
   <div class="container">
@@ -66,20 +49,9 @@ $evidence = array(
 
     <div class="sk-evidence-band sk-reveal">
       <div class="sk-evidence-band-head">
-        <h3>Evidence as Softkom earns it</h3>
-        <p>Customer stories, partners and testimonials appear here when cleared — never invented for launch.</p>
+        <h3>What clients can expect from Softkom</h3>
+        <p>Senior involvement, practical scoping, security-minded delivery, visible milestones and support after go-live. Softkom does not invent certifications, client claims or performance numbers it cannot substantiate.</p>
       </div>
-      <ul class="sk-trust-grid sk-trust-grid--compact">
-        <?php foreach ( $evidence as $item ) : ?>
-          <li class="sk-trust-card">
-            <div class="sk-trust-card-top">
-              <strong><?php echo esc_html( $item['label'] ); ?></strong>
-              <span class="sk-status sk-status--coming"><?php echo esc_html( $item['status'] ); ?></span>
-            </div>
-            <p><?php echo esc_html( $item['detail'] ); ?></p>
-          </li>
-        <?php endforeach; ?>
-      </ul>
     </div>
   </div>
 </section>

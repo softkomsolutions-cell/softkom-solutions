@@ -1,6 +1,6 @@
 <?php
 /**
- * Softkom V3 Company — vision-forward About (product-led).
+ * Softkom V3 Company — service-led company story.
  *
  * Story: why we exist → vision → philosophy → how we build → the future.
  *
@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'masthead',
     array(
       'eyebrow'         => 'Company',
-      'title'           => 'Building specialised software platforms with a clear vision',
-      'lead'            => 'Softkom exists for businesses and industries where generic software is not enough — and where the next advantage comes from products designed around real operations.',
+      'title'           => 'Business systems built around how companies really operate',
+      'lead'            => 'Softkom helps growing companies solve operational problems with custom business systems, automation, integrations and practical digital infrastructure.',
       'primary_label'   => softkom_v3_cta_label( 'start-discovery' ),
       'primary_url'     => softkom_v3_cta_url( 'start-discovery' ),
       'secondary_label' => softkom_v3_cta_label( 'explore-platforms' ),
@@ -33,15 +33,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div class="container sk-company-block sk-reveal">
       <p class="eyebrow">Why We Exist</p>
       <h2 class="sk-display">Generic software forces permanent workarounds</h2>
-      <p class="lead">When the process is the competitive edge, off-the-shelf tools become a tax on every exception, handoff and report. Softkom builds specialised platforms so operators stop fighting the software — and start compounding capability.</p>
+      <p class="lead">When the process is the competitive edge, off-the-shelf tools become a tax on every exception, handoff and report. Softkom designs the missing systems, integrations and workflows so teams spend less time fighting software and more time running the business.</p>
     </div>
   </section>
 
   <section class="section section-muted" id="our-vision">
     <div class="container sk-company-block sk-reveal">
       <p class="eyebrow">Our Vision</p>
-      <h2 class="sk-display">A portfolio of world-class specialised platforms</h2>
-      <p class="lead">Softkom is becoming a product-led software company — MarketplaceOS, Brick Alpha, and the platforms still ahead — each purpose-built for a market that needs more than generic tools.</p>
+      <h2 class="sk-display">Senior-led delivery with specialist technical capability</h2>
+      <p class="lead">Client discovery, solution direction and commercial decisions stay close to Softkom leadership. Specialist technical capability is brought into each engagement according to what the work actually requires.</p>
     </div>
   </section>
 
@@ -59,17 +59,17 @@ if ( ! defined( 'ABSPATH' ) ) {
   <section class="section section-muted" id="how-we-build">
     <div class="container">
       <div class="sk-reveal">
-        <p class="eyebrow">How We Build Products</p>
-        <h2 class="sk-display">From market reality to lasting platforms</h2>
-        <p class="lead sk-lead-narrow">Softkom maps how work moves, designs ownership and data before code ships, then builds in controlled increments — with support after go-live so the product stays usable as the market changes.</p>
+        <p class="eyebrow">How We Deliver Client Systems</p>
+        <h2 class="sk-display">From operational problem to working system</h2>
+        <p class="lead sk-lead-narrow">Softkom maps how work moves, designs workflows and data ownership before code ships, then delivers in controlled increments with testing, handover and support after go-live.</p>
       </div>
       <div class="sk-build-steps">
         <?php
         $steps = array(
-          array( 'Understand', 'Industry pressure, operator workflows and where generic tools break.' ),
-          array( 'Design', 'Operating model, data ownership and product boundaries before features.' ),
-          array( 'Build', 'Ship a platform foundation operators can trust — then layer intelligence.' ),
-          array( 'Evolve', 'Adoption, support and iteration as volumes and channels grow.' ),
+          array( 'Understand', 'Business pressure, user workflows and where the current process breaks.' ),
+          array( 'Design', 'Workflows, integrations, data ownership and delivery boundaries before features.' ),
+          array( 'Build', 'Ship a reliable working system in controlled stages — then layer automation and intelligence.' ),
+          array( 'Evolve', 'Adoption, support and iteration as the operation grows.' ),
         );
         foreach ( $steps as $i => $step ) :
           ?>
@@ -88,8 +88,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'vision',
     array(
       'id'    => 'the-future',
-      'title' => 'The Future',
-      'body'  => 'MarketplaceOS and Brick Alpha are the beginning. Softkom is building toward a growing portfolio of specialised platforms.',
+      'title' => 'Platforms & Product Engineering',
+      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha demonstrate the same engineering capability Softkom applies to client systems, integrations and automation.',
     )
   );
   ?>
@@ -101,7 +101,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       'muted' => true,
       'id'    => 'leadership',
       'title' => 'Leadership',
-      'body'  => 'Product direction and client conversations stay close to Softkom leadership — with specialist support where the work requires it.',
+      'body'  => 'Darren Enfield brings 25+ years across ICT, technology sales, project delivery and technical support. Discovery, solution direction and commercial planning stay senior-led, with specialist delivery support where the work requires it.',
     )
   );
   ?>
@@ -111,9 +111,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     'cta-band',
     array(
       'title'         => 'Ready to Explore What\'s Possible?',
-      'body'          => 'Start a conversation about Softkom platforms — or a specialised product for your industry.',
+      'body'          => 'Tell us what is slowing the business down. We will help determine whether the right next step is integration, automation, a custom system or no build at all.',
       'primary_cta'   => 'start-conversation',
-      'secondary_cta' => 'explore-platforms',
+      'secondary_cta' => 'explore-solutions',
     )
   );
   ?>
