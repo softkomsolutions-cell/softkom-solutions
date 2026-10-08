@@ -66,20 +66,9 @@ $evidence = array(
 
     <div class="sk-evidence-band sk-reveal">
       <div class="sk-evidence-band-head">
-        <h3>Evidence as Softkom earns it</h3>
-        <p>Customer stories, partners and testimonials appear here when cleared — never invented for launch.</p>
+        <h3>What clients can expect from Softkom</h3>
+        <p>Senior involvement, practical scoping, security-minded delivery, visible milestones and support after go-live. Softkom does not invent certifications, client claims or performance numbers it cannot substantiate.</p>
       </div>
-      <ul class="sk-trust-grid sk-trust-grid--compact">
-        <?php foreach ( $evidence as $item ) : ?>
-          <li class="sk-trust-card">
-            <div class="sk-trust-card-top">
-              <strong><?php echo esc_html( $item['label'] ); ?></strong>
-              <span class="sk-status sk-status--coming"><?php echo esc_html( $item['status'] ); ?></span>
-            </div>
-            <p><?php echo esc_html( $item['detail'] ); ?></p>
-          </li>
-        <?php endforeach; ?>
-      </ul>
     </div>
   </div>
 </section>
