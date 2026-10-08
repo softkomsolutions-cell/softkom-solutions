@@ -17,23 +17,6 @@ $muted = isset( $muted ) ? (bool) $muted : false;
 $title = isset( $title ) ? $title : 'Security & Reliability';
 $body  = isset( $body ) ? $body : 'How Softkom builds platforms organisations can run with confidence.';
 
-$evidence = array(
-	array(
-		'label'  => 'Customer stories',
-		'detail' => 'Named delivery narratives with permission.',
-		'status' => 'Coming soon',
-	),
-	array(
-		'label'  => 'Partner logos',
-		'detail' => 'Technology and channel partners Softkom works with.',
-		'status' => 'Coming soon',
-	),
-	array(
-		'label'  => 'Testimonials',
-		'detail' => 'Operator and investor quotes once cleared for publication.',
-		'status' => 'Coming soon',
-	),
-);
 ?>
 <section class="section<?php echo $muted ? ' section-muted' : ''; ?>" id="<?php echo esc_attr( $id ); ?>">
   <div class="container">
