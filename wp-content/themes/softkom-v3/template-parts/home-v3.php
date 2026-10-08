@@ -198,7 +198,7 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
       'title'         => 'Have an operational problem that software should solve?',
       'body'          => 'Tell us what is slowing the business down. Softkom will help determine whether the right next step is integration, automation, a custom system or no build at all.',
       'primary_cta'   => 'start-discovery',
-      'secondary_cta' => 'explore-services',
+      'secondary_cta' => 'explore-solutions',
     )
   );
   ?>
