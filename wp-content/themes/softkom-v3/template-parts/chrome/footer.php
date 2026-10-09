@@ -68,7 +68,7 @@ $read_insights_label = function_exists( 'softkom_v3_cta_label' )
       <div>
         <strong>Trust</strong>
         <a href="<?php echo esc_url( $home_url ); ?>#trust">Security-minded delivery</a>
-        <a href="/case-studies/">Delivery experience</a>
+        <a href="/projects/">Delivery experience</a>
         <a href="/privacy-policy/">Privacy &amp; POPIA</a>
       </div>
       <div>
