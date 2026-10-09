@@ -23,8 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
       'lead'            => 'Softkom helps growing companies solve operational problems with custom business systems, automation, integrations and practical digital infrastructure.',
       'primary_label'   => softkom_v3_cta_label( 'start-discovery' ),
       'primary_url'     => softkom_v3_cta_url( 'start-discovery' ),
-      'secondary_label' => softkom_v3_cta_label( 'explore-platforms' ),
-      'secondary_url'   => softkom_v3_cta_url( 'explore-platforms' ),
+      'secondary_label' => softkom_v3_cta_label( 'explore-solutions' ),
+      'secondary_url'   => softkom_v3_cta_url( 'explore-solutions' ),
     )
   );
   ?>
