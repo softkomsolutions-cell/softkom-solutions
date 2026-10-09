@@ -40,19 +40,19 @@ $read_insights_label = function_exists( 'softkom_v3_cta_label' )
         <?php else : ?>
           <div class="footer-brand">Softkom</div>
         <?php endif; ?>
-        <p>Specialised software platforms for markets where generic tools fall short.</p>
+        <p>Business systems, automation and integrations for growing companies that need better operational control.</p>
         <div class="footer-socials">
           <a href="https://www.linkedin.com/company/softkomsolutions" rel="noopener noreferrer" target="_blank">LinkedIn</a>
           <a href="https://wa.me/27749933805" rel="noopener noreferrer" target="_blank">WhatsApp</a>
         </div>
       </div>
       <div>
-        <strong>Platforms</strong>
-        <a href="/platforms/">All Platforms</a>
-        <a href="/platforms/marketplaceos/">MarketplaceOS</a>
-        <a href="/platforms/brick-alpha/">Brick Alpha</a>
-        <a href="/platforms/#product-studio">Product Studio</a>
-        <a href="<?php echo esc_url( $home_url ); ?>#roadmap">Roadmap</a>
+        <strong>Solutions</strong>
+        <a href="/services/">All Solutions</a>
+        <a href="/custom-business-systems-south-africa/">Custom Business Systems</a>
+        <a href="/ai-automation-south-africa/">AI &amp; Automation</a>
+        <a href="/business-system-integration-south-africa/">Systems Integration</a>
+        <a href="/assessment/">Business Systems Assessment</a>
       </div>
       <div>
         <strong>Company</strong>
@@ -67,9 +67,9 @@ $read_insights_label = function_exists( 'softkom_v3_cta_label' )
       </div>
       <div>
         <strong>Trust</strong>
-        <a href="<?php echo esc_url( $home_url ); ?>#trust">Security &amp; Reliability</a>
-        <a href="<?php echo esc_url( $home_url ); ?>#trust">Evidence <span class="footer-soon">Soon</span></a>
-        <a href="<?php echo esc_url( $home_url ); ?>#roadmap">Product roadmap</a>
+        <a href="<?php echo esc_url( $home_url ); ?>#trust">Security-minded delivery</a>
+        <a href="/case-studies/">Delivery experience</a>
+        <a href="/privacy-policy/">Privacy &amp; POPIA</a>
       </div>
       <div>
         <strong>Contact</strong>
