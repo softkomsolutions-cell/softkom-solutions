@@ -11,9 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $id         = isset( $id ) ? $id : 'products';
 $muted      = isset( $muted ) ? (bool) $muted : false;
-$show_links = ! empty( $show_links );
-$title      = isset( $title ) ? $title : 'Softkom products (in development)';
-$body       = isset( $body ) ? $body : 'Internal product lines Softkom is building — clearly marked so they are never confused with client delivery.';
+$show_links  = ! empty( $show_links );
+$exclude_ids = isset( $exclude_ids ) && is_array( $exclude_ids ) ? $exclude_ids : array();
+$title       = isset( $title ) ? $title : 'Softkom product portfolio';
+$body        = isset( $body ) ? $body : 'Softkom-owned product lines, clearly separated from client delivery.';
 $note       = isset( $note ) ? $note : '';
 
 ob_start();
