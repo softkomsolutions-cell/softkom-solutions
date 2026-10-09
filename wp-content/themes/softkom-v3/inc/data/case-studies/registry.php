@@ -21,7 +21,7 @@ function softkom_v3_case_studies_registry() {
 	return array(
 		array(
 			'slug'            => 'traffic-systems-africa',
-			'title'           => 'Traffic Systems Africa',
+			'title'           => 'Traffic Signals & Accessories',
 			'status'          => 'published',
 			'project_status'  => 'delivered',
 			'evidence_level'  => 'named',
@@ -33,8 +33,8 @@ function softkom_v3_case_studies_registry() {
 				'logo'        => false,
 			),
 			'client'          => array(
-				'internal_name' => 'Traffic Systems Africa',
-				'public_name'   => 'Traffic Systems Africa',
+				'internal_name' => 'Traffic Signals & Accessories',
+				'public_name'   => 'Traffic Signals & Accessories',
 				'label'         => 'Client Project',
 			),
 			'industry'        => 'Infrastructure & traffic management',
@@ -67,7 +67,7 @@ function softkom_v3_case_studies_registry() {
 			'public'          => true,
 			'hub_card_public' => true,
 			'hub_card'        => array(
-				'title'  => 'Traffic Systems Africa',
+				'title'  => 'Traffic Signals & Accessories',
 				'pills'  => array( array( 'class' => 'pill-client', 'label' => 'Client Project' ) ),
 				'facts'  => array(
 					array( 'label' => 'Industry', 'value' => 'Infrastructure & traffic management' ),
