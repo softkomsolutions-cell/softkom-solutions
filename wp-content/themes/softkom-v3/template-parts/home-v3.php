@@ -126,8 +126,8 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
       </div>
       <div class="sk-grid sk-grid--3">
         <article class="sk-card sk-reveal">
-          <h3>PS&amp;I Stationery</h3>
-          <p>Multi-portal commerce and operational platform work spanning parent, school and business journeys, catalogue, authentication, ordering workflows and backend integration.</p>
+          <h3>Retail ordering platform</h3>
+          <p>Multi-portal commerce and operational platform work spanning customer journeys, catalogue, authentication, ordering workflows and backend integration.</p>
         </article>
         <article class="sk-card sk-reveal">
           <h3>TSA</h3>
