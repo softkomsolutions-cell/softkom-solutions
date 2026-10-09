@@ -46,9 +46,10 @@ if ( ! defined( 'ABSPATH' ) ) {
     'products',
     array(
       'muted'      => true,
-      'show_links' => false,
-      'title'      => 'Softkom products (in development)',
-      'body'       => "Internal product lines Softkom is building — MarketplaceOS AI for multi-channel sellers, and Brick Alpha for collectibles intelligence.\n\nBoth are marked Softkom Product / In Development. They are not client delivery, and Softkom does not claim market adoption or production readiness here.",
+      'show_links'  => false,
+      'exclude_ids' => array( 'future-platforms' ),
+      'title'       => 'Softkom product portfolio',
+      'body'        => "Softkom-owned product work including MarketplaceOS, Brick Alpha and Product Studio. These are shown separately from client delivery so there is no confusion between internal product development and commissioned client work.",
     )
   );
   ?>
