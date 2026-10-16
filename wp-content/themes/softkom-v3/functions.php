@@ -410,7 +410,7 @@ function softkom_v3_enqueue_assets() {
 	// Single Softkom type family stack Ã¢â‚¬â€ Inter for UI/body, Plus Jakarta for display.
 	wp_enqueue_style(
 		'softkom-v3-fonts',
-		'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap',
+		'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap',
 		array(),
 		null
 	);
@@ -439,7 +439,7 @@ function softkom_v3_enqueue_assets() {
 	} else {
 		// Fallback: individual files if bundle write fails (read-only FS).
 		$prev = '';
-		foreach ( array( 'tokens', 'components', 'chrome', 'diagrams', 'home', 'product' ) as $slug ) {
+		foreach ( array( 'tokens', 'components', 'chrome', 'diagrams', 'home', 'product', 'redesign' ) as $slug ) {
 			$deps = $prev ? array( $prev ) : array( 'softkom-v3-fonts' );
 			$handle = 'softkom-v3-' . $slug;
 			wp_enqueue_style(
