@@ -1,0 +1,44 @@
+/* Softkom Solutions 2026 redesign */
+.sk-site{
+  --sk-primary:#07111f;--sk-primary-soft:#13243a;--sk-accent:#2256f3;--sk-accent-hover:#1742c7;
+  --sk-accent-subtle:#e8f0ff;--sk-bg:#f8f6f1;--sk-bg-secondary:#eef3f8;--sk-bg-dark:#07111f;
+  --sk-text:#142033;--sk-text-muted:#667085;--sk-border:rgba(7,17,31,.13);--sk-success:#0f766e;
+  --sk-gold:#d7a83d;--font:"DM Sans",sans-serif;--font-display:"Instrument Serif",Georgia,serif;
+  background:var(--sk-bg);color:var(--sk-text)
+}
+.sk-site .section{padding-top:clamp(82px,9vw,132px);padding-bottom:clamp(82px,9vw,132px)}
+.sk-site .eyebrow{display:inline-flex;align-items:center;gap:.65rem;margin-bottom:18px;font-family:var(--font);font-size:.75rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--sk-accent)}
+.sk-site .eyebrow:before{content:"";width:28px;height:2px;background:currentColor}
+.sk-site h1,.sk-site .sk-masthead h1{font-family:var(--font-display);font-weight:400;letter-spacing:-.04em;line-height:.98;font-size:clamp(3.7rem,8.6vw,7.4rem);max-width:11ch}
+.sk-site .sk-display{font-family:var(--font-display);font-weight:400;letter-spacing:-.03em;line-height:1;font-size:clamp(2.8rem,5.4vw,5.25rem);max-width:12ch}
+.sk-site h3{font-family:var(--font);font-weight:800;letter-spacing:-.025em}
+.sk-site .lead{font-size:clamp(1.08rem,1.6vw,1.28rem);line-height:1.7;color:#42526a}
+.sk-site .sk-masthead.sk-masthead--hero{min-height:min(900px,calc(100svh - 72px));padding-top:clamp(120px,12vw,180px);padding-bottom:clamp(86px,9vw,132px);background:linear-gradient(115deg,rgba(34,86,243,.12) 0 26%,transparent 26%),linear-gradient(160deg,#f8f6f1 0 62%,#e8f0ff 62% 100%)!important;overflow:hidden}
+.sk-site .sk-masthead.sk-masthead--hero:after{content:"";position:absolute;width:clamp(240px,30vw,500px);aspect-ratio:1;right:-8vw;bottom:-18%;border-radius:50%;background:#f9735b;opacity:.94;z-index:0}
+.sk-site .sk-masthead-grid{position:relative;z-index:1;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:clamp(48px,7vw,110px);align-items:center}
+.sk-site .sk-btn{min-height:50px;border-radius:999px;padding:13px 22px;font-family:var(--font);font-weight:800;transition:transform .2s ease,box-shadow .2s ease}
+.sk-site .sk-btn:hover{transform:translateY(-2px)}
+.sk-site .sk-btn-primary{background:var(--sk-accent);color:#fff;box-shadow:0 12px 28px rgba(34,86,243,.24)}
+.sk-site .sk-btn-secondary{border:1px solid rgba(7,17,31,.18);background:rgba(255,255,255,.58);color:var(--sk-primary)}
+.sk-site .sk-hero-proof-card{max-width:480px;padding:clamp(30px,4vw,48px);border:0;border-radius:4px 42px 4px 42px;background:#07111f;color:#fff;box-shadow:22px 26px 0 #dff2eb;transform:rotate(1.25deg)}
+.sk-site .sk-hero-proof-card h3{font-family:var(--font-display);font-size:clamp(2rem,3.2vw,3rem);font-weight:400;line-height:1;color:#fff}
+.sk-site .sk-hero-proof-card p{color:rgba(255,255,255,.77)}.sk-site .sk-hero-proof-card .eyebrow{color:#8fb0ff}
+.sk-site .sk-home-proof-strip{background:#07111f!important;color:#fff;padding:34px 0!important}
+.sk-site .sk-home-proof-strip .sk-grid>div{padding:14px clamp(18px,3vw,38px);border-left:1px solid rgba(255,255,255,.15)}
+.sk-site .sk-home-proof-strip .sk-grid>div:first-child{border-left:0}.sk-site .sk-home-proof-strip strong{color:#fff}.sk-site .sk-home-proof-strip p{color:#aebbd0}
+.sk-site #about-softkom{background:#dff2eb!important}.sk-site #problems-we-solve{background:#f8f6f1}.sk-site #solutions{background:#e8f0ff!important}.sk-site #proof{background:#f4dfd8!important}
+.sk-site #assessment{background:#07111f!important}.sk-site #assessment .sk-card{border:0;background:#f2c94c;color:#07111f;padding:clamp(38px,6vw,74px);border-radius:4px 54px 4px 54px;box-shadow:none}
+.sk-site #assessment .eyebrow,.sk-site #assessment .lead,.sk-site #assessment .sk-display{color:#07111f}
+.sk-site #platforms{background:#0f766e;color:#fff}.sk-site #platforms .sk-display,.sk-site #platforms h3,.sk-site #platforms .lead{color:#fff}.sk-site #platforms .eyebrow{color:#bff5df}
+.sk-site #platforms .sk-card{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.16);color:#fff;box-shadow:none}.sk-site #platforms .sk-card p{color:rgba(255,255,255,.76)}
+.sk-site .sk-card{border-radius:16px;border:1px solid rgba(7,17,31,.1);background:rgba(255,255,255,.72);box-shadow:0 18px 46px rgba(7,17,31,.07)}
+.sk-site .sk-build-steps{gap:0;border-top:1px solid rgba(7,17,31,.15)}.sk-site .sk-build-step{padding:30px 24px 30px 0;border-right:1px solid rgba(7,17,31,.12)}.sk-site .sk-build-num{font-family:var(--font-display);font-size:3rem;color:var(--sk-accent)}
+.sk-site.sk-company .sk-masthead,.sk-site.sk-platforms .sk-masthead,.sk-site.sk-contact .sk-masthead,.sk-site.sk-services .sk-masthead,.sk-site.sk-projects .sk-masthead{background:linear-gradient(145deg,#07111f 0 64%,#2256f3 64% 100%)!important}
+.sk-site.sk-company .sk-masthead h1,.sk-site.sk-platforms .sk-masthead h1,.sk-site.sk-contact .sk-masthead h1,.sk-site.sk-services .sk-masthead h1,.sk-site.sk-projects .sk-masthead h1,.sk-site.sk-company .sk-masthead .lead,.sk-site.sk-platforms .sk-masthead .lead,.sk-site.sk-contact .sk-masthead .lead,.sk-site.sk-services .sk-masthead .lead,.sk-site.sk-projects .sk-masthead .lead{color:#fff!important}
+.sk-site.sk-company #who-we-are{background:#dff2eb}.sk-site.sk-company #why-we-exist{background:#f4dfd8!important}.sk-site.sk-company #our-vision{background:#e8f0ff!important}
+.sk-site .sk-case-study{padding:clamp(34px,5vw,64px);border-radius:4px 36px 4px 36px;background:#fff;border:1px solid rgba(7,17,31,.11);box-shadow:none}
+.sk-site .sk-case-study:nth-child(even){margin-left:clamp(0px,5vw,72px);background:#e8f0ff}.sk-site .sk-case-study:nth-child(3n){background:#dff2eb}
+.sk-site .sk-form{background:#fff;border-radius:4px 32px 4px 32px;box-shadow:18px 18px 0 #e8f0ff}
+.sk-site .sk-cta-band{background:#2256f3!important;color:#fff}.sk-site .sk-cta-band h2,.sk-site .sk-cta-band p,.sk-site .sk-cta-band .eyebrow{color:#fff}
+@media(max-width:900px){.sk-site .sk-masthead-grid{grid-template-columns:1fr}.sk-site .sk-hero-proof-card{transform:none;box-shadow:12px 14px 0 #dff2eb}.sk-site .sk-home-proof-strip .sk-grid>div{border-left:0;border-top:1px solid rgba(255,255,255,.15)}}
+@media(max-width:640px){.sk-site h1,.sk-site .sk-masthead h1{font-size:clamp(3rem,15vw,4.8rem)}.sk-site .sk-display{font-size:clamp(2.5rem,11vw,3.8rem)}.sk-site .section{padding-top:72px;padding-bottom:72px}.sk-site .sk-case-study:nth-child(even){margin-left:0}}
