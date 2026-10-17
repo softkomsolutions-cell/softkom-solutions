@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="sk-site">
+<div class="sk-site sk-projects">
   <?php softkom_v3_component_e( 'header' ); ?>
   <?php
   softkom_v3_component_e(
