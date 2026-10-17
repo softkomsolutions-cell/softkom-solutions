@@ -35,8 +35,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'roadmap',
     array(
       'id'    => 'roadmap',
-      'title' => 'Product Roadmap',
-      'body'  => 'MarketplaceOS and Brick Alpha today. Product Studio, Future ERP and future platforms next.',
+      'title' => 'Product Portfolio',
+      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha are active Softkom products, each addressing a different operational problem with specialised software.',
     )
   );
   ?>
@@ -48,7 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       'muted' => true,
       'id'    => 'ecosystem',
       'title' => 'The Softkom product ecosystem',
-      'body'  => 'MarketplaceOS, Product Studio, Brick Alpha — then Future ERP, AI Copilot and industry platforms. New products slot in without redesigning the site.',
+      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha form Softkom’s current product ecosystem, supported by the same systems engineering, automation and integration capability used in client delivery.',
     )
   );
   ?>
@@ -67,20 +67,20 @@ if ( ! defined( 'ABSPATH' ) ) {
   <section class="section section-muted" id="product-studio">
     <div class="container sk-reveal">
       <div class="sk-future-band">
-        <p class="eyebrow">Third Platform</p>
+        <p class="eyebrow">Product Studio</p>
         <h2 class="sk-display">Product Studio</h2>
-        <p class="lead sk-lead-narrow">As Product Studio matures, it becomes Softkom’s specialised product-creation layer — sitting alongside MarketplaceOS and Brick Alpha in the same ecosystem.</p>
+        <p class="lead sk-lead-narrow">Product Studio is Softkom’s specialised product-creation layer for marketplace sellers — built to improve product research, content, imagery, compliance and listing workflows.</p>
         <a class="sk-btn sk-btn-primary" href="<?php echo esc_url( softkom_v3_cta_url( 'start-discovery' ) ); ?>"><?php echo esc_html( softkom_v3_cta_label( 'start-discovery' ) ); ?></a>
       </div>
     </div>
   </section>
 
-  <section class="section" id="future">
+  <section class="section" id="portfolio-extension">
     <div class="container sk-reveal">
       <div class="sk-future-band">
-        <p class="eyebrow">Future Innovation</p>
-        <h2 class="sk-display">More specialised platforms are coming</h2>
-        <p class="lead sk-lead-narrow">Future ERP, AI Copilot and industry platforms extend the Softkom stack — purpose-built where generic tools force permanent workarounds.</p>
+        <p class="eyebrow">Product Engineering</p>
+        <h2 class="sk-display">Specialised software built for real operating gaps</h2>
+        <p class="lead sk-lead-narrow">Softkom continues to extend its product engineering capability around marketplace operations, portfolio intelligence, automation and connected business systems — always where generic tools leave an operational gap.</p>
         <a class="sk-btn sk-btn-primary" href="<?php echo esc_url( softkom_v3_cta_url( 'start-discovery' ) ); ?>"><?php echo esc_html( softkom_v3_cta_label( 'start-discovery' ) ); ?></a>
       </div>
     </div>
