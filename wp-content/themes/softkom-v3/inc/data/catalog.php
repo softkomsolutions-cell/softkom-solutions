@@ -341,23 +341,11 @@ function softkom_v3_data_roadmap() {
 			'url'    => '/platforms/brick-alpha/',
 		),
 		array(
-			'title'  => 'Product Studio',
-			'body'   => 'Third platform in the ecosystem',
-			'status' => 'soon',
-			'url'    => '/platforms/#product-studio',
-		),
-		array(
-			'title'  => 'Future ERP',
-			'body'   => 'Operating layer for specialised markets',
-			'status' => 'future',
-			'url'    => '/platforms/#future',
-		),
-		array(
-			'title'  => 'Future Platforms',
-			'body'   => 'Industry lines still to come',
-			'status' => 'future',
-			'url'    => '/platforms/#future',
-		),
+				'title'  => 'Product Studio',
+				'body'   => 'AI-assisted marketplace product creation and listing workflow',
+				'status' => 'active',
+				'url'    => '/platforms/#product-studio',
+			),
 	);
 }
 
