@@ -157,6 +157,113 @@ function softkom_public_acquisition_track_conversion() {
 add_action( 'wp_ajax_softkom_public_conversion', 'softkom_public_acquisition_track_conversion' );
 add_action( 'wp_ajax_nopriv_softkom_public_conversion', 'softkom_public_acquisition_track_conversion' );
 
+
+
+/**
+ * Record anonymous first-party funnel events for campaign conversion reporting.
+ *
+ * Stores daily aggregate counters only; no visitor identity or raw IP is kept.
+ */
+function softkom_public_acquisition_track_funnel_event() {
+	check_ajax_referer( 'softkom_public_conversion', 'nonce' );
+
+	$event = isset( $_POST['event'] ) && is_scalar( $_POST['event'] )
+		? sanitize_key( wp_unslash( (string) $_POST['event'] ) )
+		: '';
+
+	$allowed = array( 'assessment_view', 'assessment_start', 'assessment_results' );
+	if ( ! in_array( $event, $allowed, true ) ) {
+		wp_send_json_error( array( 'message' => 'Invalid funnel event.' ), 400 );
+	}
+
+	$fields = array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term' );
+	$dimensions = array();
+	foreach ( $fields as $field ) {
+		$dimensions[ $field ] = isset( $_POST[ $field ] ) && is_scalar( $_POST[ $field ] )
+			? sanitize_text_field( wp_unslash( (string) $_POST[ $field ] ) )
+			: '';
+	}
+
+	$day = gmdate( 'Y-m-d' );
+	$key = implode( '|', array(
+		$day,
+		$dimensions['utm_source'],
+		$dimensions['utm_medium'],
+		$dimensions['utm_campaign'],
+		$dimensions['utm_content'],
+		$dimensions['utm_term'],
+	) );
+
+	$metrics = get_option( 'softkom_acquisition_metrics_v1', array() );
+	if ( ! is_array( $metrics ) ) {
+		$metrics = array();
+	}
+
+	if ( ! isset( $metrics[ $key ] ) || ! is_array( $metrics[ $key ] ) ) {
+		$metrics[ $key ] = array(
+			'date'         => $day,
+			'utm_source'   => $dimensions['utm_source'],
+			'utm_medium'   => $dimensions['utm_medium'],
+			'utm_campaign' => $dimensions['utm_campaign'],
+			'utm_content'  => $dimensions['utm_content'],
+			'utm_term'     => $dimensions['utm_term'],
+			'views'        => 0,
+			'starts'       => 0,
+			'results'      => 0,
+		);
+	}
+
+	$counter = array(
+		'assessment_view'    => 'views',
+		'assessment_start'   => 'starts',
+		'assessment_results' => 'results',
+	);
+	$metrics[ $key ][ $counter[ $event ] ] = isset( $metrics[ $key ][ $counter[ $event ] ] )
+		? (int) $metrics[ $key ][ $counter[ $event ] ] + 1
+		: 1;
+
+	// Keep the option bounded to roughly four months of active daily buckets.
+	if ( count( $metrics ) > 5000 ) {
+		uasort( $metrics, function ( $a, $b ) {
+			return strcmp( isset( $a['date'] ) ? $a['date'] : '', isset( $b['date'] ) ? $b['date'] : '' );
+		} );
+		$metrics = array_slice( $metrics, -4000, null, true );
+	}
+
+	update_option( 'softkom_acquisition_metrics_v1', $metrics, false );
+	wp_send_json_success( array( 'recorded' => true ) );
+}
+add_action( 'wp_ajax_softkom_public_funnel_event', 'softkom_public_acquisition_track_funnel_event' );
+add_action( 'wp_ajax_nopriv_softkom_public_funnel_event', 'softkom_public_acquisition_track_funnel_event' );
+
+/**
+ * Aggregate top-of-funnel metrics for one UTM campaign.
+ */
+function softkom_public_acquisition_metrics_for_campaign( $campaign_key ) {
+	$campaign_key = sanitize_text_field( (string) $campaign_key );
+	$out = array( 'views' => 0, 'starts' => 0, 'results' => 0 );
+
+	if ( '' === $campaign_key ) {
+		return $out;
+	}
+
+	$metrics = get_option( 'softkom_acquisition_metrics_v1', array() );
+	if ( ! is_array( $metrics ) ) {
+		return $out;
+	}
+
+	foreach ( $metrics as $row ) {
+		if ( ! is_array( $row ) || ! isset( $row['utm_campaign'] ) || $campaign_key !== (string) $row['utm_campaign'] ) {
+			continue;
+		}
+		$out['views']   += isset( $row['views'] ) ? (int) $row['views'] : 0;
+		$out['starts']  += isset( $row['starts'] ) ? (int) $row['starts'] : 0;
+		$out['results'] += isset( $row['results'] ) ? (int) $row['results'] : 0;
+	}
+
+	return $out;
+}
+
 /**
  * Fast-track genuinely sales-ready prospects.
  */
