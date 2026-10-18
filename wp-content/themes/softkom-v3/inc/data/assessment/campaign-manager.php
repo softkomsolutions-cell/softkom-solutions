@@ -860,6 +860,12 @@ function softkom_v3_campaign_performance( $post_id ) {
     );
 
     $performance = array(
+        'assessment_views'      => 0,
+        'assessment_starts'     => 0,
+        'assessment_results'    => 0,
+        'start_rate'            => 0,
+        'completion_rate'       => 0,
+        'lead_conversion_rate'  => 0,
         'leads'                 => 0,
         'qualified'             => 0,
         'warm_hot'              => 0,
@@ -876,6 +882,27 @@ function softkom_v3_campaign_performance( $post_id ) {
 
     if ( '' === $campaign_key ) {
         return $performance;
+    }
+
+    if ( function_exists( 'softkom_public_acquisition_metrics_for_campaign' ) ) {
+        $top = softkom_public_acquisition_metrics_for_campaign( $campaign_key );
+        $performance['assessment_views']   = isset( $top['views'] ) ? (int) $top['views'] : 0;
+        $performance['assessment_starts']  = isset( $top['starts'] ) ? (int) $top['starts'] : 0;
+        $performance['assessment_results'] = isset( $top['results'] ) ? (int) $top['results'] : 0;
+
+        if ( $performance['assessment_views'] > 0 ) {
+            $performance['start_rate'] = round(
+                ( $performance['assessment_starts'] / $performance['assessment_views'] ) * 100,
+                1
+            );
+        }
+
+        if ( $performance['assessment_starts'] > 0 ) {
+            $performance['completion_rate'] = round(
+                ( $performance['assessment_results'] / $performance['assessment_starts'] ) * 100,
+                1
+            );
+        }
     }
 
     $lead_ids = get_posts(
@@ -979,6 +1006,13 @@ function softkom_v3_campaign_performance( $post_id ) {
             );
     }
 
+
+    if ( $performance['assessment_views'] > 0 ) {
+        $performance['lead_conversion_rate'] = round(
+            ( $performance['leads'] / $performance['assessment_views'] ) * 100,
+            1
+        );
+    }
 
     if ( $performance['leads'] > 0 ) {
 
