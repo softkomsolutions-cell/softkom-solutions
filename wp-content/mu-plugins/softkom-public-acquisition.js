@@ -53,6 +53,38 @@
             return email ? String(email.value || '').trim() : '';
         }
 
+
+        function currentAttribution() {
+            try {
+                var raw = window.sessionStorage.getItem('softkomTrafficAttributionV1');
+                var stored = raw ? JSON.parse(raw) : {};
+                return stored && typeof stored === 'object' ? stored : {};
+            } catch (error) {
+                return {};
+            }
+        }
+
+        function postFunnelEvent(eventName) {
+            if (!config.ajaxUrl || !config.nonce || !eventName) return;
+
+            var attribution = currentAttribution();
+            var data = new FormData();
+            data.append('action', 'softkom_public_funnel_event');
+            data.append('nonce', config.nonce);
+            data.append('event', eventName);
+
+            ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function (field) {
+                data.append(field, attribution[field] || '');
+            });
+
+            fetch(config.ajaxUrl, {
+                method: 'POST',
+                body: data,
+                credentials: 'same-origin',
+                keepalive: true
+            }).catch(function () {});
+        }
+
         function postConversion(action, eventName) {
             var email = currentLeadEmail();
             if (!email || !config.ajaxUrl || !config.nonce) {
@@ -117,6 +149,20 @@
             });
         }
 
+        if (!window.sessionStorage.getItem('softkomAssessmentViewTracked')) {
+            postFunnelEvent('assessment_view');
+            try { window.sessionStorage.setItem('softkomAssessmentViewTracked', '1'); } catch (error) {}
+        }
+
+        var startButton = document.querySelector('[data-assessment-start]');
+        if (startButton) {
+            startButton.addEventListener('click', function () {
+                if (startButton.getAttribute('data-funnel-start-tracked') === '1') return;
+                startButton.setAttribute('data-funnel-start-tracked', '1');
+                postFunnelEvent('assessment_start');
+            });
+        }
+
         var hero = document.querySelector('.sk-assessment-hero');
         if (hero) {
             var params = new URLSearchParams(window.location.search);
@@ -170,6 +216,10 @@
         if (results) {
             var observer = new MutationObserver(function () {
                 window.requestAnimationFrame(reapplyResultsCopy);
+                if (!results.hidden && results.getAttribute('data-funnel-results-tracked') !== '1') {
+                    results.setAttribute('data-funnel-results-tracked', '1');
+                    postFunnelEvent('assessment_results');
+                }
             });
             observer.observe(results, {
                 childList: true,
