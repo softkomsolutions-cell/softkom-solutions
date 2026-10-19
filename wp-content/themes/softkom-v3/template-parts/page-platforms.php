@@ -66,7 +66,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
   <section class="section section-muted" id="product-studio">
     <div class="container sk-reveal">
-      <div class="sk-future-band">
+      <div class="sk-product-band">
         <p class="eyebrow">Product Studio</p>
         <h2 class="sk-display">Product Studio</h2>
         <p class="lead sk-lead-narrow">Product Studio helps marketplace sellers research products, improve listing content and imagery, check compliance requirements and prepare marketplace-ready exports.</p>
@@ -77,7 +77,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
   <section class="section" id="portfolio-extension">
     <div class="container sk-reveal">
-      <div class="sk-future-band">
+      <div class="sk-product-band">
         <p class="eyebrow">Product Engineering</p>
         <h2 class="sk-display">We keep building where the gap is real</h2>
         <p class="lead sk-lead-narrow">New product work only makes sense when there is a clear operating problem worth solving. The current focus is marketplace operations, portfolio intelligence, automation and connected business systems.</p>
