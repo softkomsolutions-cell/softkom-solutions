@@ -441,3 +441,18 @@
 .sk-site:not(.sk-home) .sk-masthead .sk-btn-secondary:hover{
   background:rgba(255,255,255,.08);
 }
+
+
+/* Keyboard accessibility */
+.sk-site a:focus-visible,
+.sk-site button:focus-visible,
+.sk-site [role="button"]:focus-visible{
+  outline:3px solid var(--sk-accent);
+  outline-offset:3px;
+}
+.sk-site .sk-nav a:focus-visible,
+.sk-site .sk-footer a:focus-visible,
+.sk-site .link-more:focus-visible,
+.sk-site .topic-chip:focus-visible{
+  border-radius:4px;
+}
