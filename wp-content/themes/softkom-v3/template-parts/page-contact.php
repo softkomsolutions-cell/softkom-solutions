@@ -72,5 +72,29 @@ $discovery = softkom_v3_cta( 'start-discovery' );
     </div>
   </section>
 
+  <section class="section section-muted" id="what-happens-next">
+    <div class="container">
+      <div class="sk-reveal">
+        <p class="eyebrow">What happens next</p>
+        <h2 class="sk-display">You will know quickly whether there is a fit</h2>
+        <p class="lead sk-lead-narrow">We review the problem first. If it looks like work Softkom can genuinely help with, we arrange a short conversation and agree the next step. That may be a scoped proposal, a technical review, a small first phase or simply a recommendation on what to do next.</p>
+      </div>
+      <div class="sk-grid sk-grid--3">
+        <article class="sk-card">
+          <h3>1. We read the detail</h3>
+          <p>Your enquiry is reviewed in context, not treated as a generic sales lead.</p>
+        </article>
+        <article class="sk-card">
+          <h3>2. We check fit</h3>
+          <p>If we need more detail, we ask. If it is not a sensible Softkom project, we tell you rather than forcing a proposal.</p>
+        </article>
+        <article class="sk-card">
+          <h3>3. We agree the next step</h3>
+          <p>Where there is a fit, the next step is clearly defined before anyone commits to a larger piece of work.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <?php softkom_v3_component_e( 'footer' ); ?>
 </div>
