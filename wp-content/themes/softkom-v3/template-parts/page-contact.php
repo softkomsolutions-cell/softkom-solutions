@@ -14,6 +14,8 @@ $discovery = softkom_v3_cta( 'start-discovery' );
 <div class="sk-site sk-contact">
   <?php softkom_v3_component_e( 'header' ); ?>
 
+  <main id="sk-main">
+
   <?php
   softkom_v3_component_e(
     'masthead',
@@ -95,6 +97,8 @@ $discovery = softkom_v3_cta( 'start-discovery' );
       </div>
     </div>
   </section>
+
+  </main>
 
   <?php softkom_v3_component_e( 'footer' ); ?>
 </div>
