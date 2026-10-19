@@ -60,13 +60,6 @@
 .sk-site .sk-build-step{padding:30px 24px 30px 0;border-right:1px solid rgba(7,17,31,.12)}
 .sk-site .sk-build-num{font-family:var(--font-display);font-size:3rem;color:var(--sk-accent)}
 
-/* Internal page mastheads */
-.sk-site.sk-company .sk-masthead,.sk-site.sk-platforms .sk-masthead,.sk-site.sk-contact .sk-masthead,.sk-site.sk-services .sk-masthead,.sk-site.sk-projects .sk-masthead{background:linear-gradient(145deg,#07111f 0 64%,#2256f3 64% 100%)!important;position:relative;overflow:hidden}
-.sk-site.sk-company .sk-masthead:after,.sk-site.sk-platforms .sk-masthead:after,.sk-site.sk-contact .sk-masthead:after,.sk-site.sk-services .sk-masthead:after,.sk-site.sk-projects .sk-masthead:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:8%;top:18%;background:var(--sk-coral-strong);opacity:.9}
-.sk-site.sk-company .sk-masthead .container,.sk-site.sk-platforms .sk-masthead .container,.sk-site.sk-contact .sk-masthead .container,.sk-site.sk-services .sk-masthead .container,.sk-site.sk-projects .sk-masthead .container{position:relative;z-index:2}
-.sk-site.sk-company .sk-masthead h1,.sk-site.sk-platforms .sk-masthead h1,.sk-site.sk-contact .sk-masthead h1,.sk-site.sk-services .sk-masthead h1,.sk-site.sk-projects .sk-masthead h1,.sk-site.sk-company .sk-masthead .lead,.sk-site.sk-platforms .sk-masthead .lead,.sk-site.sk-contact .sk-masthead .lead,.sk-site.sk-services .sk-masthead .lead,.sk-site.sk-projects .sk-masthead .lead{color:#fff!important}
-.sk-site.sk-company .sk-masthead .eyebrow,.sk-site.sk-platforms .sk-masthead .eyebrow,.sk-site.sk-contact .sk-masthead .eyebrow,.sk-site.sk-services .sk-masthead .eyebrow,.sk-site.sk-projects .sk-masthead .eyebrow{color:#a9c0ff}
-
 /* Company */
 .sk-site.sk-company #why-we-exist{background:var(--sk-coral)!important}
 .sk-site.sk-company #our-vision{background:var(--sk-accent-subtle)!important}
