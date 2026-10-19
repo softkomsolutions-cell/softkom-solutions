@@ -47,7 +47,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     array(
       'muted'      => true,
       'show_links'  => false,
-      'exclude_ids' => array( 'future-platforms' ),
       'title'       => 'Products we have built',
       'body'        => "MarketplaceOS, Brick Alpha and Product Studio are Softkom products. They show the same product engineering, integration and QA capability we bring to client projects.",
     )
