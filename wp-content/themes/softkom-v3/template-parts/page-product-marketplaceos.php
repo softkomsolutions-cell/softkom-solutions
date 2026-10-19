@@ -14,6 +14,8 @@ $p = softkom_v3_product_marketplaceos();
 <div class="sk-site sk-product-page sk-product-page--marketplaceos">
   <?php softkom_v3_component_e( 'header' ); ?>
 
+  <main id="sk-main">
+
   <?php
   softkom_v3_component_e(
     'masthead',
@@ -159,5 +161,7 @@ $p = softkom_v3_product_marketplaceos();
     )
   );
   ?>
+  </main>
+
   <?php softkom_v3_component_e( 'footer' ); ?>
 </div>
