@@ -1,8 +1,8 @@
 <?php
 /**
- * Canonical CTA registry â€” RC2.4.
+ * Canonical CTA registry.
  *
- * Level 1 Explore Â· Level 2 Discuss Â· Level 3 Commit.
+ * Level 1 Explore · Level 2 Discuss · Level 3 Commit.
  * Prefer this registry over hardcoded CTA labels.
  *
  * @package Softkom_V3
@@ -24,14 +24,14 @@ function softkom_v3_cta_registry() {
 			'level' => 1,
 			'label' => 'Explore Our Platforms',
 			'url'   => '/platforms/',
-			'notes' => 'Primary product browse â€” homepage hero and closing CTA.',
+			'notes' => 'Primary product browse — homepage hero and closing CTA.',
 		),
 		'explore-solutions'     => array(
 			'id'    => 'explore-solutions',
 			'level' => 1,
 			'label' => 'Explore Solutions',
 			'url'   => '/services/',
-			'notes' => 'Legacy solutions browse â€” retained for depth pages.',
+			'notes' => 'Legacy solutions browse — retained for depth pages.',
 		),
 		'review-selected-work'  => array(
 			'id'    => 'review-selected-work',
