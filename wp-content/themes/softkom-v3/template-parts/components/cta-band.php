@@ -12,8 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$title = isset( $title ) ? $title : 'Ready to discuss the process that is holding the business back?';
-$body  = isset( $body ) ? $body : 'Book a strategy call when you want a focused conversation on bottlenecks, fit and a practical next step — or start a discovery conversation if you prefer to write first.';
+$title = isset( $title ) ? $title : 'Tell us what is not working the way it should.';
+$body  = isset( $body ) ? $body : 'You can book a call or send a message. A formal specification is not required — a clear description of the problem is enough to start.';
 $id    = isset( $id ) ? $id : 'assessment';
 
 $primary_id   = isset( $primary_cta ) ? (string) $primary_cta : 'book-strategy-call';
