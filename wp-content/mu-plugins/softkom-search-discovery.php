@@ -163,7 +163,14 @@ function softkom_search_org_logo_url(){
 	if($site_icon){return $site_icon;}
 	return home_url('/wp-content/themes/softkom-v3/assets/images/softkom-logo-header.png');
 }
-add_action('wp_head',function(){if(!softkom_search_is_money_page())return;$graph=array('@context'=>'https://schema.org','@graph'=>array(array('@type'=>'Organization','@id'=>home_url('/#organization'),'name'=>'Softkom Solutions','url'=>home_url('/'),'logo'=>array('@type'=>'ImageObject','url'=>softkom_search_org_logo_url()),'description'=>'South African business systems, AI automation and digital infrastructure company helping growing organisations replace manual processes and disconnected tools with scalable systems.','areaServed'=>array('@type'=>'Country','name'=>'South Africa'),'knowsAbout'=>array('AI automation','business process automation','custom business systems','workflow automation','sales automation','WhatsApp automation','AI readiness','systems integration','business systems')),array('@type'=>'WebPage','@id'=>get_permalink().'#webpage','url'=>get_permalink(),'name'=>wp_get_document_title(),'isPartOf'=>array('@type'=>'WebSite','@id'=>home_url('/#website'),'url'=>home_url('/'),'name'=>'Softkom Solutions'),'about'=>array('@id'=>home_url('/#organization')),'inLanguage'=>'en-ZA')));echo '<script type="application/ld+json">'.wp_json_encode($graph,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE).'</script>'."\n";},45);
+add_action('wp_head',function(){
+	if(!softkom_search_is_money_page()||softkom_search_has_seo_plugin())return;
+	$graph=array('@context'=>'https://schema.org','@graph'=>array(
+		array('@type'=>'Organization','@id'=>home_url('/#organization'),'name'=>'Softkom Solutions','url'=>home_url('/'),'logo'=>array('@type'=>'ImageObject','url'=>softkom_search_org_logo_url()),'description'=>'South African business systems, automation and integration company helping growing organisations replace manual processes and disconnected tools.','areaServed'=>array('@type'=>'Country','name'=>'South Africa'),'knowsAbout'=>array('AI automation','business process automation','custom business systems','workflow automation','sales automation','AI readiness','systems integration','business systems')),
+		array('@type'=>'WebPage','@id'=>get_permalink().'#webpage','url'=>get_permalink(),'name'=>wp_get_document_title(),'isPartOf'=>array('@type'=>'WebSite','@id'=>home_url('/#website'),'url'=>home_url('/'),'name'=>'Softkom Solutions'),'about'=>array('@id'=>home_url('/#organization')),'inLanguage'=>'en-ZA')
+	));
+	echo '<script type="application/ld+json">'.wp_json_encode($graph,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE).'</script>'."\n";
+},45);
 
 
 /** Bridge public authority entry points into attributable lead capture. */
