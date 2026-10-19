@@ -1,8 +1,8 @@
 <?php
 /**
- * Section: premium product roadmap timeline.
+ * Section: current product portfolio timeline.
  *
- * Extensible — add nodes in softkom_v3_data_roadmap() without redesigning IA.
+ * Product nodes come from softkom_v3_data_roadmap().
  *
  * @package Softkom_V3
  */
@@ -13,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $id    = isset( $id ) ? $id : 'roadmap';
 $muted = isset( $muted ) ? (bool) $muted : false;
-$title = isset( $title ) ? $title : 'Product Roadmap';
-$body  = isset( $body ) ? $body : 'A clear path from platforms shipping today to the Softkom ecosystem ahead.';
+$title = isset( $title ) ? $title : 'Current products';
+$body  = isset( $body ) ? $body : 'MarketplaceOS, Product Studio and Brick Alpha are active Softkom products.';
 $nodes = softkom_v3_data_roadmap();
 ?>
 <section class="section<?php echo $muted ? ' section-muted' : ''; ?>" id="<?php echo esc_attr( $id ); ?>">
@@ -28,7 +28,7 @@ $nodes = softkom_v3_data_roadmap();
       )
     );
     ?>
-    <ol class="sk-roadmap sk-reveal" aria-label="Softkom product roadmap">
+    <ol class="sk-roadmap sk-reveal" aria-label="Softkom product portfolio">
       <?php foreach ( $nodes as $i => $node ) : ?>
         <li class="sk-roadmap-node sk-roadmap-node--<?php echo esc_attr( $node['status'] ); ?>">
           <?php if ( $i > 0 ) : ?>
