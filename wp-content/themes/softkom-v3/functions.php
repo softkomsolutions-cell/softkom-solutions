@@ -281,7 +281,7 @@ function softkom_v3_is_system_page() {
 		'privacy-policy',
 		'cookie',
 		'terms-of-service',
-		// RC2.3 P0 service decision pages (child pages under /services/).
+		// Service decision pages (child pages under /services/).
 		'business-systems',
 		'process-automation',
 		'process-integrations',
@@ -305,7 +305,7 @@ function softkom_v3_is_system_page() {
 }
 
 /**
- * Legacy Elementor slug redirects (keep bookmarks working after clean permalinks).
+ * Compatibility redirects for previous public slugs.
  */
 function softkom_v3_legacy_slug_redirects() {
 	global $wp;
@@ -409,7 +409,7 @@ function softkom_v3_enqueue_assets() {
 		SOFTKOM_V3_VERSION
 	);
 
-	// Single Softkom type family stack - Inter for UI/body, Plus Jakarta for display.
+	// Softkom font stack - DM Sans for UI/body, Instrument Serif for display.
 	wp_enqueue_style(
 		'softkom-v3-fonts',
 		'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap',
@@ -615,7 +615,7 @@ add_action( 'wp', 'softkom_v3_disable_astra_chrome', 20 );
  * Load shared data arrays once.
  *
  * Top-level files load first (catalog, graphics, icons, services-depth).
- * Phase 4 modules then load in dependency order from subdirectories.
+ * Data modules then load in dependency order from subdirectories.
  */
 function softkom_v3_load_data() {
 	static $loaded = false;
@@ -1279,9 +1279,9 @@ function softkom_v3_install_pages() {
         }
 
         /*
-         * V3 shortcode/template output now owns these pages.
-         * Remove old Elementor document data so Elementor does
-         * not continue rendering the previous page layout.
+         * Softkom shortcode/template output owns these pages.
+         * Remove previous Elementor document data so Elementor does
+         * not continue rendering the superseded page layout.
          */
         delete_post_meta( $page_id, '_elementor_data' );
         delete_post_meta( $page_id, '_elementor_edit_mode' );
@@ -1407,7 +1407,7 @@ add_action( 'admin_init', 'softkom_v3_install_trigger' );
 
 
 /**
- * Funnel V2 assessment shortcode.
+ * Business systems assessment shortcode.
  */
 function softkom_v3_assessment_shortcode() {
     return softkom_v3_render_partial( 'page-assessment.php' );
@@ -1420,7 +1420,7 @@ add_shortcode(
 
 
 /**
- * Funnel V2 assessment frontend assets.
+ * Business systems assessment frontend assets.
  */
 function softkom_v3_enqueue_assessment_assets() {
 
