@@ -58,8 +58,8 @@ if ( ! defined( 'ABSPATH' ) ) {
   softkom_v3_component_e(
     'cta-band',
     array(
-      'title'         => 'Does one of these problems sound familiar?'
-      'body'          => 'Tell us what is happening in your operation. We can usually tell quickly whether it is close to work we know how to handle.'
+      'title'         => 'Does one of these problems sound familiar?',
+      'body'          => 'Tell us what is happening in your operation. We can usually tell quickly whether it is close to work we know how to handle.',
       'primary_cta'   => 'discuss-problem',
       'secondary_cta' => 'explore-solutions',
     )
