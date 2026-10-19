@@ -24,7 +24,7 @@ function softkom_v3_frameworks_library() {
 	return array(
 		'transformation-framework' => array(
 			'id'            => 'transformation-framework',
-			'name'          => 'Softkom Transformation Framework™',
+			'name'          => 'Softkom delivery approach',
 			'short_name'    => 'Transformation Framework',
 			'trademark'     => true,
 			'role'          => 'methodology-umbrella',
@@ -43,7 +43,7 @@ function softkom_v3_frameworks_library() {
 			'diagram'       => 'softkom_v3_graphic_connected_business', // umbrella visual often paired with journey
 			'diagram_note'  => 'Buyer-facing journey diagram uses Transformation Journey™ stages; architecture visuals use Connected Business™.',
 			'terminology'   => array(
-				array( 'term' => 'Softkom Transformation Framework™', 'meaning' => 'Methodology umbrella Softkom uses across diagnosis and delivery.' ),
+				array( 'term' => 'Softkom delivery approach', 'meaning' => 'Methodology umbrella Softkom uses across diagnosis and delivery.' ),
 				array( 'term' => 'Transformation Journey™', 'meaning' => 'Eight-stage client sequence inside the Framework.' ),
 				array( 'term' => 'Delivery Lifecycle', 'meaning' => 'How Softkom executes a scoped engagement once the next step is agreed.' ),
 			),
