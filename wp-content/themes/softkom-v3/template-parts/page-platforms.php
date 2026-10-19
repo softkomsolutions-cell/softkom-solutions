@@ -1,8 +1,8 @@
 <?php
 /**
- * Softkom V3 Platforms hub — product ecosystem centrepiece.
+ * Softkom V3 Products hub.
  *
- * Extensible IA: add platforms via softkom_v3_data_products() / roadmap data.
+ * Product content is driven by the shared product data registry.
  *
  * @package Softkom_V3
  */
