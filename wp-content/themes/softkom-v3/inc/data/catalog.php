@@ -216,16 +216,7 @@ function softkom_v3_data_industries() {
 			'evidence_status' => 'Adjacent application — no clinical, legal or certification claims.',
 			'body'            => 'Admin workflows and record handoffs create delay when process and access control are weak. Softkom may support operational workflow design with POPIA-minded data handling. Evidence status: adjacent application — no clinical, legal or certification claims.',
 		),
-		array(
-			'id'              => 'government-municipal',
-			'group'           => 'adjacent',
-			'icon'            => 'gov',
-			'title'           => 'Government and municipal administration',
-			'pressure'        => 'Service requests need accountable process: who requested, who approved, what was delivered.',
-			'capability'      => 'Structured workflow and evidence capture for transparency — not a claim of public-sector specialism.',
-			'evidence_status' => 'Adjacent application — conservative wording; no public-sector specialism claimed.',
-			'body'            => 'Service requests need accountable process: who requested, who approved, what was delivered. Softkom’s structured workflow methods may apply. Evidence status: adjacent application — no public-sector specialism claimed.',
-		),
+
 	);
 }
 
@@ -379,12 +370,12 @@ function softkom_v3_data_products() {
 			'tagline'  => 'Multi-channel operations, under control',
 			'body'     => 'Catalogue discipline, pricing intelligence and fulfilment visibility across selling channels — built for multi-channel operators.',
 			'eyebrow'  => 'Platform',
-			'status'   => 'beta',
-			'status_label' => 'In Development',
+			'status'   => 'active',
+			'status_label' => 'Available',
 			'accent'   => 'ops',
 			'pills'    => array(
 				array( 'class' => 'pill-product', 'label' => 'Softkom Product' ),
-				array( 'class' => 'pill-dev', 'label' => 'In Development' ),
+				array( 'class' => 'pill-dev', 'label' => 'Softkom Product' ),
 			),
 			'url'      => '/platforms/marketplaceos/',
 			'cta'      => 'Explore MarketplaceOS',
@@ -395,12 +386,12 @@ function softkom_v3_data_products() {
 			'tagline'  => 'Investment intelligence for collectibles',
 			'body'     => 'Market signal, valuation context and portfolio clarity for LEGO and collectibles investors — deliberate and precise.',
 			'eyebrow'  => 'Platform',
-			'status'   => 'beta',
-			'status_label' => 'In Development',
+			'status'   => 'active',
+			'status_label' => 'Available',
 			'accent'   => 'luxury',
 			'pills'    => array(
 				array( 'class' => 'pill-product', 'label' => 'Softkom Product' ),
-				array( 'class' => 'pill-dev', 'label' => 'In Development' ),
+				array( 'class' => 'pill-dev', 'label' => 'Softkom Product' ),
 			),
 			'url'      => '/platforms/brick-alpha/',
 			'cta'      => 'Explore Brick Alpha',
