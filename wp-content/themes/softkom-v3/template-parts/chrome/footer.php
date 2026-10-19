@@ -40,7 +40,7 @@ $read_insights_label = function_exists( 'softkom_v3_cta_label' )
         <?php else : ?>
           <div class="footer-brand">Softkom</div>
         <?php endif; ?>
-        <p>Business systems, automation and integrations for growing companies that need better operational control.</p>
+        <p>Custom software, integrations and automation for growing companies that need systems that fit the way they actually work.</p>
         <div class="footer-socials">
           <a href="https://www.linkedin.com/company/softkomsolutions" rel="noopener noreferrer" target="_blank">LinkedIn</a>
           <a href="https://wa.me/27749933805" rel="noopener noreferrer" target="_blank">WhatsApp</a>
@@ -66,10 +66,10 @@ $read_insights_label = function_exists( 'softkom_v3_cta_label' )
         <a href="<?php echo esc_url( $read_insights_url ); ?>"><?php echo esc_html( $read_insights_label ); ?></a>
       </div>
       <div>
-        <strong>Trust</strong>
-        <a href="<?php echo esc_url( $home_url ); ?>#trust">Security-minded delivery</a>
-        <a href="/projects/">Delivery experience</a>
-        <a href="/privacy-policy/">Privacy &amp; POPIA</a>
+        <strong>Work</strong>
+        <a href="/case-studies/">Selected Work</a>
+        <a href="/platforms/">Products</a>
+        <a href="/assessment/">Business Systems Assessment</a>
       </div>
       <div>
         <strong>Contact</strong>
