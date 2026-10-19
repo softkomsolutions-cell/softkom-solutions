@@ -40,6 +40,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     'solutions',
     array(
       'show_links' => true,
+      'show_tags'  => false,
+      'ids'        => array(
+        'business-systems',
+        'custom-software',
+        'ai-automation',
+        'process-automation',
+        'marketplace-solutions',
+        'compliance-platforms',
+      ),
       'muted'      => true,
       'title'      => 'The work we take on',
       'body'       => "Most of our work falls into a few practical areas: custom systems, integrations, automation, e-commerce, compliance and ongoing technical support.\n\nThe technology depends on the job. We do not start with a preferred stack and force the project around it.",
