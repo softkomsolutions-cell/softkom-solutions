@@ -30,10 +30,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     'industries',
     array(
       'muted'   => false,
-      'grouped' => true,
+      'grouped' => false,
+      'group'   => 'experience',
       'title'   => 'Where we already have useful context',
       'body'    => "Industry labels matter less than the problem itself. If your team is dealing with manual ordering, disconnected systems, reporting gaps, approvals or operational admin, that is usually the more useful starting point.",
-      'note'    => 'If your sector is not listed, that does not automatically mean it is a poor fit. The process and system problem matter more.'
+      'note'    => 'We also work outside these sectors when the operating problem is a strong fit — especially around ordering, integrations, workflow automation, reporting and internal systems.'
       'foot_label' => softkom_v3_cta_label( 'discuss-problem' ) . ' →',
       'foot_url'   => softkom_v3_cta_url( 'discuss-problem' ),
     )
