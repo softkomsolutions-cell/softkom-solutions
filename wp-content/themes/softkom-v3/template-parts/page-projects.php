@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'masthead',
     array(
       'eyebrow'         => 'Selected Work',
-      'title'           => 'A selection of work we have actually delivered',
-      'lead'            => 'Client projects and Softkom products are shown separately so it is clear what was built for a customer and what we built ourselves.',
+      'title'           => 'A selection of real client and product work',
+      'lead'            => 'Client projects and Softkom products are shown separately so it is clear what we have delivered for customers, what is currently in launch preparation, and what we have built ourselves.',
       'primary_label'   => softkom_v3_cta_label( 'discuss-problem' ),
       'primary_url'     => softkom_v3_cta_url( 'discuss-problem' ),
       'secondary_label' => softkom_v3_cta_label( 'explore-solutions' ),
