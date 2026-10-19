@@ -417,3 +417,34 @@
     padding-bottom:56px;
   }
 }
+
+
+/* Unified internal-page mastheads */
+.sk-site:not(.sk-home) .sk-masthead{
+  background:#0b1420!important;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding-top:clamp(78px,8vw,112px);
+  padding-bottom:clamp(64px,7vw,96px);
+}
+.sk-site:not(.sk-home) .sk-masthead .container{
+  max-width:1180px;
+}
+.sk-site:not(.sk-home) .sk-masthead h1{
+  color:#fff!important;
+  max-width:14ch;
+}
+.sk-site:not(.sk-home) .sk-masthead .lead{
+  color:rgba(255,255,255,.78)!important;
+  max-width:760px;
+}
+.sk-site:not(.sk-home) .sk-masthead .eyebrow{
+  color:#9db6ff!important;
+}
+.sk-site:not(.sk-home) .sk-masthead .sk-btn-secondary{
+  color:#fff;
+  border-color:rgba(255,255,255,.28);
+  background:transparent;
+}
+.sk-site:not(.sk-home) .sk-masthead .sk-btn-secondary:hover{
+  background:rgba(255,255,255,.08);
+}
