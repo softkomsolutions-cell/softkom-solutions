@@ -158,7 +158,7 @@ $hero_proof = '
       <div class="sk-reveal">
         <p class="eyebrow">Recent work</p>
         <h2 class="sk-display">Work we can show you</h2>
-        <p class="lead sk-lead-narrow">A few examples of delivered client work and working Softkom products. Where a client name is not cleared for public use, we keep it anonymous.</p>
+        <p class="lead sk-lead-narrow">A few examples of recent client work and working Softkom products. Where a client name is not cleared for public use, we keep it anonymous.</p>
       </div>
       <div class="sk-grid sk-grid--3">
         <article class="sk-card sk-reveal">
