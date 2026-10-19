@@ -337,3 +337,34 @@
 .sk-home #engagement-fit{
   background:#fff;
 }
+
+
+/* Structural QA fixes from full-page review */
+.sk-services .section:nth-of-type(odd),
+.sk-services .section:nth-of-type(even),
+.sk-services .section:nth-of-type(3),
+.sk-services .section:nth-of-type(4),
+.sk-projects .section:nth-of-type(3){
+  color:inherit;
+}
+.sk-services .section:nth-of-type(4) h2,
+.sk-services .section:nth-of-type(4) h3,
+.sk-services .section:nth-of-type(4) p,
+.sk-projects .section:nth-of-type(3) h2,
+.sk-projects .section:nth-of-type(3) h3,
+.sk-projects .section:nth-of-type(3) p{
+  color:inherit;
+}
+.sk-projects #client-projects{background:var(--sk-coral);}
+.sk-projects #products{background:var(--sk-accent-subtle);}
+.sk-projects #products h2,
+.sk-projects #products h3{color:var(--sk-primary);}
+.sk-projects #products p{color:#4f5d70;}
+.sk-services #paths{background:#fff;}
+.sk-services #solutions{background:var(--sk-accent-subtle);}
+.sk-services #integration{background:#07111f;color:#fff;}
+.sk-services #integration h2,
+.sk-services #integration h3,
+.sk-services #integration p{color:#fff;}
+.sk-services #ai-opportunity{background:var(--sk-mint);}
+.sk-services #selected-work{background:#fff;}
