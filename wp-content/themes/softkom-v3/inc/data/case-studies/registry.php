@@ -1,6 +1,6 @@
 <?php
 /**
- * Case studies registry — RC2.4 permission-aware selected work.
+ * Permission-aware Selected Work registry.
  *
  * Seeded only from material Softkom can defend.
  * No invented metrics. Permission-pending names are anonymised publicly.
@@ -152,7 +152,7 @@ function softkom_v3_case_studies_registry() {
 				),
 				'url'    => '/case-studies/',
 			),
-			'notes'           => 'RC2.4: public name Confirm in permission log — anonymised until Softkom logs naming permission. Internal name retained for evidence register only.',
+			'notes'           => 'public name Confirm in permission log — anonymised until Softkom logs naming permission. Internal name retained for evidence register only.',
 		),
 		array(
 			'slug'            => 'lekr',
@@ -221,7 +221,7 @@ function softkom_v3_case_studies_registry() {
 				),
 				'url'    => '/case-studies/',
 			),
-			'notes'           => 'RC2.4: public name Confirm in permission log — anonymised until Softkom logs naming permission. Internal name retained for evidence register only.',
+			'notes'           => 'public name Confirm in permission log — anonymised until Softkom logs naming permission. Internal name retained for evidence register only.',
 		),
 		array(
 			'slug'            => 'myr-accounting',
