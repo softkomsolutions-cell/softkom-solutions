@@ -89,7 +89,7 @@ function softkom_v3_case_studies_registry() {
 			'slug'            => 'psi-stationery',
 			'title'           => 'Retail ordering platform',
 			'status'          => 'published',
-			'project_status'  => 'delivered',
+			'project_status'  => 'in-progress',
 			'evidence_level'  => 'anonymous',
 			'permission'      => array(
 				'public_name' => false,
@@ -114,13 +114,13 @@ function softkom_v3_case_studies_registry() {
 			'client_context'  => '',
 			'operational_environment' => 'Retail and distribution',
 			'approach'        => 'Digital ordering platform spanning web and mobile so catalogue, order capture and fulfilment handoff sit in one controlled flow — reducing re-entry and giving ops a single queue to run.',
-			'current_outcome' => 'Ordering workflow digitised across web and mobile.',
+			'current_outcome' => 'Multi-portal ordering platform in launch preparation across web and mobile.',
 			'what_demonstrates'=> 'Softkom can digitise ordering workflows for retail/distribution operations.',
 			'frameworks'      => array( 'connected-business' ),
 			'implementation_stages' => array(),
 			'lessons_learned' => array(),
 			'outcomes'        => array(
-				'Ordering workflow digitised across web and mobile.',
+				'Multi-portal ordering workflow built and in launch preparation across web and mobile.',
 			),
 			'metrics'         => array(),
 			'technologies'    => 'Custom web · Mobile · Integrations',
@@ -158,7 +158,7 @@ function softkom_v3_case_studies_registry() {
 			'slug'            => 'lekr',
 			'title'           => 'E-commerce systems engagement',
 			'status'          => 'published',
-			'project_status'  => 'delivered',
+			'project_status'  => 'reconciliation',
 			'evidence_level'  => 'anonymous',
 			'permission'      => array(
 				'public_name' => false,
@@ -199,8 +199,8 @@ function softkom_v3_case_studies_registry() {
 				'nodes'  => array( 'Storefront', 'Orders', 'ERP', 'Stock' ),
 			),
 			'url'             => '/case-studies/',
-			'public'          => true,
-			'hub_card_public' => true,
+			'public'          => false,
+			'hub_card_public' => false,
 			'hub_card'        => array(
 				'title'  => 'E-commerce systems engagement',
 				'pills'  => array(
