@@ -157,9 +157,7 @@ add_action('wp_head',function(){if(!softkom_search_is_money_page())return;$graph
 
 /** Bridge public authority entry points into attributable lead capture. */
 function softkom_search_is_discovery_bridge_page(){
-	if(is_admin()||!is_page())return false;
-	if(is_front_page())return true;
-	return 'insights'===(string)get_post_field('post_name',get_queried_object_id());
+	return false;
 }
 add_action('wp_footer',function(){
 	if(!softkom_search_is_discovery_bridge_page())return;
