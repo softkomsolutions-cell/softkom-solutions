@@ -65,7 +65,7 @@ $discovery = softkom_v3_cta( 'start-discovery' );
           </div>
           <div class="sk-contact-item">
             <p class="eyebrow eyebrow--tight">Location</p>
-            <p>Glensan, Johannesburg, South Africa</p>
+            <p>Johannesburg, South Africa</p>
           </div>
         </div>
       </div>
