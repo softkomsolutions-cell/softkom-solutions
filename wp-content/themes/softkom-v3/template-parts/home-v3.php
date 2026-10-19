@@ -103,6 +103,30 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     </div>
   </section>
 
+  <section class="section" id="engagement-fit">
+    <div class="container">
+      <div class="sk-reveal">
+        <p class="eyebrow">What working with us looks like</p>
+        <h2 class="sk-display">Clear scope, senior involvement, and no pressure to overbuild</h2>
+        <p class="lead sk-lead-narrow">Most Softkom engagements are project-based. Smaller website and improvement work can start in the low five figures, while custom systems, integrations and platform work are scoped around the actual requirements and delivery risk.</p>
+      </div>
+      <div class="sk-grid sk-grid--3">
+        <article class="sk-card sk-reveal">
+          <h3>You speak to senior people</h3>
+          <p>Discovery, scope and delivery decisions stay close to Softkom leadership instead of disappearing through layers of account management.</p>
+        </article>
+        <article class="sk-card sk-reveal">
+          <h3>You see progress early</h3>
+          <p>We prefer working software, visible milestones and regular decisions over long periods where the client cannot see what is happening.</p>
+        </article>
+        <article class="sk-card sk-reveal">
+          <h3>You are not forced into a bigger project</h3>
+          <p>If the right answer is a smaller integration, a phased build or improving what you already have, we will say so.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="assessment">
     <div class="container">
       <div class="sk-card sk-reveal">
