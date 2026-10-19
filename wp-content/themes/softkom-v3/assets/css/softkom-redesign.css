@@ -281,3 +281,59 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* Buyer-trust refinement */
+.sk-site .sk-masthead.sk-masthead--hero{
+  min-height:auto;
+  background:#f5f1e8!important;
+  border-bottom:1px solid rgba(7,17,31,.10);
+}
+.sk-site .sk-masthead-grid{
+  grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);
+  align-items:start;
+}
+.sk-site .sk-hero-proof-card{
+  background:#fff;
+  color:var(--sk-primary);
+  border:1px solid rgba(7,17,31,.12);
+  border-left:5px solid var(--sk-accent);
+  padding:34px;
+}
+.sk-site .sk-hero-proof-card h3{
+  color:var(--sk-primary);
+  font-family:var(--font-display);
+  font-size:clamp(1.9rem,2.8vw,2.7rem);
+  line-height:1.05;
+}
+.sk-site .sk-hero-proof-card p{
+  color:#4f5d70;
+}
+.sk-site .sk-hero-proof-card .eyebrow{
+  color:var(--sk-accent);
+}
+.sk-site .sk-hero-proof-list{
+  margin:24px 0 0;
+  padding:0;
+  list-style:none;
+}
+.sk-site .sk-hero-proof-list li{
+  position:relative;
+  padding:12px 0 12px 24px;
+  border-top:1px solid rgba(7,17,31,.10);
+  color:#26354a;
+  line-height:1.5;
+}
+.sk-site .sk-hero-proof-list li:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:20px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--sk-accent);
+}
+.sk-home #engagement-fit{
+  background:#fff;
+}
