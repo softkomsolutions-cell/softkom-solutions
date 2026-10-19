@@ -1482,6 +1482,20 @@ add_action(
     30
 );
 
+/**
+ * Cross-page conversion and funnel measurement.
+ */
+function softkom_v3_enqueue_conversion_tracking() {
+    wp_enqueue_script(
+        'softkom-v3-conversion-tracking',
+        get_stylesheet_directory_uri() . '/assets/js/softkom-conversion-tracking.js',
+        array(),
+        SOFTKOM_V3_VERSION,
+        true
+    );
+}
+add_action( 'wp_enqueue_scripts', 'softkom_v3_enqueue_conversion_tracking', 40 );
+
 
 
 
