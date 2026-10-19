@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'masthead',
     array(
       'eyebrow'         => 'Company',
-      'title'           => 'Business systems built around how companies really operate',
-      'lead'            => 'Softkom helps growing companies solve operational problems with custom business systems, automation, integrations and practical digital infrastructure.',
+      'title'           => 'Softkom is a small technology company that likes difficult business problems.',
+      'lead'            => 'We are based in Johannesburg and work with clients in South Africa and remotely. Most of our work starts with a process that is too manual, a system that no longer fits, or a project that needs experienced delivery ownership.',
       'primary_label'   => softkom_v3_cta_label( 'start-discovery' ),
       'primary_url'     => softkom_v3_cta_url( 'start-discovery' ),
       'secondary_label' => softkom_v3_cta_label( 'explore-solutions' ),
@@ -31,17 +31,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
   <section class="section" id="why-we-exist">
     <div class="container sk-company-block sk-reveal">
-      <p class="eyebrow">Why We Exist</p>
-      <h2 class="sk-display">Generic software forces permanent workarounds</h2>
-      <p class="lead">When the process is the competitive edge, off-the-shelf tools become a tax on every exception, handoff and report. Softkom designs the missing systems, integrations and workflows so teams spend less time fighting software and more time running the business.</p>
+      <p class="eyebrow">Why Softkom exists</p>
+      <h2 class="sk-display">We started Softkom because too much technology work stops at “good enough”.</h2>
+      <p class="lead">A website can look finished and still not help the business. An app can be deployed and still be awkward to use. A system can be technically correct and still create more admin than it removes. We focus on the part after the demo: does it work, do people use it, and does it make the business easier to run?</p>
     </div>
   </section>
 
   <section class="section section-muted" id="our-vision">
     <div class="container sk-company-block sk-reveal">
-      <p class="eyebrow">Our Vision</p>
-      <h2 class="sk-display">Senior-led delivery with specialist technical capability</h2>
-      <p class="lead">Client discovery, solution direction and commercial decisions stay close to Softkom leadership. Specialist technical capability is brought into each engagement according to what the work actually requires.</p>
+      <p class="eyebrow">How we are set up</p>
+      <h2 class="sk-display">Small enough to stay involved. Flexible enough to bring in the right specialists.</h2>
+      <p class="lead">Darren stays close to discovery, scope, delivery and client communication. Where a project needs specialist development, security, infrastructure or integration skills, we bring those people into the work instead of pretending one person can do everything.</p>
     </div>
   </section>
 
@@ -50,8 +50,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'philosophy',
     array(
       'id'    => 'our-philosophy',
-      'title' => 'Our Philosophy',
-      'body'  => 'Markets first. Specialised where generic fails. Products that compound.',
+      'title' => 'What matters to us',
+      'body'  => 'Understand the business first. Keep the solution as simple as it can be. Build properly. Stay accountable after launch.',
     )
   );
   ?>
@@ -59,17 +59,17 @@ if ( ! defined( 'ABSPATH' ) ) {
   <section class="section section-muted" id="how-we-build">
     <div class="container">
       <div class="sk-reveal">
-        <p class="eyebrow">How We Deliver Client Systems</p>
-        <h2 class="sk-display">From operational problem to working system</h2>
-        <p class="lead sk-lead-narrow">Softkom maps how work moves, designs workflows and data ownership before code ships, then delivers in controlled increments with testing, handover and support after go-live.</p>
+        <p class="eyebrow">How we work with clients</p>
+        <h2 class="sk-display">Less ceremony. More visibility.</h2>
+        <p class="lead sk-lead-narrow">We spend enough time understanding the problem before building, but we do not disappear for months behind documentation. Clients see progress, make decisions early and test the system before launch.</p>
       </div>
       <div class="sk-build-steps">
         <?php
         $steps = array(
-          array( 'Understand', 'Business pressure, user workflows and where the current process breaks.' ),
-          array( 'Design', 'Workflows, integrations, data ownership and delivery boundaries before features.' ),
-          array( 'Build', 'Ship a reliable working system in controlled stages — then layer automation and intelligence.' ),
-          array( 'Evolve', 'Adoption, support and iteration as the operation grows.' ),
+          array( 'Understand', 'What is happening now, who is involved, and where the frustration or cost sits.' ),
+          array( 'Agree the shape', 'What we are building, what it connects to, and what is deliberately out of scope.' ),
+          array( 'Build', 'Working software in stages, with regular client decisions instead of a big reveal at the end.' ),
+          array( 'Improve', 'Fix what needs fixing, support the team and extend the system when there is a good reason to.' ),
         );
         foreach ( $steps as $i => $step ) :
           ?>
@@ -88,8 +88,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'vision',
     array(
       'id'    => 'the-future',
-      'title' => 'Platforms & Product Engineering',
-      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha demonstrate the same engineering capability Softkom applies to client systems, integrations and automation.',
+      'title' => 'We build our own products too',
+      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha give us first-hand experience of the same product decisions, release pressure and integration problems our clients face.',
     )
   );
   ?>
@@ -101,7 +101,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       'muted' => true,
       'id'    => 'leadership',
       'title' => 'Leadership',
-      'body'  => 'Darren Enfield brings 25+ years across ICT, technology sales, project delivery and technical support. Discovery, solution direction and commercial planning stay senior-led, with specialist delivery support where the work requires it.',
+      'body'  => 'Darren Enfield has spent more than 25 years around technology — in sales, project delivery and technical support. That mix matters because a good solution has to make commercial sense, work technically and survive contact with the people who use it every day.',
     )
   );
   ?>
@@ -110,8 +110,8 @@ if ( ! defined( 'ABSPATH' ) ) {
   softkom_v3_component_e(
     'cta-band',
     array(
-      'title'         => 'Ready to Explore What\'s Possible?',
-      'body'          => 'Tell us what is slowing the business down. We will help determine whether the right next step is integration, automation, a custom system or no build at all.',
+      'title'         => 'Tell us what you are trying to fix.',
+      'body'          => 'You do not need a formal brief. Explain the problem, what you have tried and what a better outcome would look like. We can take it from there.',
       'primary_cta'   => 'start-conversation',
       'secondary_cta' => 'explore-solutions',
     )
