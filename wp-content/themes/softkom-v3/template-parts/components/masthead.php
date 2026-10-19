@@ -25,15 +25,6 @@ $media           = isset( $media ) ? $media : '';
 $mod = ( 'split' === $variant ) ? ' sk-masthead--split sk-masthead--hero' : '';
 ?>
 <section class="sk-masthead sk-surface<?php echo esc_attr( $mod ); ?>">
-  <?php if ( 'split' === $variant ) : ?>
-    <div class="sk-hero-ambient" aria-hidden="true">
-      <span class="sk-hero-orb sk-hero-orb--a"></span>
-      <span class="sk-hero-orb sk-hero-orb--b"></span>
-      <span class="sk-hero-orb sk-hero-orb--c"></span>
-      <span class="sk-hero-beam"></span>
-      <span class="sk-hero-grid"></span>
-    </div>
-  <?php endif; ?>
   <div class="container<?php echo ( 'split' === $variant ) ? ' sk-masthead-grid' : ''; ?>">
     <div class="sk-masthead-copy sk-hero-enter">
       <?php if ( $eyebrow ) : ?>
