@@ -417,9 +417,6 @@ function softkom_v3_graphic_platforms_hero() {
  */
 function softkom_v3_graphic_product_ui( $variant = 'marketplaceos' ) {
 	$variant = sanitize_key( (string) $variant );
-	if ( 'future-platforms' === $variant ) {
-		$variant = 'future';
-	}
 	$shot = '';
 	if ( in_array( $variant, array( 'marketplaceos', 'brick-alpha', 'product-studio' ), true ) ) {
 		$shot = softkom_v3_graphic_product_screenshot( $variant );
