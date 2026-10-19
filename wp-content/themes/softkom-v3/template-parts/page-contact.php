@@ -19,8 +19,8 @@ $discovery = softkom_v3_cta( 'start-discovery' );
     'masthead',
     array(
       'eyebrow'         => 'Contact',
-      'title'           => 'Let\'s Start the Conversation',
-      'lead'            => 'Tell us what is slowing the business down — a manual workflow, disconnected systems, reporting gap, integration problem or process that no longer scales. Softkom will help define the practical next step.',
+      'title'           => 'Tell us what you are trying to fix or build',
+      'lead'            => 'You do not need a polished brief. Tell us what is happening now, what is frustrating you and what a better outcome would look like. We will take it from there.',
       'primary_label'   => $discovery ? $discovery['label'] : 'Book a Discovery Call',
       'primary_url'     => $discovery ? $discovery['url'] : '/contact/#discovery',
       'secondary_label' => 'Email Softkom',
@@ -35,7 +35,7 @@ $discovery = softkom_v3_cta( 'start-discovery' );
         <div class="sk-card sk-form sk-form--minimal" id="enquiry">
           <p class="eyebrow eyebrow--tight">Message</p>
           <h3>Send Softkom a note</h3>
-          <p>Share the operational problem, workflow, system gap or project you want to improve.</p>
+          <p>A few sentences is enough. Tell us the problem, what you are using today and what you would like to change.</p>
           <?php echo do_shortcode( '[sureforms id="2722" show_title="false"]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
           <p class="sk-form-privacy-note">
             Softkom handles enquiry data under South African privacy requirements, including POPIA.
@@ -47,7 +47,7 @@ $discovery = softkom_v3_cta( 'start-discovery' );
           <div class="sk-contact-item">
             <p class="eyebrow eyebrow--tight">Discovery Call</p>
             <h3>Book a focused call</h3>
-            <p>A focused conversation to understand the business problem, assess fit and agree the most practical next step.</p>
+            <p>A short call to understand the situation, see whether we are a good fit and decide what the next step should be.</p>
             <a class="sk-btn sk-btn-primary" href="#enquiry"><?php echo esc_html( softkom_v3_cta_label( 'start-discovery' ) ); ?></a>
           </div>
           <div class="sk-contact-item">
