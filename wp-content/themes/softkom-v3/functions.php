@@ -897,9 +897,27 @@ function softkom_v3_og_image_url() {
 }
 
 /**
+ * Detect whether a dedicated SEO plugin owns page metadata and schema.
+ *
+ * @return bool
+ */
+function softkom_v3_has_seo_plugin() {
+	return defined( 'AIOSEO_VERSION' )
+		|| defined( 'RANK_MATH_VERSION' )
+		|| defined( 'WPSEO_VERSION' )
+		|| function_exists( 'aioseo' )
+		|| class_exists( 'RankMath' )
+		|| class_exists( 'WPSEO_Options' );
+}
+
+/**
  * Core meta + Open Graph + Twitter for Softkom system pages when no SEO plugin owns them.
  */
 function softkom_v3_head_meta() {
+	if ( softkom_v3_has_seo_plugin() ) {
+		return;
+	}
+
 	if ( ! function_exists( 'softkom_v3_is_system_page' ) || ! softkom_v3_is_system_page() ) {
 		return;
 	}
@@ -912,23 +930,23 @@ function softkom_v3_head_meta() {
 		// defaults above
 	} elseif ( is_page( 'platforms' ) ) {
 		$title = 'Platforms | Softkom';
-		$desc  = 'Explore Softkom specialised software platforms Ã¢â‚¬â€ MarketplaceOS, Brick Alpha, Product Studio, and the roadmap ahead.';
+		$desc  = 'Explore MarketplaceOS, Brick Alpha and Product Studio — working Softkom products built around marketplace operations, product workflows and portfolio intelligence.';
 		$url   = home_url( '/platforms/' );
 	} elseif ( is_page( 'marketplaceos' ) || is_page( 'platforms/marketplaceos' ) ) {
 		$title = 'MarketplaceOS | Softkom';
-		$desc  = 'MarketplaceOS Ã¢â‚¬â€ specialised multi-channel operations software from Softkom.';
+		$desc  = 'MarketplaceOS is Softkom marketplace operations software for catalogue, pricing, inventory, fulfilment and seller reporting.';
 		$url   = home_url( '/platforms/marketplaceos/' );
 	} elseif ( is_page( 'brick-alpha' ) || is_page( 'platforms/brick-alpha' ) ) {
 		$title = 'Brick Alpha | Softkom';
-		$desc  = 'Brick Alpha Ã¢â‚¬â€ investment intelligence for LEGO and collectibles from Softkom.';
+		$desc  = 'Brick Alpha is Softkom portfolio and market intelligence software for LEGO and collectibles investors.';
 		$url   = home_url( '/platforms/brick-alpha/' );
 	} elseif ( is_page( 'company' ) ) {
 		$title = 'Company | Softkom';
-		$desc  = 'Softkom builds specialised software platforms Ã¢â‚¬â€ purpose-built products, long-term investment, human-centred AI.';
+		$desc  = 'Softkom Solutions is a Johannesburg technology company building custom business systems, integrations, automation and digital platforms.';
 		$url   = home_url( '/company/' );
 	} elseif ( is_page( 'contact' ) ) {
 		$title = 'Book a Discovery Call | Softkom';
-		$desc  = 'Start a focused conversation about Softkom platforms or a specialised product for your industry.';
+		$desc  = 'Talk to Softkom about a business system, integration, automation or digital platform project.';
 		$url   = home_url( '/contact/' );
 	} else {
 		$queried = get_queried_object();
@@ -962,6 +980,10 @@ add_action( 'wp_head', 'softkom_v3_head_meta', 5 );
  * BreadcrumbList on product and platforms pages.
  */
 function softkom_v3_schema_jsonld() {
+	if ( softkom_v3_has_seo_plugin() ) {
+		return;
+	}
+
 	if ( ! function_exists( 'softkom_v3_is_system_page' ) || ! softkom_v3_is_system_page() ) {
 		return;
 	}
@@ -977,13 +999,13 @@ function softkom_v3_schema_jsonld() {
 			'logo'        => softkom_v3_og_image_url(),
 			'address'     => array(
 				'@type'           => 'PostalAddress',
-				'addressLocality' => 'Glensan, Johannesburg',
+				'addressLocality' => 'Johannesburg',
 				'addressCountry'  => 'ZA',
 			),
 			'sameAs'      => array(
 				'https://www.linkedin.com/company/softkomsolutions',
 			),
-			'description' => 'Softkom builds specialised software platforms for businesses and industries where generic software is not enough.',
+			'description' => 'Softkom Solutions builds custom business systems, integrations, automation and digital platforms for growing companies.',
 		);
 
 		$website = array(
