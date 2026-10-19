@@ -28,21 +28,38 @@ function softkom_organic_source() {
     return array( 'direct', 'unknown' );
 }
 
+function softkom_organic_has_seo_plugin() {
+    return defined( 'AIOSEO_VERSION' )
+        || defined( 'RANK_MATH_VERSION' )
+        || defined( 'WPSEO_VERSION' )
+        || function_exists( 'aioseo' )
+        || class_exists( 'RankMath' )
+        || class_exists( 'WPSEO_Options' );
+}
+
 function softkom_organic_assessment_schema() {
     if ( ! softkom_organic_is_assessment() ) { return; }
     $url = home_url( '/assessment/' );
+    $entities = array(
+        array('@type'=>'Service','@id'=>$url.'#service','name'=>'Business Systems & AI Readiness Assessment','provider'=>array('@id'=>home_url('/#organization')),'areaServed'=>array('@type'=>'Country','name'=>'South Africa'),'serviceType'=>'AI automation and business systems assessment','url'=>$url),
+        array('@type'=>'FAQPage','mainEntity'=>array(
+            array('@type'=>'Question','name'=>'What does the AI readiness assessment identify?','acceptedAnswer'=>array('@type'=>'Answer','text'=>'It identifies high-value opportunities across AI automation, sales, customer service, workflows and business systems, then prioritises practical next steps.')),
+            array('@type'=>'Question','name'=>'Who is the assessment for?','acceptedAnswer'=>array('@type'=>'Answer','text'=>'It is designed for South African SMEs and growing organisations that want to reduce manual work, improve systems and identify where AI or automation can create measurable value.')),
+            array('@type'=>'Question','name'=>'How long does the assessment take?','acceptedAnswer'=>array('@type'=>'Answer','text'=>'About three minutes. Results include a maturity score and prioritised recommendations.')),
+        )),
+    );
+
+    if ( ! softkom_organic_has_seo_plugin() ) {
+        array_unshift(
+            $entities,
+            array('@type'=>'Organization','@id'=>home_url('/#organization'),'name'=>'Softkom Solutions','url'=>home_url('/'),'description'=>'South African business systems, automation and integration company.','areaServed'=>array('@type'=>'Country','name'=>'South Africa')),
+            array('@type'=>'WebPage','@id'=>$url.'#webpage','url'=>$url,'name'=>'Free Business Systems & AI Readiness Assessment | South Africa','description'=>'A free 3-minute assessment for South African businesses to identify AI automation, workflow, sales and business-system opportunities.','about'=>array('AI automation','business process automation','custom business systems','sales automation','South Africa'))
+        );
+    }
+
     $graph = array(
         '@context' => 'https://schema.org',
-        '@graph' => array(
-            array('@type'=>'Organization','@id'=>home_url('/#organization'),'name'=>'Softkom Solutions','url'=>home_url('/'),'description'=>'South African business systems, AI automation and digital transformation consultancy.','areaServed'=>array('@type'=>'Country','name'=>'South Africa')),
-            array('@type'=>'WebPage','@id'=>$url.'#webpage','url'=>$url,'name'=>'Free Business Systems & AI Readiness Assessment | South Africa','description'=>'A free 3-minute assessment for South African businesses to identify AI automation, workflow, sales and business-system opportunities.','about'=>array('AI automation','business process automation','custom business systems','sales automation','South Africa')),
-            array('@type'=>'Service','@id'=>$url.'#service','name'=>'Business Systems & AI Readiness Assessment','provider'=>array('@id'=>home_url('/#organization')),'areaServed'=>array('@type'=>'Country','name'=>'South Africa'),'serviceType'=>'AI automation and business systems assessment','url'=>$url),
-            array('@type'=>'FAQPage','mainEntity'=>array(
-                array('@type'=>'Question','name'=>'What does the AI readiness assessment identify?','acceptedAnswer'=>array('@type'=>'Answer','text'=>'It identifies high-value opportunities across AI automation, sales, customer service, workflows and business systems, then prioritises practical next steps.')),
-                array('@type'=>'Question','name'=>'Who is the assessment for?','acceptedAnswer'=>array('@type'=>'Answer','text'=>'It is designed for South African SMEs and growing organisations that want to reduce manual work, improve systems and identify where AI or automation can create measurable value.')),
-                array('@type'=>'Question','name'=>'How long does the assessment take?','acceptedAnswer'=>array('@type'=>'Answer','text'=>'About three minutes. Results include a maturity score and prioritised recommendations.')),
-            )),
-        ),
+        '@graph' => $entities,
     );
     echo "\n<!-- softkom-organic-ai-discovery:active -->\n<script type=\"application/ld+json\">" . wp_json_encode( $graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "</script>\n";
 }
