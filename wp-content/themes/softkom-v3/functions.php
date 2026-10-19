@@ -877,6 +877,82 @@ function softkom_v3_document_title_parts( $parts ) {
 add_filter( 'document_title_parts', 'softkom_v3_document_title_parts' );
 
 /**
+ * Search snippets for the core Softkom pages.
+ *
+ * Dedicated SEO plugins remain responsible for rendering the actual tags;
+ * these filters keep their title and description values aligned with the
+ * current positioning.
+ */
+function softkom_v3_core_seo_meta() {
+	$map = array(
+		'home' => array(
+			'title' => 'Custom Business Systems, Automation & Integration | Softkom',
+			'description' => 'Softkom Solutions builds custom business systems, integrations, automation and digital platforms for growing South African companies.'
+		),
+		'services' => array(
+			'title' => 'Custom Software, Automation & Integration Solutions | Softkom',
+			'description' => 'Custom business systems, integrations, AI automation, ecommerce and technical delivery for companies that have outgrown manual processes and disconnected tools.'
+		),
+		'case-studies' => array(
+			'title' => 'Selected Software & Systems Work | Softkom Solutions',
+			'description' => 'See selected Softkom client projects and working products across business systems, ecommerce, marketplace operations, integrations and automation.'
+		),
+		'platforms' => array(
+			'title' => 'MarketplaceOS, Product Studio & Brick Alpha | Softkom',
+			'description' => 'Explore MarketplaceOS, Product Studio and Brick Alpha — working Softkom products built around marketplace operations, product workflows and portfolio intelligence.'
+		),
+		'company' => array(
+			'title' => 'About Softkom Solutions | Johannesburg Technology Company',
+			'description' => 'Softkom Solutions is a Johannesburg technology company delivering custom software, business systems, integrations, automation and digital platforms.'
+		),
+		'industries' => array(
+			'title' => 'Business Systems for Retail, Ecommerce & Professional Services | Softkom',
+			'description' => 'Softkom works across retail, ecommerce, professional services and infrastructure suppliers where manual processes, disconnected systems and reporting gaps need fixing.'
+		),
+		'insights' => array(
+			'title' => 'Business Systems & Automation Insights | Softkom',
+			'description' => 'Practical guidance on business systems, workflow automation, integrations, AI, spreadsheets, compliance and software delivery decisions.'
+		),
+		'contact' => array(
+			'title' => 'Contact Softkom Solutions | Discuss a Software Project',
+			'description' => 'Talk to Softkom about a custom business system, integration, automation, ecommerce or digital platform project. Johannesburg-based, working remotely across South Africa.'
+		),
+		'assessment' => array(
+			'title' => 'Free Business Systems & AI Readiness Assessment | Softkom',
+			'description' => 'Find where manual work, disconnected systems, reporting gaps and automation opportunities are holding your business back. Free 3-minute assessment.'
+		),
+	);
+
+	if ( is_front_page() ) {
+		return $map['home'];
+	}
+
+	if ( ! is_page() ) {
+		return null;
+	}
+
+	$slug = (string) get_post_field( 'post_name', get_queried_object_id() );
+	return isset( $map[ $slug ] ) ? $map[ $slug ] : null;
+}
+
+function softkom_v3_core_seo_title( $title ) {
+	$meta = softkom_v3_core_seo_meta();
+	return $meta ? $meta['title'] : $title;
+}
+
+function softkom_v3_core_seo_description( $description ) {
+	$meta = softkom_v3_core_seo_meta();
+	return $meta ? $meta['description'] : $description;
+}
+
+add_filter( 'aioseo_title', 'softkom_v3_core_seo_title', 90 );
+add_filter( 'aioseo_description', 'softkom_v3_core_seo_description', 90 );
+add_filter( 'wpseo_title', 'softkom_v3_core_seo_title', 90 );
+add_filter( 'wpseo_metadesc', 'softkom_v3_core_seo_description', 90 );
+add_filter( 'rank_math/frontend/title', 'softkom_v3_core_seo_title', 90 );
+add_filter( 'rank_math/frontend/description', 'softkom_v3_core_seo_description', 90 );
+
+/**
  * Resolve Softkom OG image URL (logo fallback until dedicated OG art ships).
  *
  * @return string
