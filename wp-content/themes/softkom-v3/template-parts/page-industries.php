@@ -9,15 +9,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="sk-site">
+<div class="sk-site sk-industries">
   <?php softkom_v3_component_e( 'header' ); ?>
   <?php
   softkom_v3_component_e(
     'masthead',
     array(
       'eyebrow'         => 'Industries',
-      'title'           => 'Operating environments Softkom works across',
-      'lead'            => 'Softkom applies business-systems, integration and automation methods across operational environments. Direct experience varies by sector, so verified delivery environments and adjacent applications are shown separately.',
+      'title'           => 'The kinds of businesses and operating problems we know well',
+      'lead'            => 'Our strongest experience is in retail and distribution, e-commerce, professional services and infrastructure suppliers. We also take on adjacent work where the operating problem and delivery model are a good fit.'
       'primary_label'   => softkom_v3_cta_label( 'discuss-problem' ),
       'primary_url'     => softkom_v3_cta_url( 'discuss-problem' ),
       'secondary_label' => softkom_v3_cta_label( 'explore-solutions' ),
@@ -31,9 +31,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     array(
       'muted'   => false,
       'grouped' => true,
-      'title'   => 'Evidence-backed and adjacent environments',
-      'body'    => "Each card names a common operational pressure, a relevant Softkom capability, and the evidence relationship.\n\nMatch the operating problem — not a sector label alone.",
-      'note'    => 'Deeper industry pages remain on Softkom’s roadmap. Until then, judge fit from verified project records and a discovery conversation.',
+      'title'   => 'Where we already have useful context',
+      'body'    => "Industry labels matter less than the problem itself. If your team is dealing with manual ordering, disconnected systems, reporting gaps, approvals or operational admin, that is usually the more useful starting point.",
+      'note'    => 'If your sector is not listed, that does not automatically mean it is a poor fit. The process and system problem matter more.'
       'foot_label' => softkom_v3_cta_label( 'discuss-problem' ) . ' →',
       'foot_url'   => softkom_v3_cta_url( 'discuss-problem' ),
     )
@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       'muted'             => true,
       'id'                => 'selected-work',
       'title'             => 'Selected work',
-      'body'              => 'Verified Softkom delivery across infrastructure-facing, retail/distribution, e-commerce and professional-services environments — labelled so client work and Softkom products stay distinct.',
+      'body'              => 'A few examples of work across retail, e-commerce, professional services and infrastructure-facing businesses.'
     )
   );
   ?>
@@ -57,8 +57,8 @@ if ( ! defined( 'ABSPATH' ) ) {
   softkom_v3_component_e(
     'cta-band',
     array(
-      'title'         => 'Recognise the operating pressure?',
-      'body'          => 'Discuss the process that is stuck. Softkom will confirm fit against verified delivery experience — and will not claim specialist depth Softkom cannot defend.',
+      'title'         => 'Does one of these problems sound familiar?'
+      'body'          => 'Tell us what is happening in your operation. We can usually tell quickly whether it is close to work we know how to handle.'
       'primary_cta'   => 'discuss-problem',
       'secondary_cta' => 'explore-solutions',
     )
