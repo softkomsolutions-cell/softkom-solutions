@@ -24,6 +24,18 @@ $start_discovery_label = function_exists( 'softkom_v3_cta_label' )
 $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
 	? softkom_v3_cta_url( 'start-discovery' )
 	: home_url( '/contact/#discovery' );
+$hero_proof = '
+<div class="sk-hero-proof-card">
+  <p class="eyebrow">Why clients talk to us</p>
+  <h3>Senior-led delivery, without the big-agency layers.</h3>
+  <p>Softkom is Johannesburg-based and works with businesses in South Africa and remotely. Current work includes multi-portal ordering, marketplace operations, integrations, automation and business systems.</p>
+  <ul class="sk-hero-proof-list">
+    <li>25+ years of ICT experience behind client discovery and delivery</li>
+    <li>Project, subcontract and white-label delivery models</li>
+    <li>Custom systems typically scoped from about R75k upwards</li>
+  </ul>
+</div>
+';
 ?>
 <div class="sk-site sk-home sk-home--product">
   <?php softkom_v3_component_e( 'header' ); ?>
@@ -39,9 +51,9 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
       'lead'            => 'We design and build business software, integrations and automation for companies that have outgrown spreadsheets, disconnected tools or awkward manual processes.',
       'primary_label'   => 'Book a Strategy Call',
       'primary_url'     => $start_discovery_url,
-      'secondary_label' => 'Take the 3-Minute Assessment',
-      'secondary_url'   => home_url( '/assessment/' ),
-      'media'           => function_exists( 'softkom_v3_graphic_platforms_hero' ) ? softkom_v3_graphic_platforms_hero() : '',
+      'secondary_label' => 'View Selected Work',
+      'secondary_url'   => home_url( '/case-studies/' ),
+      'media'           => $hero_proof,
     )
   );
   ?>
@@ -108,7 +120,7 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
       <div class="sk-reveal">
         <p class="eyebrow">What working with us looks like</p>
         <h2 class="sk-display">Clear scope, senior involvement, and no pressure to overbuild</h2>
-        <p class="lead sk-lead-narrow">Most Softkom engagements are project-based. Smaller website and improvement work can start in the low five figures, while custom systems, integrations and platform work are scoped around the actual requirements and delivery risk.</p>
+        <p class="lead sk-lead-narrow">Most Softkom engagements are project-based. Custom business systems typically start around R75k, while larger integrations and platform work are priced after scope, complexity and delivery risk are understood.</p>
       </div>
       <div class="sk-grid sk-grid--3">
         <article class="sk-card sk-reveal">
