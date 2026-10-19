@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     'masthead',
     array(
       'eyebrow'         => 'Selected Work',
-      'title'           => 'Selected systems, automation and digital delivery work',
-      'lead'            => 'Client work and Softkom-owned products are labelled separately. Product development is not presented as client delivery.',
+      'title'           => 'A selection of work we have actually delivered',
+      'lead'            => 'Client projects and Softkom products are shown separately so it is clear what was built for a customer and what we built ourselves.'
       'primary_label'   => softkom_v3_cta_label( 'discuss-problem' ),
       'primary_url'     => softkom_v3_cta_url( 'discuss-problem' ),
       'secondary_label' => softkom_v3_cta_label( 'explore-solutions' ),
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       'id'                => 'client-projects',
       'show_links'        => false,
       'show_technologies' => true,
-      'title'             => 'Client delivery',
+      'title'             => 'Client work',
       'body'              => "Work delivered for client organisations — labelled Client Project. Where naming permission is not yet confirmed, records are anonymised.\n\nRead each as a short delivery brief: industry context, the challenge, the work delivered, and the technology used. These are selected work records, not full case studies with metrics or testimonials.",
       'note'              => 'If a project resembles your bottleneck, bring that comparison to a discovery conversation. Softkom will say whether delivery experience is close enough to scope with confidence.',
     )
@@ -48,7 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       'muted'      => true,
       'show_links'  => false,
       'exclude_ids' => array( 'future-platforms' ),
-      'title'       => 'Softkom product portfolio',
+      'title'       => 'Products we have built',
       'body'        => "Softkom-owned product work including MarketplaceOS, Brick Alpha and Product Studio. These are shown separately from client delivery so there is no confusion between internal product development and commissioned client work.",
     )
   );
@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   softkom_v3_component_e(
     'cta-band',
     array(
-      'title'         => 'Have an operating problem like one of these?',
+      'title'         => 'See something here that feels familiar?'
       'body'          => 'Discuss the process that is stuck. Softkom will compare it to verified delivery experience and outline a practical next step once scope is understood.',
       'primary_cta'   => 'discuss-problem',
       'secondary_cta' => 'explore-solutions',
