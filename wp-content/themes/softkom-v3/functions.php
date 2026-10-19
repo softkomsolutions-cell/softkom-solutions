@@ -322,6 +322,7 @@ function softkom_v3_legacy_slug_redirects() {
 	$map = array(
 		'services-4' => '/services/',
 		'solutions'  => '/services/',
+		'projects'   => '/case-studies/',
 	);
 
 	foreach ( array_unique( array_filter( $candidates ) ) as $path ) {
@@ -367,6 +368,7 @@ function softkom_v3_ensure_css_bundle() {
 		'softkom-diagrams.css',
 		'softkom-home.css',
 		'softkom-product.css',
+		'softkom-redesign.css',
 	);
 
 	$newest = 0;
@@ -1349,8 +1351,8 @@ function softkom_v3_install_pages() {
     );
 
     $upsert_page(
-        'projects',
-        'Projects',
+        'case-studies',
+        'Selected Work',
         '[softkom_projects_v3]'
     );
 
