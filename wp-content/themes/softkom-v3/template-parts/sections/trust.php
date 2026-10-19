@@ -14,8 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $id    = isset( $id ) ? $id : 'trust';
 $muted = isset( $muted ) ? (bool) $muted : false;
-$title = isset( $title ) ? $title : 'Security & Reliability';
-$body  = isset( $body ) ? $body : 'How Softkom builds platforms organisations can run with confidence.';
+$title = isset( $title ) ? $title : 'How we work';
+$body  = isset( $body ) ? $body : 'The practical things we pay attention to when software has to keep working after launch.';
 
 ?>
 <section class="section<?php echo $muted ? ' section-muted' : ''; ?>" id="<?php echo esc_attr( $id ); ?>">
@@ -49,8 +49,8 @@ $body  = isset( $body ) ? $body : 'How Softkom builds platforms organisations ca
 
     <div class="sk-evidence-band sk-reveal">
       <div class="sk-evidence-band-head">
-        <h3>What clients can expect from Softkom</h3>
-        <p>Senior involvement, practical scoping, security-minded delivery, visible milestones and support after go-live. Softkom does not invent certifications, client claims or performance numbers it cannot substantiate.</p>
+        <h3>What working with Softkom should feel like</h3>
+        <p>You should know what is being built, what has changed, what still needs a decision and who is responsible for the next step. We stay close to the work and keep claims about delivery, security and results factual.</p>
       </div>
     </div>
   </div>
