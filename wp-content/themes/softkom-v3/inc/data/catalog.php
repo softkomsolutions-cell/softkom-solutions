@@ -375,7 +375,6 @@ function softkom_v3_data_products() {
 			'accent'   => 'ops',
 			'pills'    => array(
 				array( 'class' => 'pill-product', 'label' => 'Softkom Product' ),
-				array( 'class' => 'pill-dev', 'label' => 'Softkom Product' ),
 			),
 			'url'      => '/platforms/marketplaceos/',
 			'cta'      => 'Explore MarketplaceOS',
@@ -391,7 +390,6 @@ function softkom_v3_data_products() {
 			'accent'   => 'luxury',
 			'pills'    => array(
 				array( 'class' => 'pill-product', 'label' => 'Softkom Product' ),
-				array( 'class' => 'pill-dev', 'label' => 'Softkom Product' ),
 			),
 			'url'      => '/platforms/brick-alpha/',
 			'cta'      => 'Explore Brick Alpha',
@@ -407,7 +405,6 @@ function softkom_v3_data_products() {
 			'accent'   => 'studio',
 			'pills'    => array(
 				array( 'class' => 'pill-product', 'label' => 'Softkom Product' ),
-				array( 'class' => 'pill-dev', 'label' => 'Softkom Product' ),
 			),
 			'url'      => '/platforms/#product-studio',
 			'cta'      => 'See Product Studio',
