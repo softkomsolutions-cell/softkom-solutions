@@ -47,7 +47,7 @@ $secondary_url   = isset( $secondary_url ) ? $secondary_url : ( $secondary ? $se
     <p class="cta-meta">
       <a href="mailto:info@softkomsolutions.com">info@softkomsolutions.com</a>
       · <a href="tel:+27749933805">+27 74 993 3805</a>
-      · Glensan, Johannesburg
+      · Johannesburg
     </p>
   </div>
 </section>
