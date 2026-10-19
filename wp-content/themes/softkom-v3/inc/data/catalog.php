@@ -311,9 +311,9 @@ function softkom_v3_data_security() {
 }
 
 /**
- * Public product roadmap — extensible timeline (add nodes without redesigning IA).
+ * Current Softkom product timeline.
  *
- * status: active | soon | future
+ * status: active
  *
  * @return array<int, array{title:string,body:string,status:string,url:string}>
  */
@@ -414,7 +414,7 @@ function softkom_v3_data_products() {
 }
 
 /**
- * Ecosystem timeline nodes for Platforms hub and homepage vision.
+ * Current product timeline nodes for Platforms hub.
  *
  * @return array<int, array{title:string,body:string,status:string,url:string}>
  */
