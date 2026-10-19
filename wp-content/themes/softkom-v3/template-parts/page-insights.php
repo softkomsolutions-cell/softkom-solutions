@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     array(
       'eyebrow'         => 'Insights',
       'title'           => 'Useful thinking for people trying to improve how the business runs',
-      'lead'            => 'Short, practical articles on spreadsheets, automation, systems choices, compliance and delivery risk — written for people who need to make a decision, not for search engines.'
+      'lead'            => 'Short, practical articles on spreadsheets, automation, systems choices, compliance and delivery risk — written for people who need to make a decision, not for search engines.',
       'primary_label'   => softkom_v3_cta_label( 'start-discovery' ),
       'primary_url'     => softkom_v3_cta_url( 'start-discovery' ),
       'secondary_label' => softkom_v3_cta_label( 'explore-solutions' ),
@@ -64,7 +64,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   softkom_v3_component_e(
     'cta-band',
     array(
-      'title'         => 'Need help applying this to your business?'
+      'title'         => 'Need help applying this to your business?',
       'body'          => 'Tell us what you are dealing with. We can help work out whether the next step is a system change, an integration, automation or something simpler.'
       'primary_cta'   => 'start-discovery',
       'secondary_cta' => 'explore-solutions',
