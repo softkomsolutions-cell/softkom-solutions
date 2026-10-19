@@ -45,9 +45,9 @@ $header_cta_label = function_exists( 'softkom_v3_cta_label' )
     <?php endif; ?>
 
     <nav id="sk-primary-nav" class="sk-nav sk-nav--desktop" aria-label="Primary">
-      <a href="/platforms/">Platforms</a>
-      <a href="/platforms/marketplaceos/">MarketplaceOS</a>
-      <a href="/platforms/brick-alpha/">Brick Alpha</a>
+      <a href="/services/">Solutions</a>
+      <a href="/case-studies/">Selected Work</a>
+      <a href="/platforms/">Products</a>
       <a href="/company/">Company</a>
       <a href="/insights/">Insights</a>
       <a href="/contact/">Contact</a>
@@ -73,9 +73,9 @@ $header_cta_label = function_exists( 'softkom_v3_cta_label' )
   </div>
   <nav class="sk-nav-drawer-links" aria-label="Mobile primary">
     <a href="<?php echo esc_url( $home_url ); ?>">Home</a>
-    <a href="/platforms/">Platforms</a>
-    <a href="/platforms/marketplaceos/">MarketplaceOS</a>
-    <a href="/platforms/brick-alpha/">Brick Alpha</a>
+    <a href="/services/">Solutions</a>
+    <a href="/case-studies/">Selected Work</a>
+    <a href="/platforms/">Products</a>
     <a href="/company/">Company</a>
     <a href="/insights/">Insights</a>
     <a href="/contact/">Contact</a>
