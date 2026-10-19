@@ -237,7 +237,7 @@ function softkom_v3_frameworks_library() {
 
 		'ai-opportunity-map' => array(
 			'id'            => 'ai-opportunity-map',
-			'name'          => 'AI Opportunity Map™',
+			'name'          => 'AI automation decision model',
 			'short_name'    => 'AI Opportunity Map',
 			'trademark'     => true,
 			'role'          => 'controlled-intelligence',
