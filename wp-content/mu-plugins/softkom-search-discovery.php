@@ -11,7 +11,10 @@ function softkom_search_is_legacy_catalog(){if(is_admin())return false;$path=(st
 function softkom_search_has_seo_plugin(){return defined('AIOSEO_VERSION')||defined('RANK_MATH_VERSION')||defined('WPSEO_VERSION')||class_exists('RankMath')||class_exists('WPSEO_Options')||function_exists('aioseo');}
 add_filter('wp_robots',function($robots){if(softkom_search_is_legacy_catalog()){$robots['noindex']=true;$robots['nofollow']=true;unset($robots['index'],$robots['follow']);return $robots;}if(softkom_search_is_money_page()){unset($robots['noindex'],$robots['nofollow']);$robots['index']=true;$robots['follow']=true;$robots['max-image-preview']='large';$robots['max-snippet']=-1;$robots['max-video-preview']=-1;}return $robots;},100);
 add_action('wp_head',function(){if(softkom_search_is_legacy_catalog())echo '<meta name="robots" content="noindex,nofollow,noarchive">'."\n";},0);
-add_action('wp_head',function(){if(!softkom_search_is_money_page()||softkom_search_has_seo_plugin())return;echo '<link rel="canonical" href="'.esc_url(get_permalink()).'">'."\n";},2);
+add_action('wp_head',function(){
+	if(!softkom_search_is_money_page()||softkom_search_has_seo_plugin())return;
+	echo '<link rel="canonical" href="'.esc_url(get_permalink()).'">'."\n";
+},2);
 
 function softkom_search_priority_meta(){
 	return array(
@@ -134,7 +137,15 @@ add_action('init',function(){add_rewrite_rule('^softkom-sitemap\.xml$','index.ph
 add_filter('query_vars',function($vars){$vars[]='softkom_acquisition_sitemap';return $vars;});
 function softkom_search_render_sitemap(){if(is_admin()||'1'!==(string)get_query_var('softkom_acquisition_sitemap'))return;status_header(200);nocache_headers();header('Content-Type: application/xml; charset=UTF-8');echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";foreach(softkom_search_money_slugs() as $slug){$page=get_page_by_path($slug,OBJECT,'page');if(!$page||'publish'!==$page->post_status)continue;echo "  <url>\n";echo '    <loc>'.esc_url(get_permalink($page))."</loc>\n";$modified=get_post_modified_time('c',true,$page);if($modified)echo '    <lastmod>'.esc_html($modified)."</lastmod>\n";echo "  </url>\n";}echo "</urlset>\n";exit;}
 add_action('template_redirect','softkom_search_render_sitemap',-1000);
-add_filter('robots_txt',function($output,$public){if(!$public)return $output;$url=softkom_search_sitemap_url();$lines=preg_split('/\r\n|\r|\n/',trim((string)$output));$clean=array();foreach($lines as $line){if(0===stripos(trim($line),'Sitemap:'))continue;$clean[]=$line;}$clean[]='Sitemap: '.$url;return trim(implode("\n",$clean))."\n";},999,2);
+add_filter('robots_txt',function($output,$public){
+	if(!$public)return $output;
+	$url=softkom_search_sitemap_url();
+	$text=trim((string)$output);
+	if(false===stripos($text,'Sitemap: '.$url)){
+		$text.=($text!==''?"\n":'').'Sitemap: '.$url;
+	}
+	return trim($text)."\n";
+},999,2);
 add_filter('wp_sitemaps_post_types',function($types){foreach(array('catalog','product_catalog') as $type){if(isset($types[$type]))unset($types[$type]);}return $types;},100);
 add_filter('the_content',function($content){if(is_admin()||!is_main_query()||!in_the_loop()||!is_page())return $content;$slug=get_post_field('post_name',get_queried_object_id());$pages=softkom_search_money_pages();if(!isset($pages[$slug])||'assessment'===$slug)return $content;$defaults=array('business-process-automation-south-africa','custom-business-systems-south-africa','ai-automation-south-africa');$authority=array(
 'ai-automation-south-africa'=>array('assessment','ai-automation-for-smes-south-africa','ai-readiness-assessment-south-africa','whatsapp-customer-service-automation-south-africa','automate-manual-business-processes'),
