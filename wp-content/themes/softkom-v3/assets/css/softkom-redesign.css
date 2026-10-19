@@ -368,3 +368,52 @@
 .sk-services #integration p{color:#fff;}
 .sk-services #ai-opportunity{background:var(--sk-mint);}
 .sk-services #selected-work{background:#fff;}
+
+
+/* Full-page screenshot refinement */
+.sk-company .section,
+.sk-insights .section,
+.sk-industries .section,
+.sk-services .section,
+.sk-projects .section,
+.sk-contact .section{
+  padding-top:clamp(64px,6vw,88px);
+  padding-bottom:clamp(64px,6vw,88px);
+}
+.sk-company .sk-company-block{
+  max-width:820px;
+}
+.sk-company #why-we-exist .sk-display,
+.sk-company #our-vision .sk-display{
+  max-width:14ch;
+}
+.sk-company #how-we-build .sk-build-steps{
+  margin-top:32px;
+}
+.sk-insights .section-head,
+.sk-industries .section-head{
+  max-width:820px;
+}
+.sk-insights #compliance-boundary .container,
+.sk-contact #what-happens-next .container{
+  max-width:980px;
+}
+.sk-contact #what-happens-next .sk-grid--3{
+  margin-top:30px;
+}
+.sk-industries .sk-industry-grid,
+.sk-services .sk-grid,
+.sk-projects .sk-stack{
+  margin-top:28px;
+}
+@media(max-width:900px){
+  .sk-company .section,
+  .sk-insights .section,
+  .sk-industries .section,
+  .sk-services .section,
+  .sk-projects .section,
+  .sk-contact .section{
+    padding-top:56px;
+    padding-bottom:56px;
+  }
+}
