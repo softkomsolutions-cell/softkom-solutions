@@ -54,8 +54,10 @@ if ( 'lead-engine-pilot' === $campaign ) {
     );
 }
 ?>
+<div class="sk-site sk-assessment-site">
+  <?php softkom_v3_component_e( 'header' ); ?>
 
-<main class="sk-assessment">
+<main id="sk-main" class="sk-assessment">
 
     <section class="sk-assessment-hero">
         <div class="container">
@@ -530,3 +532,5 @@ if ( 'lead-engine-pilot' === $campaign ) {
 
 </main>
 
+  <?php softkom_v3_component_e( 'footer' ); ?>
+</div>
