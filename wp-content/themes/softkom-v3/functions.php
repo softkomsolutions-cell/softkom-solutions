@@ -1058,13 +1058,11 @@ add_action( 'wp_head', 'softkom_v3_head_meta', 5 );
  * BreadcrumbList on product and platforms pages.
  */
 function softkom_v3_schema_jsonld() {
-	if ( softkom_v3_has_seo_plugin() ) {
-		return;
-	}
-
 	if ( ! function_exists( 'softkom_v3_is_system_page' ) || ! softkom_v3_is_system_page() ) {
 		return;
 	}
+
+	$seo_plugin_active = softkom_v3_has_seo_plugin();
 
 	if ( is_front_page() ) {
 		$org = array(
@@ -1123,9 +1121,15 @@ function softkom_v3_schema_jsonld() {
 			),
 		);
 
-		echo '<script type="application/ld+json">' . wp_json_encode( $org, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
-		echo '<script type="application/ld+json">' . wp_json_encode( $website, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+		if ( ! $seo_plugin_active ) {
+			echo '<script type="application/ld+json">' . wp_json_encode( $org, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+			echo '<script type="application/ld+json">' . wp_json_encode( $website, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+		}
 		echo '<script type="application/ld+json">' . wp_json_encode( $software, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+		return;
+	}
+
+	if ( $seo_plugin_active ) {
 		return;
 	}
 
