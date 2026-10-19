@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     array(
       'eyebrow'         => 'Industries',
       'title'           => 'The kinds of businesses and operating problems we know well',
-      'lead'            => 'Our strongest experience is in retail and distribution, e-commerce, professional services and infrastructure suppliers. We also take on adjacent work where the operating problem and delivery model are a good fit.'
+      'lead'            => 'Our strongest experience is in retail and distribution, e-commerce, professional services and infrastructure suppliers. We also take on adjacent work where the operating problem and delivery model are a good fit.',
       'primary_label'   => softkom_v3_cta_label( 'discuss-problem' ),
       'primary_url'     => softkom_v3_cta_url( 'discuss-problem' ),
       'secondary_label' => softkom_v3_cta_label( 'explore-solutions' ),
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
       'group'   => 'experience',
       'title'   => 'Where we already have useful context',
       'body'    => "Industry labels matter less than the problem itself. If your team is dealing with manual ordering, disconnected systems, reporting gaps, approvals or operational admin, that is usually the more useful starting point.",
-      'note'    => 'We also work outside these sectors when the operating problem is a strong fit — especially around ordering, integrations, workflow automation, reporting and internal systems.'
+      'note'    => 'We also work outside these sectors when the operating problem is a strong fit — especially around ordering, integrations, workflow automation, reporting and internal systems.',
       'foot_label' => softkom_v3_cta_label( 'discuss-problem' ) . ' →',
       'foot_url'   => softkom_v3_cta_url( 'discuss-problem' ),
     )
