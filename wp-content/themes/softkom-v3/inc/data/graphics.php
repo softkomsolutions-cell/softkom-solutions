@@ -1,7 +1,6 @@
 <?php
 /**
- * Softkom signature diagram markup — reusable across web, proposals, workshops.
- * Voice: Softkom RC2 Content Excellence Standard.
+ * Reusable Softkom diagram markup for web, proposals and workshops.
  *
  * Visual grammar: numbered stages, navy/blue, white panels, restrained mono labels.
  *
@@ -13,8 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Softkom Transformation Journey™ stages (eight-stage client journey
- * within Softkom delivery approach).
+ * Delivery journey stages used by the Softkom delivery approach.
  *
  * Canonical stage copy lives in inc/data/frameworks/library.php.
  *
@@ -28,16 +26,16 @@ function softkom_v3_data_journey_stages() {
 }
 
 /**
- * Softkom Connected Business™ — hero / architecture visual.
+ * Connected business systems architecture visual.
  *
  * @return string
  */
 function softkom_v3_graphic_connected_business() {
 	ob_start();
 	?>
-	<div class="sk-diagram sk-diagram--connected" aria-label="Softkom Connected Business architecture">
+	<div class="sk-diagram sk-diagram--connected" aria-label="Connected business systems architecture">
 	  <div class="sk-diagram-head">
-	    <span class="sk-diagram-eyebrow">Softkom Connected Business™</span>
+	    <span class="sk-diagram-eyebrow">Connected business systems</span>
 	    <span class="sk-diagram-meta">Architecture</span>
 	  </div>
 	  <div class="sk-diagram-stack">
@@ -57,7 +55,7 @@ function softkom_v3_graphic_connected_business() {
 }
 
 /**
- * Softkom Systems Maturity Model™.
+ * Business systems maturity model.
  *
  * @return string
  */
@@ -70,9 +68,9 @@ function softkom_v3_graphic_maturity() {
 	);
 	ob_start();
 	?>
-	<div class="sk-diagram sk-diagram--maturity" aria-label="Softkom Systems Maturity Model">
+	<div class="sk-diagram sk-diagram--maturity" aria-label="Business systems maturity model">
 	  <div class="sk-diagram-head">
-	    <span class="sk-diagram-eyebrow">Softkom Systems Maturity Model™</span>
+	    <span class="sk-diagram-eyebrow">Business systems maturity model</span>
 	    <span class="sk-diagram-meta">Diagnostic</span>
 	  </div>
 	  <ol class="sk-maturity">
@@ -207,7 +205,7 @@ function softkom_v3_graphic_marketplaceos_ui( $density = 'hero' ) {
 	<div class="sk-pv-chrome">
 	  <span></span><span></span><span></span>
 	  <em>MarketplaceOS · Operations</em>
-	  <b class="sk-pv-chip">Live preview</b>
+	  <b class="sk-pv-chip">Interface preview</b>
 	</div>
 	<div class="sk-pv-body sk-pv-body--mos">
 	  <aside class="sk-pv-nav">
@@ -220,20 +218,20 @@ function softkom_v3_graphic_marketplaceos_ui( $density = 'hero' ) {
 	  <div class="sk-pv-main">
 	    <div class="sk-pv-toolbar">
 	      <strong>Multi-channel control</strong>
-	      <span>Today · SA</span>
+	      <span>Sample data</span>
 	    </div>
 	    <div class="sk-pv-kpis">
-	      <div class="sk-pv-kpi"><strong>Channels</strong><em>12</em></div>
-	      <div class="sk-pv-kpi"><strong>Active SKUs</strong><em>4.8k</em></div>
-	      <div class="sk-pv-kpi"><strong>Open orders</strong><em>186</em></div>
+	      <div class="sk-pv-kpi"><strong>Channels</strong><em>Connected</em></div>
+	      <div class="sk-pv-kpi"><strong>Catalogue</strong><em>Synced</em></div>
+	      <div class="sk-pv-kpi"><strong>Orders</strong><em>Monitored</em></div>
 	      <?php if ( 'hero' === $density ) : ?>
-	        <div class="sk-pv-kpi"><strong>Margin Δ</strong><em class="is-up">+2.4%</em></div>
+	        <div class="sk-pv-kpi"><strong>Pricing</strong><em class="is-up">Tracked</em></div>
 	      <?php endif; ?>
 	    </div>
 	    <div class="sk-pv-panel">
 	      <div class="sk-pv-panel-head">
 	        <strong>Fulfilment load</strong>
-	        <span>7-day</span>
+	        <span>Illustrative</span>
 	      </div>
 	      <div class="sk-pv-chart">
 	        <span style="--h:42%"></span>
@@ -247,9 +245,9 @@ function softkom_v3_graphic_marketplaceos_ui( $density = 'hero' ) {
 	    <?php if ( 'hero' === $density ) : ?>
 	      <div class="sk-pv-table">
 	        <div class="sk-pv-tr sk-pv-tr--head"><span>Channel</span><span>Orders</span><span>Status</span></div>
-	        <div class="sk-pv-tr"><span>Takealot</span><span>64</span><span class="is-ok">Synced</span></div>
-	        <div class="sk-pv-tr"><span>Amazon</span><span>41</span><span class="is-ok">Synced</span></div>
-	        <div class="sk-pv-tr"><span>Shopify</span><span>28</span><span class="is-warn">Review</span></div>
+	        <div class="sk-pv-tr"><span>Takealot</span><span>—</span><span class="is-ok">Synced</span></div>
+	        <div class="sk-pv-tr"><span>Amazon</span><span>—</span><span class="is-ok">Synced</span></div>
+	        <div class="sk-pv-tr"><span>Shopify</span><span>—</span><span class="is-warn">Review</span></div>
 	      </div>
 	    <?php endif; ?>
 	  </div>
@@ -271,21 +269,21 @@ function softkom_v3_graphic_brick_alpha_ui( $density = 'hero' ) {
 	<div class="sk-pv-chrome sk-pv-chrome--dark">
 	  <span></span><span></span><span></span>
 	  <em>Brick Alpha · Portfolio</em>
-	  <b class="sk-pv-chip sk-pv-chip--gold">Private preview</b>
+	  <b class="sk-pv-chip sk-pv-chip--gold">Interface preview</b>
 	</div>
 	<div class="sk-pv-body sk-pv-body--dark sk-pv-body--ba">
 	  <div class="sk-pv-ba-top">
 	    <div>
 	      <strong>Portfolio value</strong>
-	      <em>R 1.24m</em>
+	      <em>Sample</em>
 	    </div>
-	    <div class="sk-pv-ba-delta">+3.1% · 30d</div>
+	    <div class="sk-pv-ba-delta">Example data</div>
 	  </div>
 	  <div class="sk-pv-spark"></div>
 	  <?php if ( 'hero' === $density ) : ?>
 	    <div class="sk-pv-ba-cards">
-	      <div class="sk-pv-ba-card"><strong>Creator Expert</strong><span>Signal · Strong</span></div>
-	      <div class="sk-pv-ba-card"><strong>Architecture</strong><span>Watch · Stable</span></div>
+	      <div class="sk-pv-ba-card"><strong>Creator Expert</strong><span>Sample position</span></div>
+	      <div class="sk-pv-ba-card"><strong>Architecture</strong><span>Sample position</span></div>
 	    </div>
 	  <?php else : ?>
 	    <div class="sk-pv-line"><i></i><i></i><i></i></div>
@@ -316,15 +314,15 @@ function softkom_v3_graphic_product_studio_ui( $density = 'hero' ) {
 	  </div>
 	  <div class="sk-pv-studio-main">
 	    <div class="sk-pv-toolbar">
-	      <strong>Specialised build canvas</strong>
-	      <span>Draft · v0</span>
+	      <strong>Listing workspace</strong>
+	      <span>Example workflow</span>
 	    </div>
 	    <div class="sk-pv-studio-grid">
-	      <div class="sk-pv-studio-pane"><strong>Domain</strong><span>Market fit</span></div>
-	      <div class="sk-pv-studio-pane"><strong>Workflows</strong><span>Mapped</span></div>
+	      <div class="sk-pv-studio-pane"><strong>Research</strong><span>Product context</span></div>
+	      <div class="sk-pv-studio-pane"><strong>Listing</strong><span>Drafted</span></div>
 	      <?php if ( 'hero' === $density ) : ?>
-	        <div class="sk-pv-studio-pane"><strong>Data</strong><span>Owned</span></div>
-	        <div class="sk-pv-studio-pane"><strong>Release</strong><span>Staged</span></div>
+	        <div class="sk-pv-studio-pane"><strong>Compliance</strong><span>Checked</span></div>
+	        <div class="sk-pv-studio-pane"><strong>Export</strong><span>Prepared</span></div>
 	      <?php endif; ?>
 	    </div>
 	    <?php if ( 'hero' === $density ) : ?>
