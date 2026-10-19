@@ -34,9 +34,9 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     'masthead',
     array(
       'variant'         => 'split',
-      'eyebrow'         => 'Business Systems · Automation · Integration',
-      'title'           => 'Build the systems your business needs to scale.',
-      'lead'            => 'Softkom helps growing companies replace manual work, connect disconnected systems and gain better operational control with custom business systems, AI automation and practical integrations.',
+      'eyebrow'         => 'Softkom Solutions · Johannesburg',
+      'title'           => 'Software built around the way your business actually works.',
+      'lead'            => 'We design and build business software, integrations and automation for companies that have outgrown spreadsheets, disconnected tools or awkward manual processes.',
       'primary_label'   => 'Book a Strategy Call',
       'primary_url'     => $start_discovery_url,
       'secondary_label' => 'Take the 3-Minute Assessment',
@@ -49,19 +49,19 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
   <section class="section" id="problems-we-solve">
     <div class="container">
       <div class="sk-reveal">
-        <p class="eyebrow">What We Solve</p>
-        <h2 class="sk-display">When the business has outgrown spreadsheets, workarounds and disconnected software</h2>
-        <p class="lead sk-lead-narrow">Softkom focuses on the operational gaps that create delay, rework and poor visibility as a company grows.</p>
+        <p class="eyebrow">Where we usually help</p>
+        <h2 class="sk-display">The point where the current way of working stops being good enough</h2>
+        <p class="lead sk-lead-narrow">Most clients come to us because a process has become too manual, two systems do not talk to each other, or an off-the-shelf product no longer fits.</p>
       </div>
       <div class="sk-grid sk-grid--3">
         <?php
         $problems = array(
-          array( 'Manual processes', 'Replace repetitive spreadsheet, email and WhatsApp workflows with controlled business systems.' ),
-          array( 'Disconnected systems', 'Connect CRM, accounting, ecommerce, inventory and operational tools so information moves once.' ),
-          array( 'Poor operational visibility', 'Create dashboards, alerts and reporting that show what is happening without manual consolidation.' ),
-          array( 'Processes that no longer scale', 'Turn fragile hand-offs, approvals and exception handling into trackable workflows.' ),
-          array( 'Off-the-shelf software gaps', 'Build the missing layer around the software you already use instead of forcing a costly full replacement.' ),
-          array( 'AI without a business case', 'Identify and implement AI where it reduces real workload, improves service or increases control.' ),
+          array( 'Too much work happens by hand', 'If staff are copying information between spreadsheets, email, WhatsApp and business systems, we can usually simplify the process.' ),
+          array( 'Your systems do not talk to each other', 'We connect CRM, finance, e-commerce, inventory and operational systems so the same information is not captured three times.' ),
+          array( 'Management cannot see what is happening', 'We build practical reporting and dashboards around the information people actually need to run the business.' ),
+          array( 'A process worked when the company was smaller', 'We turn informal hand-offs and approvals into workflows that are easier to follow, measure and improve.' ),
+          array( 'The software almost fits, but not quite', 'Sometimes the answer is not replacing everything. We can build the missing piece around the tools you already use.' ),
+          array( 'You want to use AI, but need a sensible use case', 'We use AI where it can save time or improve a real workflow. We do not add it just because it is fashionable.' ),
         );
         foreach ( $problems as $problem ) :
           ?>
@@ -77,19 +77,19 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
   <section class="section section-muted" id="solutions">
     <div class="container">
       <div class="sk-reveal">
-        <p class="eyebrow">Solutions</p>
-        <h2 class="sk-display">What you can hire Softkom to deliver</h2>
-        <p class="lead sk-lead-narrow">Focused, project-based delivery for companies that need better systems, automation, integrations and digital operations.</p>
+        <p class="eyebrow">What we build</p>
+        <h2 class="sk-display">A small team for serious systems work</h2>
+        <p class="lead sk-lead-narrow">Softkom works project by project. We can take on a complete build, a defined technical workstream, or work behind another company as a delivery partner.</p>
       </div>
       <div class="sk-grid sk-grid--3">
         <?php
         $solutions = array(
-          array( 'Custom Business Systems', 'Purpose-built operational software for workflows, approvals, portals, reporting and internal control.' ),
-          array( 'AI & Automation', 'Automate repetitive work, customer interactions, document handling and decision support where the ROI is clear.' ),
-          array( 'Systems Integration', 'Connect the platforms your business already relies on and eliminate duplicate capture and brittle manual hand-offs.' ),
-          array( 'Operational Workflow Automation', 'Digitise recurring processes across operations, sales, service, stock, approvals and reporting.' ),
-          array( 'Compliance & Cybersecurity', 'Practical POPIA-aware controls, security, backup and compliance infrastructure for growing businesses.' ),
-          array( 'E-commerce & Digital Platforms', 'Build and improve commercial platforms where catalogue, ordering, workflows and integrations matter.' ),
+          array( 'Custom business systems', 'Internal tools, portals, workflows and reporting built for the way your team actually works.' ),
+          array( 'Automation and AI', 'Automation for repetitive work, document handling, customer service and internal processes where it genuinely saves time.' ),
+          array( 'Systems integration', 'APIs and integrations that connect the software you already depend on.' ),
+          array( 'Workflow software', 'Digital workflows for sales, service, stock, approvals, operations and recurring admin.' ),
+          array( 'Compliance and security', 'Practical controls, backup, security and compliance support without turning every project into a consulting exercise.' ),
+          array( 'E-commerce and digital platforms', 'Commercial websites and platforms where ordering, catalogue, payments and integrations need to work properly.' ),
         );
         foreach ( $solutions as $solution ) :
           ?>
@@ -106,9 +106,9 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
   <section class="section" id="assessment">
     <div class="container">
       <div class="sk-card sk-reveal">
-        <p class="eyebrow">Not Sure Where to Start?</p>
-        <h2 class="sk-display">Find your best systems or automation opportunity in about 3 minutes</h2>
-        <p class="lead">Use the Business Systems Assessment to identify manual-process risk, spreadsheet dependence, integration gaps, reporting weaknesses and practical automation opportunities.</p>
+        <p class="eyebrow">Not sure what the right project is yet?</p>
+        <h2 class="sk-display">Start with a quick assessment</h2>
+        <p class="lead">The assessment gives you a simple view of where manual work, disconnected systems or weak reporting may be costing time. It takes about three minutes.</p>
         <p>
           <a class="sk-btn sk-btn-primary" href="<?php echo esc_url( home_url( '/assessment/' ) ); ?>">Take the Free Assessment</a>
           <a class="sk-btn sk-btn-secondary" href="<?php echo esc_url( $start_discovery_url ); ?>">Book a Strategy Call</a>
@@ -120,22 +120,22 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
   <section class="section section-muted" id="proof">
     <div class="container">
       <div class="sk-reveal">
-        <p class="eyebrow">Delivery Experience</p>
-        <h2 class="sk-display">Built around real operational requirements</h2>
-        <p class="lead sk-lead-narrow">Softkom combines client delivery with its own product engineering. The examples below show the kinds of systems, workflows and integrations the team works with.</p>
+        <p class="eyebrow">Recent work</p>
+        <h2 class="sk-display">Work we can show you</h2>
+        <p class="lead sk-lead-narrow">These are examples of the kind of work we are doing now — not concept projects or future ideas.</p>
       </div>
       <div class="sk-grid sk-grid--3">
         <article class="sk-card sk-reveal">
-          <h3>Retail ordering platform</h3>
-          <p>Multi-portal commerce and operational platform work spanning customer journeys, catalogue, authentication, ordering workflows and backend integration.</p>
+          <h3>PS&amp;I Stationery Supplies</h3>
+          <p>A multi-portal ordering platform for parents, schools and business customers, including catalogue, checkout, delivery options, authentication and backend order workflows.</p>
         </article>
         <article class="sk-card sk-reveal">
-          <h3>TSA</h3>
-          <p>Corporate and infrastructure digital platform work covering product architecture, project presentation, manufacturing capability and industry-facing lead generation.</p>
+          <h3>Traffic Signals &amp; Accessories</h3>
+          <p>A clearer commercial website for a specialist infrastructure supplier, with product information, project capability and stronger enquiry paths.</p>
         </article>
         <article class="sk-card sk-reveal">
-          <h3>MarketplaceOS Engineering</h3>
-          <p>Multi-channel operational software spanning catalogue control, pricing intelligence, inventory, fulfilment, integrations and management visibility.</p>
+          <h3>MarketplaceOS</h3>
+          <p>Marketplace operations software covering catalogue, repricing, inventory, fulfilment, integrations and seller reporting.</p>
         </article>
       </div>
     </div>
@@ -144,17 +144,17 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
   <section class="section" id="how-we-work">
     <div class="container">
       <div class="sk-reveal">
-        <p class="eyebrow">How We Work</p>
-        <h2 class="sk-display">A clear path from operational problem to working system</h2>
+        <p class="eyebrow">How projects run</p>
+        <h2 class="sk-display">Straightforward delivery, with fewer surprises</h2>
       </div>
       <div class="sk-build-steps">
         <?php
         $steps = array(
-          array( 'Discover', 'Understand the operational problem, users, commercial priority and business case.' ),
-          array( 'Design', 'Map workflows, integrations, data ownership, risks and the smallest useful delivery scope.' ),
-          array( 'Build', 'Deliver in controlled stages with visible milestones, testing and decision points.' ),
-          array( 'Launch', 'Deploy, validate, train and hand over with the operational team involved.' ),
-          array( 'Support', 'Maintain, improve and automate further as the business grows.' ),
+          array( 'Understand', 'We start with the problem, the people doing the work and what a useful result would look like.' ),
+          array( 'Scope', 'We agree what needs to be built, what needs to connect, and what can wait.' ),
+          array( 'Build', 'You see working software as the project moves forward, not only at the end.' ),
+          array( 'Launch', 'We test it with the people who will use it, then deploy and hand over properly.' ),
+          array( 'Support', 'We stay involved where ongoing support, fixes or further improvement make sense.' ),
         );
         foreach ( $steps as $i => $step ) :
           ?>
@@ -174,8 +174,8 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     array(
       'muted' => true,
       'id'    => 'trust',
-      'title' => 'Built for Business-Critical Work',
-      'body'  => 'Practical engineering, security-minded delivery and senior involvement throughout the engagement.',
+      'title' => 'Built for real businesses, not demos',
+      'body'  => 'You deal directly with senior people, and the work is judged by whether it solves the business problem and works reliably after launch.',
     )
   );
   ?>
@@ -185,8 +185,8 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     'platform-showcase',
     array(
       'id'    => 'platforms',
-      'title' => 'Platforms We Are Building',
-      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha demonstrate the same engineering capabilities Softkom applies to custom client systems.',
+      'title' => 'Products we have built',
+      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha are working examples of the product engineering, integration and QA capability we bring to client projects.',
     )
   );
   ?>
@@ -195,8 +195,8 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
   softkom_v3_component_e(
     'cta-band',
     array(
-      'title'         => 'Have an operational problem that software should solve?',
-      'body'          => 'Tell us what is slowing the business down. Softkom will help determine whether the right next step is integration, automation, a custom system or no build at all.',
+      'title'         => 'Have something in the business that is harder than it should be?',
+      'body'          => 'Tell us what is happening now and what you want to improve. We will tell you whether it looks like a software, integration or automation project — and if it does not, we will say so.',
       'primary_cta'   => 'start-discovery',
       'secondary_cta' => 'explore-solutions',
     )
