@@ -1316,8 +1316,8 @@ function softkom_v3_render_campaign_performance( $post_id ) {
         </h2>
 
         <p class="description">
-            Revenue and lead performance attributed
-            to this campaign.
+            Full-funnel performance from assessment traffic through
+            qualified pipeline and estimated recurring revenue.
         </p>
 
         <div
@@ -1333,6 +1333,42 @@ function softkom_v3_render_campaign_performance( $post_id ) {
             <?php
 
             $metrics = array(
+
+                'Assessment Views' =>
+                    number_format_i18n(
+                        $performance['assessment_views']
+                    ),
+
+                'Assessment Starts' =>
+                    number_format_i18n(
+                        $performance['assessment_starts']
+                    ),
+
+                'Results Reached' =>
+                    number_format_i18n(
+                        $performance['assessment_results']
+                    ),
+
+                'Start Rate' =>
+                    number_format_i18n(
+                        $performance['start_rate'],
+                        1
+                    ) .
+                    '%',
+
+                'Completion Rate' =>
+                    number_format_i18n(
+                        $performance['completion_rate'],
+                        1
+                    ) .
+                    '%',
+
+                'Visitor to Lead' =>
+                    number_format_i18n(
+                        $performance['lead_conversion_rate'],
+                        1
+                    ) .
+                    '%',
 
                 'Leads' =>
                     number_format_i18n(
