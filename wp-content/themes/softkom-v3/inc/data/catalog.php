@@ -341,7 +341,7 @@ function softkom_v3_data_roadmap() {
 }
 
 /**
- * Projects hub cards — Phase 4 case-studies registry is the source of truth.
+ * Selected Work cards — case-study registry is the source of truth.
  *
  * @return array<int, array<string, mixed>>
  */
