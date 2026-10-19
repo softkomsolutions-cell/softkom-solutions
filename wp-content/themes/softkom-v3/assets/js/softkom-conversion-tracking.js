@@ -27,6 +27,13 @@
   }
 
   function postFunnelEvent(eventName) {
+    // The public-acquisition MU plugin owns first-party funnel counters when
+    // present. Avoid duplicate requests and nonce conflicts; this theme script
+    // remains responsible for analytics/conversion events.
+    if (typeof window.softkomPublicAcquisition !== 'undefined') {
+      return;
+    }
+
     if (
       typeof window.softkomAssessment === 'undefined' ||
       !window.softkomAssessment.ajaxUrl ||
