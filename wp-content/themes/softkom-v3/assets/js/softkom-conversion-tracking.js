@@ -16,74 +16,7 @@
     return (el && (el.textContent || el.value) || '').trim().replace(/\s+/g, ' ').slice(0, 120);
   }
 
-  function assessmentAttribution() {
-    try {
-      var raw = window.sessionStorage.getItem('softkomTrafficAttributionV1');
-      var stored = raw ? JSON.parse(raw) : {};
-      return stored && typeof stored === 'object' ? stored : {};
-    } catch (error) {
-      return {};
-    }
-  }
-
-  function postFunnelEvent(eventName) {
-    // The public-acquisition MU plugin owns first-party funnel counters when
-    // present. Avoid duplicate requests and nonce conflicts; this theme script
-    // remains responsible for analytics/conversion events.
-    if (typeof window.softkomPublicAcquisition !== 'undefined') {
-      return;
-    }
-
-    if (
-      typeof window.softkomAssessment === 'undefined' ||
-      !window.softkomAssessment.ajaxUrl ||
-      !window.softkomAssessment.nonce ||
-      !eventName
-    ) {
-      return;
-    }
-
-    var attribution = assessmentAttribution();
-    var data = new FormData();
-    data.append('action', 'softkom_public_funnel_event');
-    data.append('nonce', window.softkomAssessment.nonce);
-    data.append('event', eventName);
-
-    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (field) {
-      data.append(field, attribution[field] || '');
-    });
-
-    fetch(window.softkomAssessment.ajaxUrl, {
-      method: 'POST',
-      body: data,
-      credentials: 'same-origin',
-      keepalive: true
-    }).catch(function () {});
-  }
-
-  function postFunnelEventOnce(eventName) {
-    var attribution = assessmentAttribution();
-    var key = [
-      eventName,
-      attribution.utm_source || 'direct',
-      attribution.utm_medium || 'none',
-      attribution.utm_campaign || 'none',
-      attribution.utm_content || 'none',
-      attribution.utm_term || 'none'
-    ].join('|');
-
-    try {
-      if (window.sessionStorage.getItem('softkomFunnelTracked:' + key)) {
-        return;
-      }
-      window.sessionStorage.setItem('softkomFunnelTracked:' + key, '1');
-    } catch (error) {}
-
-    postFunnelEvent(eventName);
-  }
-
   if (document.querySelector('[data-assessment-start]')) {
-    postFunnelEventOnce('assessment_view');
   }
 
   document.addEventListener('click', function (event) {
@@ -95,7 +28,6 @@
 
     if (link.matches('[data-assessment-start]')) {
       send('softkom_assessment_start', { cta_label: label });
-      postFunnelEventOnce('assessment_start');
     }
 
     if (link.matches('[data-assessment-next]')) {
@@ -154,7 +86,6 @@
       if (!results.hidden && !results.dataset.trackedVisible) {
         results.dataset.trackedVisible = '1';
         send('softkom_assessment_results_view');
-        postFunnelEventOnce('assessment_results');
       }
     }).observe(results, { attributes: true, attributeFilter: ['hidden'] });
   }
