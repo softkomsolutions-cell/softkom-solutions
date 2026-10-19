@@ -358,7 +358,7 @@ function softkom_v3_data_projects() {
 /**
  * Softkom product platforms — product-led portfolio.
  *
- * status: live | beta | coming | future
+ * status: active
  *
  * @return array<int, array<string, mixed>>
  */
@@ -399,15 +399,15 @@ function softkom_v3_data_products() {
 		array(
 			'id'       => 'product-studio',
 			'title'    => 'Product Studio',
-			'tagline'  => 'The third platform in the Softkom ecosystem',
-			'body'     => 'Maturing as Softkom’s product creation and specialised-build layer — designed to sit alongside MarketplaceOS and Brick Alpha.',
+			'tagline'  => 'Marketplace product research, listing and compliance workflow',
+			'body'     => 'Product research, listing content, image improvement, compliance checks and marketplace-ready export preparation in one workflow.',
 			'eyebrow'  => 'Platform',
-			'status'   => 'soon',
-			'status_label' => 'Maturing',
+			'status'   => 'active',
+			'status_label' => 'Available',
 			'accent'   => 'studio',
 			'pills'    => array(
 				array( 'class' => 'pill-product', 'label' => 'Softkom Product' ),
-				array( 'class' => 'pill-dev', 'label' => 'Maturing' ),
+				array( 'class' => 'pill-dev', 'label' => 'Softkom Product' ),
 			),
 			'url'      => '/platforms/#product-studio',
 			'cta'      => 'See Product Studio',
@@ -431,8 +431,8 @@ function softkom_v3_data_ecosystem() {
 		),
 		array(
 			'title'  => 'Product Studio',
-			'body'   => 'Specialised product creation layer',
-			'status' => 'soon',
+			'body'   => 'Marketplace product creation workflow',
+			'status' => 'active',
 			'url'    => '/platforms/#product-studio',
 		),
 		array(
