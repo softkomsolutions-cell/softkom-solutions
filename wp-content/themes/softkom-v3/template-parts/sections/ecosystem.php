@@ -1,6 +1,6 @@
 <?php
 /**
- * Section: ecosystem — expanding product portfolio timeline.
+ * Section: shared engineering across the product portfolio.
  *
  * @package Softkom_V3
  */
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $id    = isset( $id ) ? $id : 'ecosystem';
 $muted = isset( $muted ) ? (bool) $muted : false;
-$title = isset( $title ) ? $title : 'An Expanding Portfolio';
+$title = isset( $title ) ? $title : 'One engineering base';
 $body  = isset( $body ) ? $body : '';
 $nodes = softkom_v3_data_ecosystem();
 ?>
@@ -26,7 +26,7 @@ $nodes = softkom_v3_data_ecosystem();
       )
     );
     ?>
-    <ol class="sk-ecosystem sk-ecosystem--flow sk-reveal" aria-label="Softkom product ecosystem">
+    <ol class="sk-ecosystem sk-ecosystem--flow sk-reveal" aria-label="Softkom product engineering">
       <?php foreach ( $nodes as $i => $node ) : ?>
         <li class="sk-ecosystem-node sk-ecosystem-node--<?php echo esc_attr( $node['status'] ); ?>">
           <?php if ( $i > 0 ) : ?>
