@@ -412,22 +412,7 @@ function softkom_v3_data_products() {
 			'url'      => '/platforms/#product-studio',
 			'cta'      => 'See Product Studio',
 		),
-		array(
-			'id'       => 'future-platforms',
-			'title'    => 'Platform concepts',
-			'tagline'  => 'Specialised products for specialised industries',
-			'body'     => 'Future ERP, AI Copilot and industry platforms — added to the ecosystem without redesigning the information architecture.',
-			'eyebrow'  => 'Coming Soon',
-			'status'   => 'future',
-			'status_label' => 'Coming Soon',
-			'accent'   => 'future',
-			'pills'    => array(
-				array( 'class' => 'pill-product', 'label' => 'Softkom Product' ),
-				array( 'class' => 'pill-dev', 'label' => 'Coming Soon' ),
-			),
-			'url'      => '/platforms/#future',
-			'cta'      => 'See the roadmap',
-		),
+
 	);
 }
 
