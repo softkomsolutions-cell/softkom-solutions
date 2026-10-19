@@ -438,24 +438,9 @@ function softkom_v3_data_ecosystem() {
 			'status' => 'active',
 			'url'    => '/platforms/brick-alpha/',
 		),
-		array(
-			'title'  => 'Future ERP',
-			'body'   => 'Operating layer for specialised markets',
-			'status' => 'future',
-			'url'    => '/platforms/#future',
-		),
-		array(
-			'title'  => 'AI Copilot',
-			'body'   => 'Intelligence layered where volume work earns it',
-			'status' => 'future',
-			'url'    => '/platforms/#future',
-		),
-		array(
-			'title'  => 'Platform concepts',
-			'body'   => 'Industry lines still to come',
-			'status' => 'future',
-			'url'    => '/platforms/#future',
-		),
+
+
+
 	);
 }
 
@@ -467,25 +452,25 @@ function softkom_v3_data_ecosystem() {
 function softkom_v3_data_philosophy() {
 	return array(
 		array(
-			'title'   => 'Why specialised software wins',
-			'body'    => 'When the process is the competitive edge, software must fit the work — exceptions, approvals and the data that must not be lost at handoff. Specialised platforms remove permanent workarounds.',
+			'title'   => 'When software needs to fit the business',
+			'body'    => 'When the process matters, software needs to fit the real work — including exceptions, approvals and the data that must survive each handoff.',
 			'visual'  => 'specialised',
 		),
 		array(
-			'title'   => 'Why generic software reaches limits',
+			'title'   => 'Where off-the-shelf tools reach their limits',
 			'body'    => 'Off-the-shelf tools serve the average case. As volume grows, teams invent spreadsheets and side channels to cover what the product never modelled. The tool still works — the business pays for the gaps.',
 			'visual'  => 'markets',
 		),
 		array(
 			'title'   => 'Why Softkom exists',
-			'body'    => 'Softkom builds specialised platforms for markets where generic tools force those gaps. Foundations first — then automation and intelligence where they earn their place.',
+			'body'    => 'Softkom builds systems around the operating problem instead of forcing the business into a generic workflow. Foundations first, then automation and AI where they genuinely help.',
 			'visual'  => 'compound',
 		),
 	);
 }
 
 /**
- * Insights hub cards — Phase 4 insights registry is the source of truth.
+ * Insights hub cards — the insights registry is the source of truth.
  *
  * @return array<int, array{eyebrow:string,title:string,body:string,url:string}>
  */
@@ -530,7 +515,7 @@ function softkom_v3_data_faq() {
 		),
 		array(
 			'title' => 'Who owns the source code?',
-			'body'  => 'For client projects, ownership is agreed in the engagement contract — Softkom does not hide IP terms in the fine print. Softkom products (MarketplaceOS AI, Brick Alpha) remain Softkom intellectual property and are labelled separately from client work on this site.',
+			'body'  => 'For client projects, ownership is agreed in the engagement contract — Softkom does not hide IP terms in the fine print. Softkom products (MarketplaceOS, Product Studio and Brick Alpha) remain Softkom intellectual property and are labelled separately from client work on this site.',
 		),
 		array(
 			'title' => 'How does AI automation work in practice?',
