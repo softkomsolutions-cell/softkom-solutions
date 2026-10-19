@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Softkom Transformation Journey™ stages (eight-stage client journey
- * within Softkom Transformation Framework™).
+ * within Softkom delivery approach).
  *
  * Canonical stage copy lives in inc/data/frameworks/library.php.
  *
