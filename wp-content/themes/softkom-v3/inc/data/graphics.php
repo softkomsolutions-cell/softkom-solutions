@@ -90,7 +90,7 @@ function softkom_v3_graphic_maturity() {
 }
 
 /**
- * Softkom AI Opportunity Map™.
+ * AI automation decision model.
  *
  * @return string
  */
@@ -103,9 +103,9 @@ function softkom_v3_graphic_ai_map() {
 	);
 	ob_start();
 	?>
-	<div class="sk-diagram sk-diagram--ai" aria-label="Softkom AI Opportunity Map">
+	<div class="sk-diagram sk-diagram--ai" aria-label="AI automation decision model">
 	  <div class="sk-diagram-head">
-	    <span class="sk-diagram-eyebrow">Softkom AI Opportunity Map™</span>
+	    <span class="sk-diagram-eyebrow">AI automation decision model</span>
 	    <span class="sk-diagram-meta">Intelligence</span>
 	  </div>
 	  <div class="sk-ai-map">
@@ -308,7 +308,7 @@ function softkom_v3_graphic_product_studio_ui( $density = 'hero' ) {
 	<div class="sk-pv-chrome">
 	  <span></span><span></span><span></span>
 	  <em>Product Studio · Workspace</em>
-	  <b class="sk-pv-chip sk-pv-chip--studio">Maturing</b>
+	  <b class="sk-pv-chip sk-pv-chip--studio">Product workflow</b>
 	</div>
 	<div class="sk-pv-body sk-pv-body--studio">
 	  <div class="sk-pv-studio-rail" aria-hidden="true">
@@ -440,8 +440,8 @@ function softkom_v3_graphic_product_ui( $variant = 'marketplaceos' ) {
 	    <?php elseif ( 'future' === $variant ) : ?>
 	      <div class="sk-pv-chrome">
 	        <span></span><span></span><span></span>
-	        <em>Future Platform</em>
-	        <b class="sk-pv-chip">Coming soon</b>
+	        <em>Platform Concept</em>
+	        <b class="sk-pv-chip">Softkom</b>
 	      </div>
 	      <div class="sk-pv-body">
 	        <div class="sk-pv-placeholder">
