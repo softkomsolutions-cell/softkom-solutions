@@ -1089,6 +1089,15 @@ add_action( 'init', 'softkom_traffic_sprint_sync', 25 );
 /**
  * Is the current request one of the four traffic-sprint pages?
  */
+function softkom_traffic_sprint_has_seo_plugin() {
+	return defined( 'AIOSEO_VERSION' )
+		|| defined( 'RANK_MATH_VERSION' )
+		|| defined( 'WPSEO_VERSION' )
+		|| function_exists( 'aioseo' )
+		|| class_exists( 'RankMath' )
+		|| class_exists( 'WPSEO_Options' );
+}
+
 function softkom_traffic_sprint_is_page() {
 	return is_page() && array_key_exists( get_post_field( 'post_name', get_queried_object_id() ), softkom_traffic_sprint_pages() );
 }
@@ -1128,7 +1137,9 @@ add_action( 'wp_head', function () {
 	$slug = get_post_field( 'post_name', get_queried_object_id() );
 	$p    = softkom_traffic_sprint_pages()[ $slug ];
 
-	echo '<link rel="canonical" href="' . esc_url( get_permalink() ) . '">' . "\n";
+	if ( ! softkom_traffic_sprint_has_seo_plugin() ) {
+		echo '<link rel="canonical" href="' . esc_url( get_permalink() ) . '">' . "\n";
+	}
 
 	$faq = array();
 	foreach ( $p['faq'] as $x ) {
@@ -1159,7 +1170,7 @@ add_action( 'wp_head', function () {
  * Meta description.
  */
 add_action( 'wp_head', function () {
-	if ( ! softkom_traffic_sprint_is_page() ) {
+	if ( ! softkom_traffic_sprint_is_page() || softkom_traffic_sprint_has_seo_plugin() ) {
 		return;
 	}
 	$slug = get_post_field( 'post_name', get_queried_object_id() );
