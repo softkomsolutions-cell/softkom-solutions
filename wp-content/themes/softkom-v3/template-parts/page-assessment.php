@@ -1,6 +1,6 @@
 <?php
 /**
- * Softkom V3 â€” Business Systems Assessment
+ * Softkom V3 — Business Systems Assessment
  *
  * Public lead-generation assessment experience.
  *
@@ -297,10 +297,10 @@ if ( 'lead-engine-pilot' === $campaign ) {
                                 Organisation size
                                 <select name="qualification[company_size]" required>
                                     <option value="">Select one</option>
-                                    <option value="1-5">1â€“5 people</option>
-                                    <option value="6-20">6â€“20 people</option>
-                                    <option value="21-50">21â€“50 people</option>
-                                    <option value="51-200">51â€“200 people</option>
+                                    <option value="1-5">1–5 people</option>
+                                    <option value="6-20">6–20 people</option>
+                                    <option value="21-50">21–50 people</option>
+                                    <option value="51-200">51–200 people</option>
                                     <option value="201-plus">201+ people</option>
                                 </select>
                             </label>
@@ -332,9 +332,9 @@ if ( 'lead-engine-pilot' === $campaign ) {
                                 <select name="qualification[timeframe]" required>
                                     <option value="">Select one</option>
                                     <option value="12-plus-months">12+ months</option>
-                                    <option value="6-12-months">6â€“12 months</option>
-                                    <option value="3-6-months">3â€“6 months</option>
-                                    <option value="1-3-months">1â€“3 months</option>
+                                    <option value="6-12-months">6–12 months</option>
+                                    <option value="3-6-months">3–6 months</option>
+                                    <option value="1-3-months">1–3 months</option>
                                     <option value="immediately">Immediately</option>
                                 </select>
                             </label>
