@@ -414,7 +414,7 @@ function softkom_v3_data_products() {
 		),
 		array(
 			'id'       => 'future-platforms',
-			'title'    => 'Future Platforms',
+			'title'    => 'Platform concepts',
 			'tagline'  => 'Specialised products for specialised industries',
 			'body'     => 'Future ERP, AI Copilot and industry platforms — added to the ecosystem without redesigning the information architecture.',
 			'eyebrow'  => 'Coming Soon',
@@ -469,7 +469,7 @@ function softkom_v3_data_ecosystem() {
 			'url'    => '/platforms/#future',
 		),
 		array(
-			'title'  => 'Future Platforms',
+			'title'  => 'Platform concepts',
 			'body'   => 'Industry lines still to come',
 			'status' => 'future',
 			'url'    => '/platforms/#future',
