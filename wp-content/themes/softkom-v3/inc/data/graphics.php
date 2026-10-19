@@ -412,7 +412,7 @@ function softkom_v3_graphic_platforms_hero() {
 /**
  * Compact product UI mock for cards / product pages.
  *
- * @param string $variant marketplaceos|brick-alpha|product-studio|future|markets|specialised|compound.
+ * @param string $variant marketplaceos|brick-alpha|product-studio|markets|specialised|compound.
  * @return string
  */
 function softkom_v3_graphic_product_ui( $variant = 'marketplaceos' ) {
@@ -434,17 +434,6 @@ function softkom_v3_graphic_product_ui( $variant = 'marketplaceos' ) {
 	      <?php echo softkom_v3_graphic_marketplaceos_ui( 'card' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	    <?php elseif ( 'product-studio' === $variant ) : ?>
 	      <?php echo softkom_v3_graphic_product_studio_ui( 'card' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-	    <?php elseif ( 'future' === $variant ) : ?>
-	      <div class="sk-pv-chrome">
-	        <span></span><span></span><span></span>
-	        <em>Platform Concept</em>
-	        <b class="sk-pv-chip">Softkom</b>
-	      </div>
-	      <div class="sk-pv-body">
-	        <div class="sk-pv-placeholder">
-	          <span></span><span></span><span></span>
-	        </div>
-	      </div>
 	    <?php elseif ( 'markets' === $variant ) : ?>
 	      <div class="sk-pv-chrome">
 	        <span></span><span></span><span></span>
