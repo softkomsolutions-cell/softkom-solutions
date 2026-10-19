@@ -13,6 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="sk-site sk-projects">
   <?php softkom_v3_component_e( 'header' ); ?>
+
+  <main id="sk-main">
   <?php
   softkom_v3_component_e(
     'masthead',
@@ -63,5 +65,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     )
   );
   ?>
+  </main>
+
   <?php softkom_v3_component_e( 'footer' ); ?>
 </div>
