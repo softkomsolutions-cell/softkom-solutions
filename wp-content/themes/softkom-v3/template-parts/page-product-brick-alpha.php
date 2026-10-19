@@ -14,6 +14,8 @@ $p = softkom_v3_product_brick_alpha();
 <div class="sk-site sk-product-page sk-product-page--brick-alpha">
   <?php softkom_v3_component_e( 'header' ); ?>
 
+  <main id="sk-main">
+
   <section class="sk-luxury-hero">
     <div class="container sk-luxury-hero-grid">
       <div class="sk-reveal">
@@ -140,6 +142,8 @@ $p = softkom_v3_product_brick_alpha();
       </div>
     </div>
   </section>
+
+  </main>
 
   <?php softkom_v3_component_e( 'footer' ); ?>
 </div>
