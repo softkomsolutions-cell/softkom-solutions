@@ -1,6 +1,6 @@
 <?php
 /**
- * Softkom V3 Ã¢â‚¬â€ Astra child theme (component library)
+ * Softkom V3 - Astra child theme (component library)
  *
  * @package Softkom_V3
  */
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SOFTKOM_V3_VERSION', '3.3.7' );
+define( 'SOFTKOM_V3_VERSION', '3.4.0' );
 
 
 /*
@@ -384,7 +384,7 @@ function softkom_v3_ensure_css_bundle() {
 		return $bundle;
 	}
 
-	$out = "/* Softkom V3 CSS bundle Ã¢â‚¬â€ generated; edit source files, not this file. */\n";
+	$out = "/* Softkom V3 CSS bundle - generated; edit source files, not this file. */\n";
 	foreach ( $sources as $file ) {
 		$out .= "\n/* --- {$file} --- */\n";
 		$out .= file_get_contents( $dir . '/' . $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
@@ -409,7 +409,7 @@ function softkom_v3_enqueue_assets() {
 		SOFTKOM_V3_VERSION
 	);
 
-	// Single Softkom type family stack Ã¢â‚¬â€ Inter for UI/body, Plus Jakarta for display.
+	// Single Softkom type family stack - Inter for UI/body, Plus Jakarta for display.
 	wp_enqueue_style(
 		'softkom-v3-fonts',
 		'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap',
@@ -486,10 +486,10 @@ function softkom_v3_dequeue_bloat() {
 		'widget-social-icons',
 		'e-animation-fadeIn',
 		'e-animation-fadeInUp',
-		// SureForms Ã¢â‚¬â€ payment CSS unused on Softkom pages.
+		// SureForms - payment CSS unused on Softkom pages.
 		'sureforms-payment-history',
 		'srfm-payment-history',
-		// Header Footer Elementor Ã¢â‚¬â€ Softkom owns chrome; HFE CSS is pure dead weight.
+		// Header Footer Elementor - Softkom owns chrome; HFE CSS is pure dead weight.
 		'hfe-style',
 		'hfe-widgets-style',
 		'hfe-elementor-icons',
@@ -515,7 +515,7 @@ function softkom_v3_dequeue_bloat() {
 		'elementor-frontend',
 	);
 	// Only strip Elementor JS when the Softkom shortcode owns the page body
-	// (homepage / platforms / product pages) Ã¢â‚¬â€ avoid breaking non-Softkom Elementor layouts.
+	// (homepage / platforms / product pages) - avoid breaking non-Softkom Elementor layouts.
 	$softkom_owned = is_front_page()
 		|| is_page( array( 'platforms', 'marketplaceos', 'brick-alpha', 'company', 'contact', 'insights-3', 'insights', 'services', 'industries', 'case-studies' ) );
 	if ( $softkom_owned ) {
@@ -529,7 +529,7 @@ function softkom_v3_dequeue_bloat() {
 		wp_dequeue_script( 'astra-theme-js' );
 		wp_deregister_script( 'astra-theme-js' );
 
-		// Softkom composers own layout Ã¢â‚¬â€ Elementor kit/frontend CSS is unused weight.
+		// Softkom composers own layout - Elementor kit/frontend CSS is unused weight.
 		wp_dequeue_style( 'elementor-frontend' );
 		wp_deregister_style( 'elementor-frontend' );
 		wp_dequeue_style( 'elementor-icons' );
@@ -604,7 +604,7 @@ function softkom_v3_disable_astra_chrome() {
 	remove_all_actions( 'astra_header' );
 	remove_all_actions( 'astra_footer' );
 
-	// Header Footer Elementor Ã¢â‚¬â€ Softkom chrome replaces these.
+	// Header Footer Elementor - Softkom chrome replaces these.
 	add_filter( 'hfe_header_enabled', '__return_false' );
 	add_filter( 'hfe_footer_enabled', '__return_false' );
 	add_filter( 'enable_hfe_render', '__return_false' );
@@ -703,14 +703,14 @@ function softkom_v3_load_assessment_ajax_data() {
 add_action( 'init', 'softkom_v3_load_assessment_ajax_data', 1 );
 
 /**
- * Render a library component (args only Ã¢â‚¬â€ no page-local markup).
+ * Render a library component (args only - no page-local markup).
  *
  * @param string               $slug Component slug under template-parts/components/.
  * @param array<string,mixed>  $args Component props.
  * @return string
  */
 function softkom_v3_component( $slug, $args = array() ) {
-	// Ensure registries (including CTA helpers) load for chrome used outside shortcodes Ã¢â‚¬â€ e.g. 404.
+	// Ensure registries (including CTA helpers) load for chrome used outside shortcodes - e.g. 404.
 	softkom_v3_load_data();
 	$slug = preg_replace( '/[^a-z0-9\-]/', '', strtolower( (string) $slug ) );
 	$path = get_stylesheet_directory() . '/template-parts/components/' . $slug . '.php';
