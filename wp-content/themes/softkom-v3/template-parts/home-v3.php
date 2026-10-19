@@ -122,12 +122,12 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
       <div class="sk-reveal">
         <p class="eyebrow">Recent work</p>
         <h2 class="sk-display">Work we can show you</h2>
-        <p class="lead sk-lead-narrow">These are examples of the kind of work we are doing now — not concept projects or future ideas.</p>
+        <p class="lead sk-lead-narrow">A few examples of delivered client work and working Softkom products. Where a client name is not cleared for public use, we keep it anonymous.</p>
       </div>
       <div class="sk-grid sk-grid--3">
         <article class="sk-card sk-reveal">
-          <h3>PS&amp;I Stationery Supplies</h3>
-          <p>A multi-portal ordering platform for parents, schools and business customers, including catalogue, checkout, delivery options, authentication and backend order workflows.</p>
+          <h3>Retail ordering platform</h3>
+          <p>A multi-portal ordering platform for parents, schools and business customers, covering catalogue, checkout, delivery options, authentication and backend order workflows.</p>
         </article>
         <article class="sk-card sk-reveal">
           <h3>Traffic Signals &amp; Accessories</h3>
