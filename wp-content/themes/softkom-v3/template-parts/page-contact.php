@@ -100,5 +100,45 @@ $discovery = softkom_v3_cta( 'start-discovery' );
 
   </main>
 
+  <script id="softkom-contact-default-za">
+  (function () {
+    function setSouthAfricaDefault() {
+      var tel = document.querySelector('#enquiry input[type="tel"]');
+      if (!tel) return false;
+
+      var iti = tel.closest('.iti');
+      var selected = iti && iti.querySelector('.iti__selected-country, .iti__selected-flag');
+      var current = selected && (selected.getAttribute('aria-label') || selected.textContent || '');
+      if (current && /south africa/i.test(current)) return true;
+
+      if (selected) {
+        selected.click();
+        var za = document.querySelector('.iti__country[data-country-code="za"], [data-country-code="za"]');
+        if (za) {
+          za.click();
+          return true;
+        }
+      }
+
+      if (!tel.value || /^\+1\s*$/.test(tel.value)) {
+        tel.value = '+27 ';
+        tel.dispatchEvent(new Event('input', { bubbles: true }));
+        tel.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return true;
+    }
+
+    if (!setSouthAfricaDefault()) {
+      var tries = 0;
+      var timer = window.setInterval(function () {
+        tries += 1;
+        if (setSouthAfricaDefault() || tries > 20) {
+          window.clearInterval(timer);
+        }
+      }, 250);
+    }
+  }());
+  </script>
+
   <?php softkom_v3_component_e( 'footer' ); ?>
 </div>
