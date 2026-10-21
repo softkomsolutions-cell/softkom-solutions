@@ -1446,7 +1446,7 @@ function softkom_v3_enqueue_assessment_assets() {
         'softkom-v3-assessment',
         $base . '/js/softkom-assessment.js',
         array(),
-        SOFTKOM_V3_VERSION,
+        SOFTKOM_V3_VERSION . '-funnel-20261021',
         true
     );
 
@@ -1477,7 +1477,7 @@ function softkom_v3_enqueue_conversion_tracking() {
         'softkom-v3-conversion-tracking',
         get_stylesheet_directory_uri() . '/assets/js/softkom-conversion-tracking.js',
         array(),
-        SOFTKOM_V3_VERSION,
+        SOFTKOM_V3_VERSION . '-funnel-20261021',
         true
     );
 }

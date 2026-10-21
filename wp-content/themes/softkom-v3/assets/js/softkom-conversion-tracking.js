@@ -60,22 +60,34 @@
     }
   });
 
-  var contact = document.querySelector('[data-sk-contact-form]');
-  if (contact) {
+  var contacts = document.querySelectorAll('[data-sk-contact-form], #srfm-form-2722');
+  contacts.forEach(function (contact) {
     var started = false;
     contact.addEventListener('focusin', function () {
       if (started) return;
       started = true;
       send('softkom_contact_form_start');
     });
-    contact.addEventListener('submit', function () {
-      send('softkom_contact_form_submit');
-    });
-  }
+  });
+
+  // SureForms emits this event only after the server accepts the submission.
+  // Its detail.formId contains the DOM ID, including the "srfm-form-" prefix.
+  var contactSuccessTracked = false;
+  document.addEventListener('srfm_form_submission_success', function (event) {
+    var formId = event.detail && event.detail.formId;
+    if (formId !== 'srfm-form-2722' || contactSuccessTracked) return;
+    if (!document.getElementById(formId)) return;
+    contactSuccessTracked = true;
+    send('softkom_contact_form_submit', { form_id: formId });
+    send('softkom_enquiry_success', { form_id: formId });
+  });
 
   var assessmentLead = document.querySelector('[data-assessment-lead-form]');
   if (assessmentLead) {
-    assessmentLead.addEventListener('submit', function () {
+    var assessmentSuccessTracked = false;
+    assessmentLead.addEventListener('softkom_assessment_submission_success', function () {
+      if (assessmentSuccessTracked) return;
+      assessmentSuccessTracked = true;
       send('softkom_assessment_lead_submit');
     });
   }
@@ -110,7 +122,4 @@
     }
   }, 20000);
 
-  if (new URLSearchParams(window.location.search).get('sent') === '1') {
-    send('softkom_enquiry_success');
-  }
 })();
