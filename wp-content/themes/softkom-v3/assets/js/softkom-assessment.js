@@ -571,6 +571,13 @@
                     }
 
                     const result = payload.data;
+
+                    // A submit attempt is not a conversion. Notify tracking only
+                    // after the endpoint confirms that the lead was accepted.
+                    leadForm.dispatchEvent(new CustomEvent(
+                        'softkom_assessment_submission_success'
+                    ));
+
                     const scores = result.scores || {};
                     const maturityScore =
                         Math.round(Number(scores.maturity) || 0);
