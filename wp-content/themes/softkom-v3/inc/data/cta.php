@@ -79,7 +79,7 @@ function softkom_v3_cta_registry() {
 			'id'    => 'start-discovery',
 			'level' => 2,
 			'label' => 'Book a Strategy Call',
-			'url'   => '/contact/#discovery',
+			'url'   => 'https://calendly.com/softkomsolutions/30mins',
 			'notes' => 'Primary service-led strategy conversation.',
 		),
 		'start-conversation'    => array(
@@ -107,7 +107,7 @@ function softkom_v3_cta_registry() {
 			'id'    => 'book-strategy-call',
 			'level' => 3,
 			'label' => 'Book a Strategy Call',
-			'url'   => '/contact/#discovery',
+			'url'   => 'https://calendly.com/softkomsolutions/30mins',
 			'notes' => 'Header commit CTA for a focused strategy conversation.',
 		),
 		'request-scoped-proposal' => array(
