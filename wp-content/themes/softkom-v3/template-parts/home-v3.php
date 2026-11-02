@@ -103,6 +103,20 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     </div>
   </section>
 
+  <section class="section section-muted" id="revenue-lab">
+    <div class="container">
+      <div class="sk-card sk-reveal">
+        <p class="eyebrow">Softkom Revenue Lab</p>
+        <h2 class="sk-display">Send AI customers through your website before your real customers get there</h2>
+        <p class="lead">See who understands your offer, who gets stuck, who leaves and where a competitor may be stronger. Revenue Lab turns those buying signals into a practical conversion repair plan.</p>
+        <p>
+          <a class="sk-btn sk-btn-primary" href="<?php echo esc_url( home_url( '/revenue-lab/' ) ); ?>">Run the Free Customer Test</a>
+          <a class="sk-btn sk-btn-secondary" href="<?php echo esc_url( home_url( '/assessment/' ) ); ?>">Take the Business Systems Assessment</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="assessment">
     <div class="container">
       <div class="sk-card sk-reveal">
