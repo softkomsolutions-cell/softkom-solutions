@@ -52,6 +52,22 @@ function softkom_revenue_lab_enqueue() {
         is_readable( $js_path ) ? (string) filemtime( $js_path ) : SOFTKOM_REVENUE_LAB_VERSION,
         true
     );
+
+    $wow_js_path  = WPMU_PLUGIN_DIR . '/softkom-revenue-lab-wow.js';
+    $wow_css_path = WPMU_PLUGIN_DIR . '/softkom-revenue-lab-wow.css';
+    wp_enqueue_style(
+        'softkom-revenue-lab-wow',
+        content_url( '/mu-plugins/softkom-revenue-lab-wow.css' ),
+        array( 'softkom-revenue-lab' ),
+        is_readable( $wow_css_path ) ? (string) filemtime( $wow_css_path ) : SOFTKOM_REVENUE_LAB_VERSION
+    );
+    wp_enqueue_script(
+        'softkom-revenue-lab-wow',
+        content_url( '/mu-plugins/softkom-revenue-lab-wow.js' ),
+        array( 'softkom-revenue-lab' ),
+        is_readable( $wow_js_path ) ? (string) filemtime( $wow_js_path ) : SOFTKOM_REVENUE_LAB_VERSION,
+        true
+    );
     wp_localize_script(
         'softkom-revenue-lab',
         'softkomRevenueLab',
