@@ -185,6 +185,113 @@ function softkom_revenue_suite_offers() {
 }
 
 
+
+function softkom_revenue_suite_efficiency_review() {
+    return array(
+        'slug' => 'business-efficiency-review',
+        'title' => 'Business Efficiency Review',
+        'eyebrow' => 'START WITH HOW THE BUSINESS ACTUALLY WORKS',
+        'headline' => 'Show us how your business works. We will show you where it can work better.',
+        'intro' => 'You do not need to know which software, automation or agent you need. Softkom reviews the systems, subscriptions and everyday processes you already use, then identifies where money is being wasted, staff time is being lost and opportunities are being missed.',
+        'pain' => array(
+            'Software costs keep growing but nobody has the full picture.',
+            'Staff retype the same information into more than one system.',
+            'Quotes, leads or invoices depend on someone remembering to follow up.',
+            'Reports are still assembled manually.',
+            'Important processes live in spreadsheets, inboxes or WhatsApp.',
+            'Different tools overlap or do not talk to each other.',
+            'AI tools are being used without a clear owner or policy.',
+            'Management knows the business is inefficient but does not know where to start.'
+        ),
+        'review' => array(
+            'Current software and subscriptions',
+            'Core workflows and hand-offs',
+            'Manual data capture and duplicate work',
+            'Sales, quote and lead follow-up',
+            'Invoice and collections processes',
+            'Reporting and management visibility',
+            'AI usage, ownership and risk',
+            'Integration gaps between systems',
+            'Customer-facing journeys where relevant'
+        ),
+        'outputs' => array(
+            'Business Efficiency Map',
+            'Software waste and overlap findings',
+            'Manual-hours and repetitive-work estimate',
+            'Revenue leakage opportunities',
+            'Risk and control gaps',
+            'Prioritised quick wins',
+            'Recommended automations, integrations or managed assistants',
+            'Clear items that should not be changed'
+        ),
+        'price' => 'From R7,500',
+        'monthly' => 'Optional ongoing optimisation from R2,500/month'
+    );
+}
+
+function softkom_revenue_suite_efficiency_review_html() {
+    $r = softkom_revenue_suite_efficiency_review();
+    $pain=''; foreach($r['pain'] as $x){$pain.='<li><span>!</span>'.esc_html($x).'</li>';}
+    $review=''; foreach($r['review'] as $x){$review.='<li><span>✓</span>'.esc_html($x).'</li>';}
+    $outputs=''; foreach($r['outputs'] as $x){$outputs.='<li><span>✓</span>'.esc_html($x).'</li>';}
+    $contact=esc_url( softkom_revenue_suite_contact_url( 'business-efficiency-review' ) );
+    return '<div class="skrs-page">
+        <section class="skrs-hero">
+            <div class="skrs-inner">
+                <div class="skrs-kicker">'.esc_html($r['eyebrow']).'</div>
+                <h1>'.esc_html($r['headline']).'</h1>
+                <p class="skrs-lead">'.esc_html($r['intro']).'</p>
+                <div class="skrs-actions"><a class="skrs-primary" href="'.$contact.'">Review How Our Business Works →</a></div>
+            </div>
+        </section>
+        <section class="skrs-section">
+            <div class="skrs-inner">
+                <div class="skrs-sectionhead"><p>COMMON SIGNS</p><h2>You should not need to diagnose the problem yourself.</h2></div>
+                <ul class="skrs-pain">'.$pain.'</ul>
+            </div>
+        </section>
+        <section class="skrs-section skrs-muted">
+            <div class="skrs-inner skrs-two">
+                <div>
+                    <p class="skrs-label">WHAT WE REVIEW</p>
+                    <h2>We look at the current business before recommending anything new.</h2>
+                    <ul class="skrs-deliverables">'.$review.'</ul>
+                </div>
+                <div class="skrs-outcome">
+                    <p>THE PRINCIPLE</p>
+                    <strong>Do not buy another tool until you know what is actually broken.</strong>
+                    <span>Sometimes the right answer is automation. Sometimes it is integration, cleanup, better follow-up or simply using the software you already pay for properly.</span>
+                </div>
+            </div>
+        </section>
+        <section class="skrs-section">
+            <div class="skrs-inner skrs-two">
+                <div>
+                    <p class="skrs-label">WHAT YOU GET</p>
+                    <h2>A prioritised Business Efficiency Map.</h2>
+                    <ul class="skrs-deliverables">'.$outputs.'</ul>
+                </div>
+                <div class="skrs-outcome">
+                    <p>PRICING</p>
+                    <strong>'.esc_html($r['price']).'</strong>
+                    <span>'.esc_html($r['monthly']).'</span>
+                </div>
+            </div>
+        </section>
+        <section class="skrs-section">
+            <div class="skrs-inner">
+                <div class="skrs-sectionhead"><p>WHAT HAPPENS NEXT</p><h2>Check it. Fix what matters. Manage only what needs ongoing attention.</h2></div>
+                <div class="skrs-pricing">
+                    <article><span>1 · REVIEW</span><h3>Understand the current business</h3><p>Map software, processes, hand-offs, costs, missed opportunities and control gaps.</p></article>
+                    <article><span>2 · PRIORITISE</span><h3>Choose the highest-value fixes</h3><p>Quick wins first. No unnecessary rebuilds and no technology for its own sake.</p></article>
+                    <article class="skrs-featured"><span>3 · IMPROVE</span><h3>Implement and manage</h3><p>Use Softkom products, integrations, automations, assistants or custom software only where the business case is clear.</p></article>
+                </div>
+            </div>
+        </section>
+        <section class="skrs-final"><div class="skrs-inner"><p>START WITH THE BUSINESS</p><h2>Find where money, time and opportunities are leaking.</h2><a class="skrs-primary" href="'.$contact.'">Start the Business Efficiency Review →</a></div></section>
+    </div>';
+}
+
 function softkom_revenue_suite_agents() {
     return array(
         'payment-chaser' => array(
@@ -505,7 +612,12 @@ function softkom_revenue_suite_hub_html() {
     $hub = softkom_revenue_suite_hub_definition();
     $offers = softkom_revenue_suite_offers();
 
-    $cards = '<article class="skrs-hub-card skrs-hub-card--revenue-lab">
+    $cards = '<article class="skrs-hub-card skrs-featured">
+        <p>START HERE</p>
+        <h2>Not sure where the waste is? Start with a Business Efficiency Review.</h2>
+        <span>We analyse the systems, subscriptions and processes you already use before recommending any new technology.</span>
+        <a href="' . esc_url( home_url( '/business-efficiency-review/' ) ) . '">Review How Your Business Works →</a>
+    </article><article class="skrs-hub-card skrs-hub-card--revenue-lab">
         <p>WEBSITE SALES</p>
         <h2>Is your website losing customers?</h2>
         <span>Find where buyers hesitate, leave or choose a competitor.</span>
@@ -575,6 +687,22 @@ function softkom_revenue_suite_sync_pages() {
         wp_insert_post( wp_slash( $hub_post ) );
     }
 
+    $efficiency = softkom_revenue_suite_efficiency_review();
+    $efficiency_page = get_page_by_path( $efficiency['slug'], OBJECT, 'page' );
+    $efficiency_post = array(
+        'post_title' => $efficiency['title'],
+        'post_name' => $efficiency['slug'],
+        'post_type' => 'page',
+        'post_status' => 'publish',
+        'post_content' => softkom_revenue_suite_efficiency_review_html()
+    );
+    if ( $efficiency_page ) {
+        $efficiency_post['ID'] = $efficiency_page->ID;
+        wp_update_post( wp_slash( $efficiency_post ) );
+    } else {
+        wp_insert_post( wp_slash( $efficiency_post ) );
+    }
+
     $digital_team = get_page_by_path( 'digital-team', OBJECT, 'page' );
     $digital_team_post = array(
         'post_title' => 'Softkom Digital Team',
@@ -631,6 +759,7 @@ add_action( 'init', 'softkom_revenue_suite_sync_pages', 28 );
 
 function softkom_revenue_suite_slugs() {
     $slugs = array_keys( softkom_revenue_suite_offers() );
+    $slugs[] = 'business-efficiency-review';
     $slugs[] = 'digital-team';
     foreach ( array_keys( softkom_revenue_suite_agents() ) as $agent_slug ) {
         $slugs[] = 'digital-team-' . $agent_slug;
