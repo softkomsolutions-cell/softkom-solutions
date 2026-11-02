@@ -31,62 +31,42 @@ $read_insights_label = function_exists( 'softkom_v3_cta_label' )
 ?>
 <footer class="sk-footer">
   <div class="container">
-    <div class="footer-grid">
+    <div class="footer-grid footer-grid--simple">
       <div class="footer-brand-col">
         <?php if ( has_custom_logo() ) : ?>
-          <div class="footer-logo sk-brand">
-            <?php the_custom_logo(); ?>
-          </div>
+          <div class="footer-logo sk-brand"><?php the_custom_logo(); ?></div>
         <?php else : ?>
           <div class="footer-brand">Softkom</div>
         <?php endif; ?>
-        <p>Business systems, automation and integrations for growing companies that need better operational control.</p>
-        <div class="footer-socials">
-          <a href="https://www.linkedin.com/company/softkomsolutions" rel="noopener noreferrer" target="_blank">LinkedIn</a>
-          <a href="https://wa.me/27749933805" rel="noopener noreferrer" target="_blank">WhatsApp</a>
-        </div>
+        <p>Practical business systems that reduce waste, recover revenue and remove repetitive work.</p>
       </div>
       <div>
-        <strong>Solutions</strong>
-        <a href="/services/">All Solutions</a>
-        <a href="/custom-business-systems-south-africa/">Custom Business Systems</a>
-        <a href="/ai-automation-south-africa/">AI &amp; Automation</a>
-        <a href="/business-system-integration-south-africa/">Systems Integration</a>
-        <a href="/assessment/">Business Systems Assessment</a>
+        <strong>Explore</strong>
+        <a href="<?php echo esc_url( $home_url ); ?>#solutions">How We Help</a>
+        <a href="<?php echo esc_url( $home_url ); ?>#proof">Case Studies</a>
+        <a href="<?php echo esc_url( $home_url ); ?>#how-we-work">How We Work</a>
+        <a href="/insights/">Insights</a>
       </div>
       <div>
-        <strong>Company</strong>
-        <a href="/company/">About Softkom</a>
-        <a href="<?php echo esc_url( $home_url ); ?>#why-softkom">Why Softkom</a>
-        <a href="/contact/">Contact</a>
-      </div>
-      <div>
-        <strong>Insights</strong>
-        <a href="/insights/">All Insights</a>
-        <a href="<?php echo esc_url( $read_insights_url ); ?>"><?php echo esc_html( $read_insights_label ); ?></a>
-      </div>
-      <div>
-        <strong>Trust</strong>
-        <a href="<?php echo esc_url( $home_url ); ?>#trust">Security-minded delivery</a>
-        <a href="/projects/">Delivery experience</a>
-        <a href="/privacy-policy/">Privacy &amp; POPIA</a>
+        <strong>Start</strong>
+        <a href="/business-efficiency-review/">Business Efficiency Review</a>
+        <a href="/revenue-lab/">Revenue Lab</a>
+        <a href="<?php echo esc_url( $home_url ); ?>#contact">Contact Softkom</a>
       </div>
       <div>
         <strong>Contact</strong>
         <a href="mailto:info@softkomsolutions.com">info@softkomsolutions.com</a>
         <a href="tel:+27749933805">+27 74 993 3805</a>
-        <span class="footer-address">Glensan, Johannesburg, South Africa</span>
+        <span class="footer-address">Johannesburg, South Africa</span>
       </div>
     </div>
     <div class="footer-bottom">
       <div>&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> Softkom Solutions. All rights reserved.</div>
       <div class="footer-legal">
         <a href="/privacy-policy/">Privacy</a>
-        <a href="/privacy-policy/">POPIA</a>
-        <a href="/cookie/">Cookie Policy</a>
+        <a href="/cookie/">Cookies</a>
         <a href="/terms-of-service/">Terms</a>
       </div>
     </div>
   </div>
 </footer>
-
