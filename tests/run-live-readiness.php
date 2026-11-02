@@ -49,6 +49,8 @@ softkom_live_assert( 'Revenue Lab fix simulator available', function_exists( 'so
 softkom_live_assert( 'Revenue Lab lead storage available', function_exists( 'softkom_revenue_lab_store_lead' ) );
 softkom_live_assert( 'Revenue and Efficiency Suite loaded', function_exists( 'softkom_revenue_suite_offers' ) );
 softkom_live_assert( 'Digital Team offer catalogue loaded', function_exists( 'softkom_revenue_suite_agents' ) );
+softkom_live_assert( 'Business Efficiency Review intake available', function_exists( 'softkom_efficiency_review_form_html' ) );
+softkom_live_assert( 'Business Efficiency Review lead storage available', function_exists( 'softkom_efficiency_review_store_lead' ) );
 softkom_live_assert( 'Campaign performance function available', function_exists( 'softkom_v3_campaign_performance' ) );
 softkom_live_assert( 'Campaign tracked URL function available', function_exists( 'softkom_v3_campaign_tracked_url' ) );
 
@@ -96,6 +98,7 @@ $required_mu_files = array(
 	'softkom-revenue-lab-wow.css',
 	'softkom-revenue-suite.php',
 	'softkom-revenue-suite.css',
+	'softkom-efficiency-review.js',
 	'softkom-strategy-request.php',
 	'softkom-sales-notifications.php',
 	'softkom-industry-funnel.php',
