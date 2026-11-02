@@ -47,6 +47,8 @@ softkom_live_assert( 'Revenue Lab scanner available', function_exists( 'softkom_
 softkom_live_assert( 'Revenue Lab comparison engine available', function_exists( 'softkom_revenue_lab_battle' ) );
 softkom_live_assert( 'Revenue Lab fix simulator available', function_exists( 'softkom_revenue_lab_simulate_fix' ) );
 softkom_live_assert( 'Revenue Lab lead storage available', function_exists( 'softkom_revenue_lab_store_lead' ) );
+softkom_live_assert( 'Revenue and Efficiency Suite loaded', function_exists( 'softkom_revenue_suite_offers' ) );
+softkom_live_assert( 'Digital Team offer catalogue loaded', function_exists( 'softkom_revenue_suite_agents' ) );
 softkom_live_assert( 'Campaign performance function available', function_exists( 'softkom_v3_campaign_performance' ) );
 softkom_live_assert( 'Campaign tracked URL function available', function_exists( 'softkom_v3_campaign_tracked_url' ) );
 
@@ -58,6 +60,11 @@ softkom_live_assert( 'Contact page exists', $contact_page instanceof WP_Post && 
 
 $revenue_lab_page = get_page_by_path( 'revenue-lab' );
 softkom_live_assert( 'Revenue Lab page exists', $revenue_lab_page instanceof WP_Post && 'publish' === $revenue_lab_page->post_status );
+
+foreach ( array( 'business-revenue-efficiency','software-cost-check','ai-usage-risk-review','lost-lead-recovery','business-website-protection','business-process-review','digital-team','digital-team-payment-chaser','digital-team-quote-follow-up','digital-team-supplier-quote-assistant','digital-team-management-briefing','digital-team-staff-helpdesk','digital-team-document-processing-assistant' ) as $softkom_suite_slug ) {
+	$softkom_suite_page = get_page_by_path( $softkom_suite_slug );
+	softkom_live_assert( 'Commercial page exists: /' . $softkom_suite_slug . '/', $softkom_suite_page instanceof WP_Post && 'publish' === $softkom_suite_page->post_status );
+}
 
 $admin_email = sanitize_email( get_option( 'admin_email' ) );
 softkom_live_assert( 'Valid WordPress admin email configured', is_email( $admin_email ) );
@@ -87,6 +94,8 @@ $required_mu_files = array(
 	'softkom-revenue-lab.css',
 	'softkom-revenue-lab-wow.js',
 	'softkom-revenue-lab-wow.css',
+	'softkom-revenue-suite.php',
+	'softkom-revenue-suite.css',
 	'softkom-strategy-request.php',
 	'softkom-sales-notifications.php',
 	'softkom-industry-funnel.php',
