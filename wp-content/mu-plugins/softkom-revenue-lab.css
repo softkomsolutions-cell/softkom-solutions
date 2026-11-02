@@ -1,0 +1,28 @@
+.sk-rl-shell{max-width:1180px;margin:0 auto;padding:72px 24px 96px;color:#102338}
+.sk-rl-hero{padding:56px;border-radius:32px;background:linear-gradient(135deg,#07192b,#123a61 68%,#1a6b65);color:#fff;box-shadow:0 30px 80px rgba(8,25,43,.18)}
+.sk-rl-kicker{font-size:12px;letter-spacing:.16em;font-weight:800;text-transform:uppercase;opacity:.72}
+.sk-rl-hero h1{font-size:clamp(40px,7vw,82px);line-height:.98;max-width:980px;margin:18px 0 24px}
+.sk-rl-hero>p{font-size:20px;line-height:1.55;max-width:800px;color:rgba(255,255,255,.82)}
+.sk-rl-form{margin-top:34px}.sk-rl-form label{display:block;font-weight:700;margin-bottom:10px}
+.sk-rl-url-row{display:flex;gap:12px}.sk-rl-url-row input,.sk-rl-panel input{width:100%;border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:16px 18px;font-size:16px}
+.sk-rl-url-row button,.sk-rl-panel button{border:0;border-radius:14px;padding:16px 22px;font-weight:800;cursor:pointer;background:#ffcc67;color:#102338;white-space:nowrap}
+.sk-rl-note{font-size:13px;opacity:.7;margin-top:10px}
+.sk-rl-running{margin:36px 0;padding:38px;border-radius:24px;background:#f4f7fa;text-align:center}
+.sk-rl-orbit{width:48px;height:48px;border:4px solid #cfd8df;border-top-color:#123a61;border-radius:50%;margin:0 auto 18px;animation:skrlspin 1s linear infinite}
+@keyframes skrlspin{to{transform:rotate(360deg)}}.sk-rl-running-title{font-size:24px;font-weight:800;margin-bottom:18px}
+.sk-rl-running-steps{display:grid;gap:8px;max-width:520px;margin:0 auto;text-align:left}
+.sk-rl-running-steps span{padding:12px 14px;border-radius:10px;background:#fff;opacity:.46}.sk-rl-running-steps .is-active{opacity:1;box-shadow:0 0 0 2px #8bb6c7}.sk-rl-running-steps .is-done{opacity:.75}
+.sk-rl-results{margin-top:42px}.sk-rl-score-card{display:grid;grid-template-columns:220px 1fr;gap:36px;align-items:center;padding:32px;border:1px solid #dde5eb;border-radius:24px;background:#fff;box-shadow:0 18px 54px rgba(19,48,77,.08)}
+.sk-rl-score{font-size:74px;line-height:1;font-weight:900;margin-top:8px}.sk-rl-score small{font-size:24px;font-weight:600;opacity:.48}
+.sk-rl-score-copy h2{font-size:34px;margin:0 0 8px}.sk-rl-score-copy p{font-size:18px;line-height:1.55;color:#556779}
+.sk-rl-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.8fr);gap:28px;margin-top:34px}.sk-rl-section-head h2{font-size:34px;margin:8px 0 18px}
+.sk-rl-personas{display:grid;gap:16px}.sk-rl-persona{padding:22px;border:1px solid #dde5eb;border-radius:18px;background:#fff}
+.sk-rl-persona-top{display:flex;gap:14px}.sk-rl-status{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;font-weight:900;background:#eaf0f4}
+.sk-rl-persona--converted .sk-rl-status{background:#dff6e9;color:#17693d}.sk-rl-persona--stuck .sk-rl-status{background:#fff0c8;color:#895c00}.sk-rl-persona--left .sk-rl-status{background:#fde1e1;color:#9b2626}
+.sk-rl-persona h3{margin:0 0 5px}.sk-rl-persona p{margin:0;color:#5a6b7b;line-height:1.5}.sk-rl-journey{margin:18px 0 12px;padding-left:24px;color:#30465b}.sk-rl-reason{font-weight:600!important}
+.sk-rl-side{display:grid;gap:18px;align-content:start}.sk-rl-panel{padding:24px;border-radius:18px;background:#f5f7f9;border:1px solid #e1e7ec}.sk-rl-panel h3{font-size:24px;margin:8px 0 16px}
+.sk-rl-panel--dark{background:#0b2137;color:#fff}.sk-rl-panel--dark input{display:block;margin:10px 0;background:#fff;color:#102338;border-color:transparent}.sk-rl-panel--dark button{width:100%;margin-top:2px}
+.sk-rl-finding{display:flex;gap:12px;padding:14px 0;border-top:1px solid #dde4ea}.sk-rl-finding:first-child{border-top:0}.sk-rl-finding p{margin:4px 0 0;color:#657587;line-height:1.45}.sk-rl-dot{width:10px;height:10px;border-radius:50%;margin-top:6px;background:#d28c27;flex:0 0 auto}
+.sk-rl-finding--critical .sk-rl-dot{background:#b62f2f}.sk-rl-finding--high .sk-rl-dot{background:#db6d2c}.sk-rl-finding--positive .sk-rl-dot{background:#2d8a5b}
+.sk-rl-error{margin-top:24px;padding:16px 18px;border-radius:12px;background:#fde9e9;color:#8b2525;font-weight:700}
+@media(max-width:800px){.sk-rl-shell{padding:36px 16px 72px}.sk-rl-hero{padding:32px 22px}.sk-rl-url-row{display:grid}.sk-rl-score-card,.sk-rl-grid{grid-template-columns:1fr}.sk-rl-score-card{gap:20px}.sk-rl-score{font-size:60px}}
