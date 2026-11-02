@@ -103,6 +103,20 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     </div>
   </section>
 
+  <section class="section" id="business-efficiency-review">
+    <div class="container">
+      <div class="sk-card sk-reveal">
+        <p class="eyebrow">Start With How the Business Actually Works</p>
+        <h2 class="sk-display">Show us how your business works. We will show you where it can work better.</h2>
+        <p class="lead">Softkom reviews the systems, subscriptions and everyday processes you already use, then identifies where money is being wasted, staff time is being lost and opportunities are being missed.</p>
+        <p>
+          <a class="sk-btn sk-btn-primary" href="<?php echo esc_url( home_url( '/business-efficiency-review/' ) ); ?>">Start a Business Efficiency Review</a>
+          <a class="sk-btn sk-btn-secondary" href="<?php echo esc_url( home_url( '/business-revenue-efficiency/' ) ); ?>">Explore Revenue & Efficiency</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section class="section section-muted" id="revenue-lab">
     <div class="container">
       <div class="sk-card sk-reveal">
