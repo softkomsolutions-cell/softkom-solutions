@@ -61,7 +61,7 @@ softkom_live_assert( 'Contact page exists', $contact_page instanceof WP_Post && 
 $revenue_lab_page = get_page_by_path( 'revenue-lab' );
 softkom_live_assert( 'Revenue Lab page exists', $revenue_lab_page instanceof WP_Post && 'publish' === $revenue_lab_page->post_status );
 
-foreach ( array( 'business-revenue-efficiency','software-cost-check','ai-usage-risk-review','lost-lead-recovery','business-website-protection','business-process-review','digital-team','digital-team-payment-chaser','digital-team-quote-follow-up','digital-team-supplier-quote-assistant','digital-team-management-briefing','digital-team-staff-helpdesk','digital-team-document-processing-assistant' ) as $softkom_suite_slug ) {
+foreach ( array( 'business-revenue-efficiency','business-efficiency-review','software-cost-check','ai-usage-risk-review','lost-lead-recovery','business-website-protection','business-process-review','digital-team','digital-team-payment-chaser','digital-team-quote-follow-up','digital-team-supplier-quote-assistant','digital-team-management-briefing','digital-team-staff-helpdesk','digital-team-document-processing-assistant' ) as $softkom_suite_slug ) {
 	$softkom_suite_page = get_page_by_path( $softkom_suite_slug );
 	softkom_live_assert( 'Commercial page exists: /' . $softkom_suite_slug . '/', $softkom_suite_page instanceof WP_Post && 'publish' === $softkom_suite_page->post_status );
 }
