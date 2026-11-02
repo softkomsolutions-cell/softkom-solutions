@@ -27,7 +27,18 @@ function renderSim(s){
 
 var originalFetch=window.fetch;
 window.fetch=function(input,init){
-  return originalFetch.apply(this,arguments).then(function(response){
+  try{
+    var ajaxUrl=typeof input==='string'?input:(input&&input.url?input.url:'');
+    if(ajaxUrl.indexOf(cfg.ajaxUrl)!==-1 && init && typeof init.body==='string' && init.body.indexOf('action=softkom_revenue_lab_scan')!==-1){
+      var competitor=form.querySelector('[name="competitor_url"]');
+      if(competitor && competitor.value.trim()){
+        var params=new URLSearchParams(init.body);
+        params.set('competitor_url',competitor.value.trim());
+        init=Object.assign({},init,{body:params.toString()});
+      }
+    }
+  }catch(e){}
+  return originalFetch.call(this,input,init).then(function(response){
     try{
       var url=typeof input==='string'?input:(input&&input.url?input.url:'');
       if(url.indexOf(cfg.ajaxUrl)!==-1 && init && typeof init.body==='string' && init.body.indexOf('action=softkom_revenue_lab_scan')!==-1){
