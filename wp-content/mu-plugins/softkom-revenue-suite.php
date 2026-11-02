@@ -184,6 +184,208 @@ function softkom_revenue_suite_offers() {
     );
 }
 
+
+function softkom_revenue_suite_agents() {
+    return array(
+        'payment-chaser' => array(
+            'title' => 'Payment Chaser',
+            'eyebrow' => 'GET PAID FASTER',
+            'headline' => 'Stop spending staff time chasing unpaid invoices.',
+            'intro' => 'The Payment Chaser follows up outstanding invoices, records promises to pay, stops when payment arrives and sends disputes or exceptions back to a person.',
+            'jobs' => array(
+                'Monitors outstanding invoices and due dates',
+                'Sends polite reminders before and after due date',
+                'Tracks promises to pay',
+                'Stops follow-up automatically when payment is recorded',
+                'Escalates disputes and exceptions to staff',
+                'Produces an overdue-debt summary'
+            ),
+            'setup' => 'From R4,950',
+            'monthly' => 'From R1,950/month',
+            'cta' => 'Reduce Invoice Chasing'
+        ),
+        'quote-follow-up' => array(
+            'title' => 'Quote Follow-Up Assistant',
+            'eyebrow' => 'STOP LETTING QUOTES GO COLD',
+            'headline' => 'How many quotes did you send last month that nobody followed up?',
+            'intro' => 'This assistant follows up sent quotes, captures objections, identifies interested buyers and hands hot opportunities back to sales.',
+            'jobs' => array(
+                'Detects when a quote is sent',
+                'Follows up at sensible intervals',
+                'Captures timing, price and approval objections',
+                'Identifies interested prospects',
+                'Escalates hot opportunities to sales',
+                'Tracks won, lost and no-response outcomes'
+            ),
+            'setup' => 'From R5,500',
+            'monthly' => 'From R1,950/month',
+            'cta' => 'Improve Quote Follow-Up'
+        ),
+        'supplier-quote-assistant' => array(
+            'title' => 'Supplier Quote Assistant',
+            'eyebrow' => 'REDUCE PROCUREMENT CHASING',
+            'headline' => 'Stop spending hours chasing suppliers for prices.',
+            'intro' => 'Give the assistant a requirement and it can prepare requests, chase suppliers, collect replies and turn the responses into a clean comparison for a buyer to review.',
+            'jobs' => array(
+                'Uses the approved supplier list',
+                'Prepares and sends RFQs',
+                'Follows up outstanding supplier responses',
+                'Extracts price, lead time and terms',
+                'Builds a side-by-side comparison',
+                'Routes the final decision to a person'
+            ),
+            'setup' => 'From R7,500',
+            'monthly' => 'From R1,950/month + usage',
+            'cta' => 'Reduce Supplier Chasing'
+        ),
+        'management-briefing' => array(
+            'title' => 'Management Briefing Assistant',
+            'eyebrow' => 'STOP BUILDING REPORTS BY HAND',
+            'headline' => 'Get the numbers that matter without spending Monday morning assembling them.',
+            'intro' => 'The Management Briefing Assistant pulls together the operational information management needs and highlights what changed, what needs attention and what can wait.',
+            'jobs' => array(
+                'Combines sales, finance and operations inputs',
+                'Summarises key changes and exceptions',
+                'Highlights overdue debt and delayed work',
+                'Flags unusual trends',
+                'Produces a concise management briefing',
+                'Keeps the final decision with management'
+            ),
+            'setup' => 'From R7,500',
+            'monthly' => 'From R2,500/month',
+            'cta' => 'Automate Management Reporting'
+        ),
+        'staff-helpdesk' => array(
+            'title' => 'Staff Helpdesk',
+            'eyebrow' => 'STOP ANSWERING THE SAME QUESTIONS',
+            'headline' => 'Give staff one place to get answers about policies, forms and everyday processes.',
+            'intro' => 'The Staff Helpdesk answers routine internal questions from approved company information and escalates sensitive or exceptional cases to the right person.',
+            'jobs' => array(
+                'Answers routine policy and process questions',
+                'Points staff to forms and procedures',
+                'Supports onboarding',
+                'Explains approved internal processes',
+                'Keeps answers grounded in company documents',
+                'Escalates sensitive matters to people'
+            ),
+            'setup' => 'From R5,500',
+            'monthly' => 'From R1,950/month',
+            'cta' => 'Reduce Repetitive Staff Questions'
+        ),
+        'document-processing-assistant' => array(
+            'title' => 'Document Processing Assistant',
+            'eyebrow' => 'REMOVE REPETITIVE DATA CAPTURE',
+            'headline' => 'Stop retyping information from invoices, forms and orders.',
+            'intro' => 'The Document Processing Assistant reads incoming documents, extracts the information the business needs, validates it and routes exceptions for human review.',
+            'jobs' => array(
+                'Reads common incoming documents',
+                'Extracts required fields',
+                'Checks for missing or inconsistent information',
+                'Routes clean records into the next workflow step',
+                'Flags exceptions for review',
+                'Creates an audit trail of what was processed'
+            ),
+            'setup' => 'From R7,500',
+            'monthly' => 'From R2,500/month',
+            'cta' => 'Reduce Manual Data Capture'
+        )
+    );
+}
+
+function softkom_revenue_suite_agent_html( $slug, $agent ) {
+    $jobs = '';
+    foreach ( $agent['jobs'] as $job ) {
+        $jobs .= '<li><span>✓</span>' . esc_html( $job ) . '</li>';
+    }
+    $contact = esc_url( softkom_revenue_suite_contact_url( 'digital-team-' . $slug ) );
+    $hub = esc_url( home_url( '/digital-team/' ) );
+
+    return '<div class="skrs-page">
+        <section class="skrs-hero">
+            <div class="skrs-inner">
+                <a class="skrs-back" href="' . $hub . '">← Digital Team</a>
+                <div class="skrs-kicker">' . esc_html( $agent['eyebrow'] ) . '</div>
+                <h1>' . esc_html( $agent['headline'] ) . '</h1>
+                <p class="skrs-lead">' . esc_html( $agent['intro'] ) . '</p>
+                <div class="skrs-actions"><a class="skrs-primary" href="' . $contact . '">' . esc_html( $agent['cta'] ) . ' →</a></div>
+            </div>
+        </section>
+        <section class="skrs-section">
+            <div class="skrs-inner skrs-two">
+                <div>
+                    <p class="skrs-label">WHAT IT TAKES OFF YOUR TEAM</p>
+                    <h2>A narrow job, done consistently.</h2>
+                    <ul class="skrs-deliverables">' . $jobs . '</ul>
+                </div>
+                <div class="skrs-outcome">
+                    <p>COMMERCIAL MODEL</p>
+                    <strong>Setup: ' . esc_html( $agent['setup'] ) . '</strong>
+                    <strong style="font-size:26px">' . esc_html( $agent['monthly'] ) . '</strong>
+                    <span>Final pricing depends on integrations, message volume, number of systems and the level of human review required.</span>
+                </div>
+            </div>
+        </section>
+        <section class="skrs-section">
+            <div class="skrs-inner">
+                <div class="skrs-sectionhead">
+                    <p>HOW SOFTKOM SELLS IT</p>
+                    <h2>Give repetitive work to the system. Keep decisions with your people.</h2>
+                </div>
+                <div class="skrs-pricing">
+                    <article><span>1 · DEFINE</span><h3>Choose one repetitive job</h3><p>We narrow the scope so the assistant has a clear responsibility and measurable outcome.</p></article>
+                    <article><span>2 · CONNECT</span><h3>Connect the systems it needs</h3><p>Email, accounting, CRM, documents, supplier lists or internal information as required.</p></article>
+                    <article class="skrs-featured"><span>3 · MANAGE</span><h3>Softkom keeps it working</h3><p>Monitoring, prompt/workflow changes, exception handling and ongoing optimisation.</p></article>
+                </div>
+            </div>
+        </section>
+        <section class="skrs-final">
+            <div class="skrs-inner">
+                <p>START WITH ONE JOB</p>
+                <h2>' . esc_html( $agent['cta'] ) . '</h2>
+                <a class="skrs-primary" href="' . $contact . '">Talk to Softkom →</a>
+            </div>
+        </section>
+    </div>';
+}
+
+function softkom_revenue_suite_digital_team_html() {
+    $cards = '';
+    foreach ( softkom_revenue_suite_agents() as $slug => $agent ) {
+        $cards .= '<article class="skrs-hub-card">
+            <p>' . esc_html( $agent['title'] ) . '</p>
+            <h2>' . esc_html( $agent['headline'] ) . '</h2>
+            <span>' . esc_html( $agent['intro'] ) . '</span>
+            <a href="' . esc_url( home_url( '/digital-team-' . $slug . '/' ) ) . '">See How It Works →</a>
+        </article>';
+    }
+
+    return '<div class="skrs-page skrs-hub">
+        <section class="skrs-hero">
+            <div class="skrs-inner">
+                <div class="skrs-kicker">SOFTKOM DIGITAL TEAM</div>
+                <h1>Give repetitive work to the system. Keep decisions with your people.</h1>
+                <p class="skrs-lead">Softkom builds and manages focused assistants for the repetitive jobs that drain staff time: collections, quote follow-up, supplier pricing, reporting, staff questions and document processing.</p>
+            </div>
+        </section>
+        <section class="skrs-section">
+            <div class="skrs-inner">
+                <div class="skrs-sectionhead">
+                    <p>CHOOSE THE JOB</p>
+                    <h2>Start with one repetitive task that has a clear business cost.</h2>
+                </div>
+                <div class="skrs-hub-grid">' . $cards . '</div>
+            </div>
+        </section>
+        <section class="skrs-final">
+            <div class="skrs-inner">
+                <p>NEED MORE THAN ONE?</p>
+                <h2>Combine several assistants into a managed Digital Team.</h2>
+                <a class="skrs-primary" href="' . esc_url( softkom_revenue_suite_contact_url( 'digital-team' ) ) . '">Plan a Digital Team →</a>
+            </div>
+        </section>
+    </div>';
+}
+
 function softkom_revenue_suite_hub_definition() {
     return array(
         'slug'     => 'business-revenue-efficiency',
@@ -310,6 +512,13 @@ function softkom_revenue_suite_hub_html() {
         <a href="' . esc_url( home_url( '/revenue-lab/' ) ) . '">Run the Website Sales Check →</a>
     </article>';
 
+    $cards .= '<article class="skrs-hub-card skrs-hub-card--digital-team">
+        <p>DIGITAL TEAM</p>
+        <h2>Which repetitive job should your team stop doing by hand?</h2>
+        <span>Collections, quote follow-up, supplier pricing, reporting, staff questions and document processing.</span>
+        <a href="' . esc_url( home_url( '/digital-team/' ) ) . '">Explore the Digital Team →</a>
+    </article>';
+
     foreach ( $offers as $slug => $offer ) {
         $cards .= '<article class="skrs-hub-card">
             <p>' . esc_html( $offer['title'] ) . '</p>
@@ -366,6 +575,39 @@ function softkom_revenue_suite_sync_pages() {
         wp_insert_post( wp_slash( $hub_post ) );
     }
 
+    $digital_team = get_page_by_path( 'digital-team', OBJECT, 'page' );
+    $digital_team_post = array(
+        'post_title' => 'Softkom Digital Team',
+        'post_name' => 'digital-team',
+        'post_type' => 'page',
+        'post_status' => 'publish',
+        'post_content' => softkom_revenue_suite_digital_team_html()
+    );
+    if ( $digital_team ) {
+        $digital_team_post['ID'] = $digital_team->ID;
+        wp_update_post( wp_slash( $digital_team_post ) );
+    } else {
+        wp_insert_post( wp_slash( $digital_team_post ) );
+    }
+
+    foreach ( softkom_revenue_suite_agents() as $agent_slug => $agent ) {
+        $agent_page_slug = 'digital-team-' . $agent_slug;
+        $agent_page = get_page_by_path( $agent_page_slug, OBJECT, 'page' );
+        $agent_post = array(
+            'post_title' => $agent['title'],
+            'post_name' => $agent_page_slug,
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'post_content' => softkom_revenue_suite_agent_html( $agent_slug, $agent )
+        );
+        if ( $agent_page ) {
+            $agent_post['ID'] = $agent_page->ID;
+            wp_update_post( wp_slash( $agent_post ) );
+        } else {
+            wp_insert_post( wp_slash( $agent_post ) );
+        }
+    }
+
     foreach ( softkom_revenue_suite_offers() as $slug => $offer ) {
         $page = get_page_by_path( $slug, OBJECT, 'page' );
         $post = array(
@@ -389,6 +631,10 @@ add_action( 'init', 'softkom_revenue_suite_sync_pages', 28 );
 
 function softkom_revenue_suite_slugs() {
     $slugs = array_keys( softkom_revenue_suite_offers() );
+    $slugs[] = 'digital-team';
+    foreach ( array_keys( softkom_revenue_suite_agents() ) as $agent_slug ) {
+        $slugs[] = 'digital-team-' . $agent_slug;
+    }
     $hub = softkom_revenue_suite_hub_definition();
     array_unshift( $slugs, $hub['slug'] );
     return $slugs;
