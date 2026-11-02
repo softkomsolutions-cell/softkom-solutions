@@ -77,6 +77,10 @@ function softkom_revenue_lab_shortcode() {
                     <input id="sk-rl-url" name="url" type="url" placeholder="https://yourcompany.co.za" required>
                     <button type="submit">Send in the AI customers</button>
                 </div>
+                <div class="sk-rl-competitor-inputs">
+                    <label for="sk-rl-competitor">Optional competitor URL</label>
+                    <input id="sk-rl-competitor" name="competitor_url" type="url" placeholder="https://competitor.co.za">
+                </div>
                 <p class="sk-rl-note">No login required. We inspect public pages only. Results are simulations, not guaranteed conversion forecasts.</p>
             </form>
         </section>
@@ -102,6 +106,19 @@ function softkom_revenue_lab_shortcode() {
                     <h2 id="sk-rl-result-title">Your simulated customer test</h2>
                     <p id="sk-rl-summary"></p>
                 </div>
+            </div>
+
+            <div class="sk-rl-wow-grid">
+                <section class="sk-rl-panel sk-rl-panel--battle" id="sk-rl-battle-panel" hidden>
+                    <div class="sk-rl-kicker">WEBSITE BATTLE</div>
+                    <h3>Which website wins the buyer?</h3>
+                    <div id="sk-rl-battle"></div>
+                </section>
+                <section class="sk-rl-panel sk-rl-panel--simulation" id="sk-rl-simulation-panel" hidden>
+                    <div class="sk-rl-kicker">SIMULATE THE FIX</div>
+                    <h3>What if the biggest gaps were repaired?</h3>
+                    <div id="sk-rl-simulation"></div>
+                </section>
             </div>
 
             <div class="sk-rl-grid">
@@ -338,6 +355,97 @@ function softkom_revenue_lab_scan_url( $url ) {
     );
 }
 
+
+function softkom_revenue_lab_simulate_fix( $result ) {
+    $signals = isset( $result['signals'] ) && is_array( $result['signals'] ) ? $result['signals'] : array();
+    $priority = array( 'has_contact', 'has_proof', 'has_testimonial', 'has_pricing', 'has_location', 'has_faq' );
+    $fixed = $signals;
+    $repairs = array();
+    foreach ( $priority as $key ) {
+        if ( empty( $fixed[ $key ] ) ) {
+            $fixed[ $key ] = true;
+            $repairs[] = $key;
+            if ( count( $repairs ) >= 3 ) { break; }
+        }
+    }
+
+    $before = (int) $result['successes'];
+    $after = 0;
+    $needs = array(
+        array( 'has_contact', 'has_phone' ),
+        array( 'has_proof', 'has_testimonial' ),
+        array( 'has_pricing', 'has_faq' ),
+        array( 'has_about', 'has_proof' ),
+        array( 'has_location', 'has_contact' ),
+    );
+    foreach ( $needs as $pair ) {
+        $met = 0;
+        foreach ( $pair as $need ) {
+            if ( ! empty( $fixed[ $need ] ) ) { $met++; }
+        }
+        if ( 2 === $met ) { $after++; }
+    }
+
+    $labels = array(
+        'has_contact' => 'clearer primary conversion action',
+        'has_proof' => 'stronger proof and case-study evidence',
+        'has_testimonial' => 'credible social proof',
+        'has_pricing' => 'pricing/value guidance',
+        'has_location' => 'clear service-area information',
+        'has_faq' => 'buyer objection handling',
+    );
+
+    return array(
+        'before' => $before,
+        'after'  => $after,
+        'repairs'=> array_values( array_map( function( $key ) use ( $labels ) { return $labels[ $key ]; }, $repairs ) ),
+        'note'   => 'Directional simulation only: this models whether missing buying signals are repaired. It is not a forecast of real conversion uplift.',
+    );
+}
+
+function softkom_revenue_lab_battle( $primary, $competitor ) {
+    $winner = 'tie';
+    if ( (int) $primary['score'] > (int) $competitor['score'] ) { $winner = 'primary'; }
+    if ( (int) $primary['score'] < (int) $competitor['score'] ) { $winner = 'competitor'; }
+
+    $reasons = array();
+    $signal_labels = array(
+        'has_contact' => 'clear conversion path',
+        'has_proof' => 'proof and credibility',
+        'has_testimonial' => 'social proof',
+        'has_pricing' => 'pricing/value clarity',
+        'has_location' => 'local/service-area confidence',
+        'has_faq' => 'objection handling',
+    );
+    foreach ( $signal_labels as $key => $label ) {
+        $a = ! empty( $primary['signals'][ $key ] );
+        $b = ! empty( $competitor['signals'][ $key ] );
+        if ( $a !== $b ) {
+            $reasons[] = array(
+                'advantage' => $a ? 'primary' : 'competitor',
+                'label' => $label,
+            );
+        }
+    }
+
+    return array(
+        'winner' => $winner,
+        'primary' => array(
+            'title' => $primary['title'],
+            'url' => $primary['url'],
+            'score' => $primary['score'],
+            'successes' => $primary['successes'],
+        ),
+        'competitor' => array(
+            'title' => $competitor['title'],
+            'url' => $competitor['url'],
+            'score' => $competitor['score'],
+            'successes' => $competitor['successes'],
+        ),
+        'reasons' => array_slice( $reasons, 0, 4 ),
+    );
+}
+
 function softkom_revenue_lab_ajax_scan() {
     check_ajax_referer( 'softkom_revenue_lab', 'nonce' );
     $url = isset( $_POST['url'] ) ? softkom_revenue_lab_normalize_url( wp_unslash( $_POST['url'] ) ) : new WP_Error( 'missing_url', 'Enter a website URL.' );
@@ -345,6 +453,19 @@ function softkom_revenue_lab_ajax_scan() {
 
     $result = softkom_revenue_lab_scan_url( $url );
     if ( is_wp_error( $result ) ) { wp_send_json_error( array( 'message' => $result->get_error_message() ), 422 ); }
+
+    $result['simulation'] = softkom_revenue_lab_simulate_fix( $result );
+
+    $competitor_raw = isset( $_POST['competitor_url'] ) ? trim( (string) wp_unslash( $_POST['competitor_url'] ) ) : '';
+    if ( '' !== $competitor_raw ) {
+        $competitor_url = softkom_revenue_lab_normalize_url( $competitor_raw );
+        if ( ! is_wp_error( $competitor_url ) ) {
+            $competitor = softkom_revenue_lab_scan_url( $competitor_url );
+            if ( ! is_wp_error( $competitor ) ) {
+                $result['battle'] = softkom_revenue_lab_battle( $result, $competitor );
+            }
+        }
+    }
 
     $token = wp_generate_password( 24, false, false );
     set_transient( 'softkom_rl_' . $token, $result, 30 * MINUTE_IN_SECONDS );
