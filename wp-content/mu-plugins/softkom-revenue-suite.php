@@ -229,6 +229,188 @@ function softkom_revenue_suite_efficiency_review() {
     );
 }
 
+
+function softkom_efficiency_review_form_html() {
+    $industries = array( 'Professional services','Retail / ecommerce','Construction / trades','Manufacturing','Healthcare','Property','Education','Technology','Hospitality','Other' );
+    $systems = array( 'Microsoft 365','Google Workspace','Xero','Sage','QuickBooks','CRM','Ecommerce platform','Project management tool','WhatsApp Business','AI tools','Other' );
+
+    $industry_options = '<option value="">Select industry</option>';
+    foreach ( $industries as $item ) { $industry_options .= '<option value="' . esc_attr( $item ) . '">' . esc_html( $item ) . '</option>'; }
+
+    $system_checks = '';
+    foreach ( $systems as $item ) {
+        $system_checks .= '<label class="skber-check"><input type="checkbox" name="systems[]" value="' . esc_attr( $item ) . '"><span>' . esc_html( $item ) . '</span></label>';
+    }
+
+    return '<form class="skber-form" data-skber-form>
+        <div class="skber-head">
+            <div>
+                <span class="skber-brand">SOFTKOM SOLUTIONS</span>
+                <h2>Business Efficiency Review</h2>
+                <p>Tell us how the business currently works. No technical preparation needed.</p>
+            </div>
+            <div class="skber-progress-wrap">
+                <span data-skber-progress-label>Step 1 of 5</span>
+                <div class="skber-progress-track"><i data-skber-progress></i></div>
+            </div>
+        </div>
+
+        <div data-skber-form-body>
+            <section data-skber-step>
+                <p class="skber-step-label">1 · About the business</p>
+                <div class="skber-grid">
+                    <label>Company name<input required name="company" autocomplete="organization"></label>
+                    <label>Your name<input required name="name" autocomplete="name"></label>
+                    <label>Work email<input required type="email" name="email" autocomplete="email"></label>
+                    <label>Phone<input name="phone" autocomplete="tel"></label>
+                    <label>Industry<select required name="industry">' . $industry_options . '</select></label>
+                    <label>Team size<select required name="team_size"><option value="">Select team size</option><option>1–5</option><option>6–15</option><option>16–30</option><option>31–75</option><option>76–150</option><option>150+</option></select></label>
+                </div>
+            </section>
+
+            <section data-skber-step hidden>
+                <p class="skber-step-label">2 · Where does the business feel inefficient?</p>
+                <div class="skber-choice-grid">
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="software-cost"><span>Software costs keep growing</span></label>
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="manual-capture"><span>Staff retype the same information</span></label>
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="lead-followup"><span>Leads or quotes are not followed up consistently</span></label>
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="collections"><span>Too much time goes into chasing invoices</span></label>
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="reporting"><span>Reports are assembled manually</span></label>
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="systems"><span>Systems do not talk to each other</span></label>
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="ai"><span>AI use is growing without clear control</span></label>
+                    <label class="skber-check"><input type="checkbox" name="pain[]" value="key-person"><span>Too much depends on one key person</span></label>
+                </div>
+                <label class="skber-full">Anything else slowing the business down?<textarea name="pain_notes" rows="4" placeholder="A short description is enough."></textarea></label>
+            </section>
+
+            <section data-skber-step hidden>
+                <p class="skber-step-label">3 · What do you currently use?</p>
+                <div class="skber-choice-grid">' . $system_checks . '</div>
+                <label class="skber-full">Other important systems or spreadsheets<textarea name="systems_notes" rows="4" placeholder="Examples: stock spreadsheet, job card system, custom CRM, supplier portal..."></textarea></label>
+            </section>
+
+            <section data-skber-step hidden>
+                <p class="skber-step-label">4 · Where is the time or money going?</p>
+                <div class="skber-grid">
+                    <label>Approx. monthly software spend<select name="software_spend"><option value="">Not sure</option><option>Under R2,500</option><option>R2,500–R7,500</option><option>R7,500–R15,000</option><option>R15,000–R30,000</option><option>R30,000+</option></select></label>
+                    <label>Manual admin each week<select name="manual_hours"><option value="">Not sure</option><option>Under 5 hours</option><option>5–10 hours</option><option>10–20 hours</option><option>20–40 hours</option><option>40+ hours</option></select></label>
+                    <label>Quotes / leads per month<select name="lead_volume"><option value="">Not sure</option><option>Under 20</option><option>20–50</option><option>51–100</option><option>101–250</option><option>250+</option></select></label>
+                    <label>Biggest priority<select required name="priority"><option value="">Choose one</option><option>Reduce costs</option><option>Save staff time</option><option>Increase sales / follow-up</option><option>Improve control</option><option>Reduce risk</option><option>Not sure yet</option></select></label>
+                </div>
+            </section>
+
+            <section data-skber-step hidden>
+                <p class="skber-step-label">5 · Final context</p>
+                <label class="skber-full">If Softkom could improve one thing in the next 90 days, what would make the biggest difference?<textarea required name="ninety_day_goal" rows="5" placeholder="Write it in your own words."></textarea></label>
+                <label class="skber-consent"><input required type="checkbox" name="consent" value="yes"><span>I agree that Softkom may use this information to assess the business and contact me about the review.</span></label>
+            </section>
+
+            <div class="skber-nav">
+                <button type="button" class="skber-secondary" data-skber-prev hidden>Back</button>
+                <div class="skber-nav-spacer"></div>
+                <button type="button" class="skber-primary" data-skber-next>Continue</button>
+                <button type="submit" class="skber-primary" data-skber-submit hidden>Send My Review Request</button>
+            </div>
+            <p class="skber-message" data-skber-message></p>
+        </div>
+
+        <div class="skber-success" data-skber-success hidden>
+            <span class="skber-success-mark">✓</span>
+            <h3>Thank you <span data-skber-success-name></span>.</h3>
+            <p>Your Business Efficiency Review request has been captured. Softkom now has enough context to prepare the next step without making you repeat everything on a call.</p>
+        </div>
+    </form>';
+}
+
+function softkom_efficiency_review_store_lead( $data ) {
+    if ( ! post_type_exists( 'softkom_lead' ) ) { return 0; }
+
+    $lead_id = wp_insert_post(
+        array(
+            'post_type' => 'softkom_lead',
+            'post_status' => 'private',
+            'post_title' => trim( $data['company'] . ' - Business Efficiency Review' ),
+        ),
+        true
+    );
+    if ( is_wp_error( $lead_id ) ) { return 0; }
+
+    $parts = preg_split( '/\s+/', trim( $data['name'] ), 2 );
+    update_post_meta( $lead_id, '_softkom_first_name', isset( $parts[0] ) ? $parts[0] : '' );
+    update_post_meta( $lead_id, '_softkom_last_name', isset( $parts[1] ) ? $parts[1] : '' );
+    update_post_meta( $lead_id, '_softkom_email', $data['email'] );
+    update_post_meta( $lead_id, '_softkom_phone', $data['phone'] );
+    update_post_meta( $lead_id, '_softkom_company', $data['company'] );
+    update_post_meta( $lead_id, '_softkom_traffic_source', 'business-efficiency-review' );
+    update_post_meta( $lead_id, '_softkom_acquisition_mode', 'business-efficiency-review' );
+    update_post_meta( $lead_id, '_softkom_pipeline_stage', 'new' );
+    update_post_meta( $lead_id, '_softkom_lead_temperature', 'WARM' );
+    update_post_meta( $lead_id, '_softkom_score_purchase_intent', 76 );
+    update_post_meta( $lead_id, '_softkom_score_commercial_fit', 78 );
+    update_post_meta( $lead_id, '_softkom_efficiency_review_payload', wp_json_encode( $data ) );
+
+    if ( function_exists( 'softkom_public_acquisition_activity' ) ) {
+        softkom_public_acquisition_activity( $lead_id, 'business_efficiency_review_submitted', '', 'WARM' );
+    }
+
+    return (int) $lead_id;
+}
+
+function softkom_efficiency_review_ajax_submit() {
+    check_ajax_referer( 'softkom_efficiency_review', 'nonce' );
+
+    $data = array(
+        'company' => isset($_POST['company']) ? sanitize_text_field(wp_unslash($_POST['company'])) : '',
+        'name' => isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '',
+        'email' => isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '',
+        'phone' => isset($_POST['phone']) ? sanitize_text_field(wp_unslash($_POST['phone'])) : '',
+        'industry' => isset($_POST['industry']) ? sanitize_text_field(wp_unslash($_POST['industry'])) : '',
+        'team_size' => isset($_POST['team_size']) ? sanitize_text_field(wp_unslash($_POST['team_size'])) : '',
+        'pain' => isset($_POST['pain']) ? array_values(array_map('sanitize_text_field',(array)wp_unslash($_POST['pain']))) : array(),
+        'pain_notes' => isset($_POST['pain_notes']) ? sanitize_textarea_field(wp_unslash($_POST['pain_notes'])) : '',
+        'systems' => isset($_POST['systems']) ? array_values(array_map('sanitize_text_field',(array)wp_unslash($_POST['systems']))) : array(),
+        'systems_notes' => isset($_POST['systems_notes']) ? sanitize_textarea_field(wp_unslash($_POST['systems_notes'])) : '',
+        'software_spend' => isset($_POST['software_spend']) ? sanitize_text_field(wp_unslash($_POST['software_spend'])) : '',
+        'manual_hours' => isset($_POST['manual_hours']) ? sanitize_text_field(wp_unslash($_POST['manual_hours'])) : '',
+        'lead_volume' => isset($_POST['lead_volume']) ? sanitize_text_field(wp_unslash($_POST['lead_volume'])) : '',
+        'priority' => isset($_POST['priority']) ? sanitize_text_field(wp_unslash($_POST['priority'])) : '',
+        'ninety_day_goal' => isset($_POST['ninety_day_goal']) ? sanitize_textarea_field(wp_unslash($_POST['ninety_day_goal'])) : '',
+    );
+
+    if ( ! $data['company'] || ! $data['name'] || ! is_email( $data['email'] ) || ! $data['industry'] || ! $data['team_size'] || ! $data['priority'] || ! $data['ninety_day_goal'] ) {
+        wp_send_json_error( array( 'message' => 'Please complete the required fields.' ), 400 );
+    }
+
+    if ( empty( $_POST['consent'] ) ) {
+        wp_send_json_error( array( 'message' => 'Please confirm that Softkom may contact you about the review.' ), 400 );
+    }
+
+    $lead_id = softkom_efficiency_review_store_lead( $data );
+    $admin_email = sanitize_email( get_option( 'admin_email' ) );
+    if ( is_email( $admin_email ) ) {
+        wp_mail(
+            $admin_email,
+            '[Softkom] Business Efficiency Review - ' . $data['company'],
+            implode( "\n", array(
+                'New Business Efficiency Review request.',
+                'Company: ' . $data['company'],
+                'Name: ' . $data['name'],
+                'Email: ' . $data['email'],
+                'Phone: ' . ( $data['phone'] ? $data['phone'] : '-' ),
+                'Industry: ' . $data['industry'],
+                'Team size: ' . $data['team_size'],
+                'Priority: ' . $data['priority'],
+                '90-day goal: ' . $data['ninety_day_goal'],
+                'Lead ID: ' . ( $lead_id ? $lead_id : 'not stored' ),
+            ) )
+        );
+    }
+
+    wp_send_json_success( array( 'lead_id' => $lead_id ) );
+}
+add_action( 'wp_ajax_softkom_efficiency_review_submit', 'softkom_efficiency_review_ajax_submit' );
+add_action( 'wp_ajax_nopriv_softkom_efficiency_review_submit', 'softkom_efficiency_review_ajax_submit' );
+
 function softkom_revenue_suite_efficiency_review_html() {
     $r = softkom_revenue_suite_efficiency_review();
     $pain=''; foreach($r['pain'] as $x){$pain.='<li><span>!</span>'.esc_html($x).'</li>';}
@@ -288,7 +470,8 @@ function softkom_revenue_suite_efficiency_review_html() {
                 </div>
             </div>
         </section>
-        <section class="skrs-final"><div class="skrs-inner"><p>START WITH THE BUSINESS</p><h2>Find where money, time and opportunities are leaking.</h2><a class="skrs-primary" href="'.$contact.'">Start the Business Efficiency Review →</a></div></section>
+        <section class="skrs-section skrs-intake-section"><div class="skrs-inner">' . softkom_efficiency_review_form_html() . '</div></section>
+        <section class="skrs-final"><div class="skrs-inner"><p>START WITH THE BUSINESS</p><h2>Find where money, time and opportunities are leaking.</h2><a class="skrs-primary" href="#business-efficiency-review-intake">Start the Business Efficiency Review →</a></div></section>
     </div>';
 }
 
@@ -782,6 +965,24 @@ function softkom_revenue_suite_assets() {
         array(),
         is_readable( $path ) ? (string) filemtime( $path ) : SOFTKOM_REVENUE_SUITE_VERSION
     );
+    if ( is_page( 'business-efficiency-review' ) ) {
+        $js_path = WPMU_PLUGIN_DIR . '/softkom-efficiency-review.js';
+        wp_enqueue_script(
+            'softkom-efficiency-review',
+            content_url( '/mu-plugins/softkom-efficiency-review.js' ),
+            array(),
+            is_readable( $js_path ) ? (string) filemtime( $js_path ) : SOFTKOM_REVENUE_SUITE_VERSION,
+            true
+        );
+        wp_localize_script(
+            'softkom-efficiency-review',
+            'SoftkomEfficiencyReview',
+            array(
+                'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce( 'softkom_efficiency_review' ),
+            )
+        );
+    }
 }
 add_action( 'wp_enqueue_scripts', 'softkom_revenue_suite_assets', 70 );
 
