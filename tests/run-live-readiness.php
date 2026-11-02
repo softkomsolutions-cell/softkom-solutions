@@ -43,6 +43,10 @@ softkom_live_assert( 'HOT lead auto-pipeline handler available', function_exists
 softkom_live_assert( 'Commercial persistence handler available', function_exists( 'softkom_v3_persist_commercial_recommendation' ) );
 softkom_live_assert( 'Public acquisition conversion handler available', function_exists( 'softkom_public_acquisition_track_conversion' ) );
 softkom_live_assert( 'Public acquisition notification handler available', function_exists( 'softkom_public_acquisition_notify' ) );
+softkom_live_assert( 'Revenue Lab scanner available', function_exists( 'softkom_revenue_lab_scan_url' ) );
+softkom_live_assert( 'Revenue Lab comparison engine available', function_exists( 'softkom_revenue_lab_battle' ) );
+softkom_live_assert( 'Revenue Lab fix simulator available', function_exists( 'softkom_revenue_lab_simulate_fix' ) );
+softkom_live_assert( 'Revenue Lab lead storage available', function_exists( 'softkom_revenue_lab_store_lead' ) );
 softkom_live_assert( 'Campaign performance function available', function_exists( 'softkom_v3_campaign_performance' ) );
 softkom_live_assert( 'Campaign tracked URL function available', function_exists( 'softkom_v3_campaign_tracked_url' ) );
 
@@ -51,6 +55,9 @@ softkom_live_assert( 'Assessment page exists', $assessment_page instanceof WP_Po
 
 $contact_page = get_page_by_path( 'contact' );
 softkom_live_assert( 'Contact page exists', $contact_page instanceof WP_Post && 'publish' === $contact_page->post_status );
+
+$revenue_lab_page = get_page_by_path( 'revenue-lab' );
+softkom_live_assert( 'Revenue Lab page exists', $revenue_lab_page instanceof WP_Post && 'publish' === $revenue_lab_page->post_status );
 
 $admin_email = sanitize_email( get_option( 'admin_email' ) );
 softkom_live_assert( 'Valid WordPress admin email configured', is_email( $admin_email ) );
@@ -75,6 +82,11 @@ softkom_live_assert( 'Commercial catalogue contains priced recurring plans', $ha
 $required_mu_files = array(
 	'softkom-public-acquisition.php',
 	'softkom-public-acquisition.js',
+	'softkom-revenue-lab.php',
+	'softkom-revenue-lab.js',
+	'softkom-revenue-lab.css',
+	'softkom-revenue-lab-wow.js',
+	'softkom-revenue-lab-wow.css',
 	'softkom-strategy-request.php',
 	'softkom-sales-notifications.php',
 	'softkom-industry-funnel.php',
