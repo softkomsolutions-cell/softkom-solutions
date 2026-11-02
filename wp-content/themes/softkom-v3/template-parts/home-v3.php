@@ -219,6 +219,7 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
   );
   ?>
 
+  <div id="contact">
   <?php
   softkom_v3_component_e(
     'cta-band',
@@ -230,6 +231,7 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     )
   );
   ?>
+  </div>
   </main>
 
   <?php softkom_v3_component_e( 'footer' ); ?>
