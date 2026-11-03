@@ -7,6 +7,21 @@ import { db } from "@/lib/db";
 import { currentUser, getContext } from "@/lib/context";
 import { AccessError, canManage, text, webUrl } from "@/lib/security";
 import * as workflow from "@/lib/workflow";
+import {
+  connectWordPress,
+  testWordPress,
+  disconnect,
+  saveBrandTerms,
+} from "@/lib/connections/service";
+import {
+  beginGoogle,
+  chooseProperty,
+  disconnectGoogle,
+} from "@/lib/analytics/service";
+import { requestSync } from "@/lib/analytics/sync";
+import { retryPublication } from "@/lib/publishing/worker";
+import { providerError, ProviderError } from "@/lib/connections/http";
+import { idSchema } from "@/lib/security";
 import { CmsType } from "@prisma/client";
 
 export type ActionState = { error?: string; success?: string };
@@ -18,6 +33,38 @@ export async function mutate(
   try {
     const data = Object.fromEntries(form);
     switch (form.get("operation")) {
+      case "wordpressConnect":
+        await connectWordPress(ctx, data);
+        break;
+      case "wordpressTest":
+        await testWordPress(ctx, idSchema.parse(data.siteId));
+        break;
+      case "googleProperty":
+        await chooseProperty(
+          ctx,
+          idSchema.parse(data.siteId),
+          z.string().max(2048).parse(data.property),
+        );
+        break;
+      case "searchSync":
+        await requestSync(ctx, idSchema.parse(data.siteId));
+        break;
+      case "retryPublication":
+        await retryPublication(ctx, idSchema.parse(data.id));
+        break;
+      case "brandTerms":
+        await saveBrandTerms(ctx, data.terms);
+        break;
+      case "disconnect": {
+        const siteId = idSchema.parse(data.siteId);
+        const provider = z
+          .enum(["WORDPRESS", "GOOGLE_SEARCH_CONSOLE"])
+          .parse(data.provider);
+        if (provider === "GOOGLE_SEARCH_CONSOLE")
+          await disconnectGoogle(ctx, siteId);
+        else await disconnect(ctx, siteId, provider);
+        break;
+      }
       case "site":
         await workflow.addSite(ctx, data);
         break;
@@ -50,11 +97,12 @@ export async function mutate(
     return {
       success:
         form.get("operation") === "publish"
-          ? "Request recorded. The connector is unavailable; nothing was published. See publication history."
+          ? "Publication request recorded. See its status and retry details below."
           : "Saved to your workspace.",
     };
   } catch (error) {
-    if (error instanceof AccessError) return { error: error.message };
+    if (error instanceof AccessError || error instanceof ProviderError)
+      return { error: error.message };
     if (error instanceof z.ZodError)
       return {
         error: error.issues
@@ -156,7 +204,7 @@ export async function completeOnboarding(
             connections: {
               create: [
                 { provider: "WORDPRESS", status: "REQUIRES_SETUP" },
-                { provider: "GOOGLE_SEARCH_CONSOLE", status: "COMING_SOON" },
+                { provider: "GOOGLE_SEARCH_CONSOLE", status: "REQUIRES_SETUP" },
                 { provider: "GOOGLE_ANALYTICS_4", status: "COMING_SOON" },
               ],
             },
@@ -192,4 +240,23 @@ export async function completeOnboarding(
     maxAge: 86400,
   });
   redirect("/workspace/dashboard");
+}
+
+export async function startGoogle(
+  _previous: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const ctx = await getContext();
+  let url: string;
+  try {
+    url = await beginGoogle(ctx, idSchema.parse(form.get("siteId")));
+  } catch (error) {
+    return {
+      error:
+        error instanceof AccessError
+          ? error.message
+          : providerError(error).message,
+    };
+  }
+  redirect(url);
 }

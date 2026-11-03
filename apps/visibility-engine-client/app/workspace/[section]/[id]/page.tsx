@@ -307,10 +307,36 @@ export default async function Detail({
                   </a>
                 )}
                 <small>
-                  Revision {p.requestedRevision} · Attempt {p.attempts} ·{" "}
+                  Requested / approved revision {p.requestedRevision} · Attempt {p.attempts} ·{" "}
                   {date(p.createdAt)}
                   {p.externalId ? ` · External ID ${p.externalId}` : ""}
                 </small>
+                <small>
+                  Last attempt:{" "}
+                  {p.lastAttemptAt?.toLocaleString("en-ZA", {
+                    timeZone: "Africa/Johannesburg",
+                  }) || "Not yet"}{" "}
+                  · Verified:{" "}
+                  {p.verifiedAt?.toLocaleString("en-ZA", {
+                    timeZone: "Africa/Johannesburg",
+                  }) || "Not yet"}
+                </small>
+                {p.verificationError && (
+                  <p className="notice error">{p.verificationError}</p>
+                )}
+                {p.status === "FAILED" &&
+                  canManage(ctx.role) &&
+                  p.attempts < 5 && (
+                    <ActionForm operation="retryPublication">
+                      <input type="hidden" name="id" value={p.id} />
+                      <button className="secondary">Retry publication</button>
+                    </ActionForm>
+                  )}
+                {p.status === "FAILED" && p.attempts >= 5 && (
+                  <p>
+                    Maximum attempts reached. Contact your manager for recovery.
+                  </p>
+                )}
                 {p.publishedAt && (
                   <small>Published {date(p.publishedAt)}</small>
                 )}
@@ -319,7 +345,7 @@ export default async function Detail({
                 )}
                 <small>
                   {p.nextRetryAt
-                    ? `Retry after ${date(p.nextRetryAt)}`
+                    ? `Retry after ${p.nextRetryAt.toLocaleString("en-ZA",{timeZone:"Africa/Johannesburg"})} SAST`
                     : "No automatic retry scheduled"}
                 </small>
               </article>
@@ -328,8 +354,8 @@ export default async function Detail({
               <>
                 <div className="notice">
                   <p>
-                    WordPress publishing is not implemented. A request records a
-                    failure and sends no content.
+                    Only the approved revision is queued. A verified WordPress
+                    connection and a running publication worker are required.
                   </p>
                 </div>
                 <ActionForm operation="publish">
@@ -341,7 +367,9 @@ export default async function Detail({
                       maxLength={2000}
                     />
                   )}
-                  <button className="secondary">Record publish request</button>
+                  <button className="secondary">
+                    Publish approved revision
+                  </button>
                 </ActionForm>
               </>
             )}

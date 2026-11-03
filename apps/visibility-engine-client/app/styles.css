@@ -1710,3 +1710,6 @@ footer span {
     font-size: 28px;
   }
 }
+
+.search-content-table { min-width: 940px; }
+.search-content-table td:not(:first-child) { white-space: nowrap; }

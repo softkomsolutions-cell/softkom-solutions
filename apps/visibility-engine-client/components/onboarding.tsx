@@ -91,7 +91,7 @@ export function Onboarding({ businessName }: { businessName: string }) {
           </p>
           <div className="connection-row">
             <strong>Google Search Console</strong>
-            <span className="badge">Connection available soon</span>
+            <span className="badge">Connect after setup</span>
           </div>
           <div className="connection-row">
             <strong>CMS publishing</strong>

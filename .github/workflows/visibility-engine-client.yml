@@ -27,6 +27,7 @@ jobs:
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: ci-only-test-secret-not-for-production-visibility
       NEXT_TELEMETRY_DISABLED: '1'
+      CONNECTION_ENCRYPTION_KEY: BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc=
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,8 +41,11 @@ jobs:
       - run: npm run db:migrate
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm run test:services
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
       - run: npm audit --omit=dev
+      - if: always()
+        run: npm run test:services -- --stop

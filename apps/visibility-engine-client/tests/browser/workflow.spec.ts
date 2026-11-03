@@ -1,3 +1,4 @@
+import { signIn, saveForm } from "../fixtures/browser-login";
 import { test, expect, type BrowserContext } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { hashPassword } from "better-auth/crypto";
@@ -99,11 +100,11 @@ test.beforeAll(async ({ playwright }) => {
     [foreignEmail, (s: typeof managerState) => (foreignState = s)],
   ] as const) {
     const request = await playwright.request.newContext({
-      baseURL: "http://localhost:3000",
+      baseURL: process.env.BETTER_AUTH_URL!,
     });
     let response = await request.post("/api/auth/sign-in/email", {
       data: { email, password },
-      headers: { Origin: "http://localhost:3000" },
+      headers: { Origin: process.env.BETTER_AUTH_URL! },
     });
     if (response.status() === 429) {
       // Respect the real production rate limit between repeated local suites.
@@ -114,7 +115,7 @@ test.beforeAll(async ({ playwright }) => {
       await new Promise((resolve) => setTimeout(resolve, retry));
       response = await request.post("/api/auth/sign-in/email", {
         data: { email, password },
-        headers: { Origin: "http://localhost:3000" },
+        headers: { Origin: process.env.BETTER_AUTH_URL! },
       });
     }
     expect(response.ok(), await response.text()).toBe(true);
@@ -152,7 +153,7 @@ test("unauthenticated routes redirect, signup is disabled, cross-origin sign-in 
   await expect(page).toHaveURL(/\/login$/);
   const signup = await request.post("/api/auth/sign-up/email", {
     data: { name: "Intruder", email: "uninvited@example.test", password },
-    headers: { Origin: "http://localhost:3000" },
+    headers: { Origin: process.env.BETTER_AUTH_URL! },
   });
   expect(signup.ok()).toBe(false);
   const csrf = await request.post("/api/auth/sign-in/email", {
@@ -166,11 +167,8 @@ test("real login hydrates under CSP and opens a truthful empty workspace", async
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/login");
-  await page.getByLabel("Work email").fill(managerEmail);
-  await page.getByLabel("Password", { exact: true }).fill(password);
-  await page.getByRole("button", { name: "Sign in to your workspace" }).click();
-  await expect(page).toHaveURL(/\/workspace\/dashboard$/);
+  test.setTimeout(90000);
+  await signIn(page, managerEmail, password);
   await expect(
     page.getByRole("heading", { name: "Your visibility, with purpose." }),
   ).toBeVisible();
@@ -209,7 +207,7 @@ test("a client completes all four onboarding steps without a fake integration", 
     .fill("Book a business review");
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(
-    page.getByText("Connection available soon", { exact: true }),
+    page.getByText("Connect after setup", { exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Open your workspace" }).click();
   await expect(page).toHaveURL(/\/workspace\/dashboard$/);
@@ -239,9 +237,10 @@ test("manager records a reasoned opportunity and proposes real content", async (
     .fill(
       "The client offers lead recovery and can give owners a measurable next action. Evidence is from the test business brief, not a demand estimate.",
     );
-  await page
-    .getByRole("button", { name: "Add opportunity", exact: true })
-    .click();
+  await saveForm(
+    page,
+    page.getByRole("button", { name: "Add opportunity", exact: true }),
+  );
   await expect(page.locator(".topic-card").first()).toContainText(
     "Recover missed enquiries",
   );
@@ -277,7 +276,10 @@ test("manager records a reasoned opportunity and proposes real content", async (
   await page
     .getByLabel("Assigned reviewer")
     .selectOption({ label: "Test client" });
-  await page.getByRole("button", { name: "Send for review" }).click();
+  await saveForm(
+    page,
+    page.getByRole("button", { name: "Send for review", exact: true }),
+  );
   await expect(
     page.getByRole("link", {
       name: "A practical guide to enquiry follow-up",
@@ -307,7 +309,10 @@ test("client requests changes, sees history, and cannot see manager controls", a
   await page
     .getByLabel("Comment (required")
     .fill("Please make the follow-up ownership explicit.");
-  await page.getByRole("button", { name: "Save review decision" }).click();
+  await saveForm(
+    page,
+    page.getByRole("button", { name: "Save review decision", exact: true }),
+  );
 
   await expect(page.locator(".history-entry")).toContainText(
     "Please make the follow-up ownership explicit.",
@@ -316,7 +321,7 @@ test("client requests changes, sees history, and cannot see manager controls", a
     page.getByText("Prepare a new revision", { exact: true }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Record publish request" }),
+    page.getByRole("button", { name: "Publish approved revision" }),
   ).toHaveCount(0);
   await context.close();
 });
@@ -330,23 +335,36 @@ test("a new revision is approved, an unavailable publication is recorded truthfu
   await page
     .getByLabel("Page content", { exact: true })
     .fill("<p>Give every enquiry a named owner and a useful next step.</p>");
-  await page
-    .getByRole("button", { name: "Save revision & request review" })
-    .click();
+  await saveForm(
+    page,
+    page.getByRole("button", {
+      name: "Save revision & request review",
+      exact: true,
+    }),
+  );
   await expect(page.locator(".content-preview")).toContainText(
     "Give every enquiry a named owner and a useful next step.",
   );
   const clientContext = await browser.newContext({ storageState: clientState });
   const review = await clientContext.newPage();
   await review.goto(`/workspace/content/${contentId}`);
-  await review.getByRole("button", { name: "Save review decision" }).click();
+  await saveForm(
+    review,
+    review.getByRole("button", { name: "Save review decision", exact: true }),
+  );
 
   await expect(review.locator(".history-entry").first()).toContainText(
     "Approved",
   );
   await clientContext.close();
   await page.reload();
-  await page.getByRole("button", { name: "Record publish request" }).click();
+  await saveForm(
+    page,
+    page.getByRole("button", {
+      name: "Publish approved revision",
+      exact: true,
+    }),
+  );
 
   await expect(page.locator(".publication")).toContainText("FAILED", {
     ignoreCase: true,

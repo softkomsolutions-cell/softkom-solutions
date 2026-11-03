@@ -1,12 +1,8 @@
+import { ConnectionPanels } from "./connections";
+import { SearchInsights } from "./search-insights";
 import Link from "next/link";
 import { localDay } from "@/lib/time";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  CheckCheck,
-  Globe2,
-  Target,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight, CheckCheck, Target } from "lucide-react";
 import type { Context } from "@/lib/context";
 import { canManage } from "@/lib/security";
 import { searchTotals, type WorkspaceData, type Filters } from "@/lib/queries";
@@ -645,56 +641,7 @@ export function Calendar({ data, filters }: Props) {
 export function Connections({ data, ctx }: Props) {
   return (
     <>
-      <div className="notice">
-        <Globe2 size={20} />
-        <div>
-          <strong>
-            Your website is a record. A connection is a verified capability.
-          </strong>
-          <p>
-            Adding a site does not authorise publishing or connect Google data.
-            No credentials are requested until a real connector is available.
-          </p>
-        </div>
-      </div>
-      {data.sites.map((s) => (
-        <section key={s.id} className="panel">
-          <div className="panel-head">
-            <div>
-              <span className="eyebrow">{s.cms}</span>
-              <h2>{s.name}</h2>
-              <a href={s.baseUrl} target="_blank" rel="noopener noreferrer">
-                {s.baseUrl} ↗
-              </a>
-            </div>
-            <Badge value={s.status} />
-          </div>
-          <div className="connection-grid">
-            {["WORDPRESS", "GOOGLE_SEARCH_CONSOLE", "GOOGLE_ANALYTICS_4"].map(
-              (provider) => {
-                const c = s.connections.find((c) => c.provider === provider);
-                return (
-                  <article className="connection-card" key={provider}>
-                    <span className="connection-symbol">
-                      {provider === "WORDPRESS" ? "W" : "G"}
-                    </span>
-                    <h3>{label(provider)}</h3>
-                    <Badge value={c?.status || "NOT_CONNECTED"} />
-                    <p>
-                      {provider === "WORDPRESS"
-                        ? "Requires Softkom setup. The publishing connector is not implemented yet."
-                        : "Connection available soon. No measurement data is fetched automatically."}
-                    </p>
-                    {c?.lastSyncedAt && (
-                      <small>Last sync: {date(c.lastSyncedAt)}</small>
-                    )}
-                  </article>
-                );
-              },
-            )}
-          </div>
-        </section>
-      ))}
+      <ConnectionPanels data={data} ctx={ctx} />
       {!data.sites.length && (
         <section className="panel">
           <Empty
@@ -740,14 +687,16 @@ function groupedMetrics(
     (m) => m.date >= from && m.date < to,
   )) {
     const name = metric[key] || "Not recorded";
-    groups.set(name, [...(groups.get(name) || []), metric]);
+    const group = groups.get(name) || [];
+    group.push(metric);
+    groups.set(name, group);
   }
   return Array.from(groups, ([name, rows]) => ({
     name,
     ...searchTotals(rows),
   })).sort((a, b) => b.clicks - a.clicks);
 }
-export function Analytics({ data, filters }: Props) {
+export function Analytics({ data, filters, ctx }: Props) {
   const current = data.metrics.filter((m) => m.date >= data.range.from);
   const totals = searchTotals(current);
   const pages = groupedMetrics(data, "pageUrl", data.range.from, data.range.to);
@@ -770,6 +719,33 @@ export function Analytics({ data, filters }: Props) {
   return (
     <>
       <FiltersBar data={data} filters={filters} />
+      {current.length > 0 && (
+        <div className="kpis">
+          <Metric
+            title="Clicks"
+            value={totals.clicks.toLocaleString()}
+            note="Recorded search-result clicks"
+          />
+          <Metric
+            title="Impressions"
+            value={totals.impressions.toLocaleString()}
+            note="Recorded search appearances"
+          />
+          <Metric
+            title="CTR"
+            value={
+              totals.ctr === null ? "—" : `${(totals.ctr * 100).toFixed(2)}%`
+            }
+            note="Total clicks ÷ total impressions"
+          />
+          <Metric
+            title="Average position"
+            value={totals.position?.toFixed(1) || "—"}
+            note="Weighted by recorded impressions"
+          />
+        </div>
+      )}
+      <SearchInsights data={data} terms={ctx.organisation.brandedTerms} />
       {!hasConnection && (
         <div className="notice">
           <strong>Google Search Console is not connected.</strong>
@@ -789,30 +765,6 @@ export function Analytics({ data, filters }: Props) {
         </section>
       ) : (
         <>
-          <div className="kpis">
-            <Metric
-              title="Clicks"
-              value={totals.clicks.toLocaleString()}
-              note="Recorded search-result clicks"
-            />
-            <Metric
-              title="Impressions"
-              value={totals.impressions.toLocaleString()}
-              note="Recorded search appearances"
-            />
-            <Metric
-              title="CTR"
-              value={
-                totals.ctr === null ? "—" : `${(totals.ctr * 100).toFixed(2)}%`
-              }
-              note="Total clicks ÷ total impressions"
-            />
-            <Metric
-              title="Average position"
-              value={totals.position?.toFixed(1) || "—"}
-              note="Weighted by recorded impressions"
-            />
-          </div>
           <p className="fine">
             Sources:{" "}
             {Array.from(new Set(current.map((m) => label(m.source)))).join(
@@ -831,6 +783,8 @@ export function Analytics({ data, filters }: Props) {
                         <th>{key === "pageUrl" ? "Page URL" : "Query"}</th>
                         <th>Clicks</th>
                         <th>Impressions</th>
+                        <th>CTR</th>
+                        <th>Position</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -841,6 +795,12 @@ export function Analytics({ data, filters }: Props) {
                             <td>{r.name}</td>
                             <td>{r.clicks}</td>
                             <td>{r.impressions}</td>
+                            <td>
+                              {r.ctr === null
+                                ? "—"
+                                : (r.ctr * 100).toFixed(2) + "%"}
+                            </td>
+                            <td>{r.position?.toFixed(1) || "—"}</td>
                           </tr>
                         ))}
                     </tbody>
