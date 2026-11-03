@@ -271,6 +271,11 @@ function softkom_v3_is_system_page() {
 		'case-studies',
 		'company',
 		'assessment',
+		'automate-quote-follow-up-south-africa',
+		'reduce-manual-admin-business',
+		'reduce-software-subscription-costs',
+		'recover-old-sales-leads-south-africa',
+		'business-process-automation-johannesburg',
               'insights-3',
 		'insights',
 		'contact',
@@ -515,7 +520,7 @@ function softkom_v3_dequeue_bloat() {
 	// Only strip Elementor JS when the Softkom shortcode owns the page body
 	// (homepage / platforms / product pages) Ã¢â‚¬â€ avoid breaking non-Softkom Elementor layouts.
 	$softkom_owned = is_front_page()
-		|| is_page( array( 'platforms', 'marketplaceos', 'brick-alpha', 'company', 'contact', 'insights-3', 'insights', 'services', 'industries', 'case-studies' ) );
+		|| is_page( array( 'platforms', 'marketplaceos', 'brick-alpha', 'company', 'contact', 'insights-3', 'insights', 'services', 'industries', 'case-studies', 'automate-quote-follow-up-south-africa', 'reduce-manual-admin-business', 'reduce-software-subscription-costs', 'recover-old-sales-leads-south-africa', 'business-process-automation-johannesburg' ) );
 	if ( $softkom_owned ) {
 		foreach ( $scripts as $handle ) {
 			wp_dequeue_script( $handle );
@@ -814,6 +819,34 @@ add_shortcode( 'softkom_product_brick_alpha_v3', function () {
 } );
 
 /**
+ * Render a high-intent problem/search landing page.
+ *
+ * @param string $slug Problem page slug.
+ * @return string
+ */
+function softkom_v3_render_problem_intent( $slug ) {
+	$softkom_problem_slug = sanitize_title( (string) $slug );
+	ob_start();
+	$partial = get_stylesheet_directory() . '/template-parts/page-problem-intent.php';
+	if ( file_exists( $partial ) ) {
+		include $partial;
+	}
+	return ob_get_clean();
+}
+
+add_shortcode(
+	'softkom_problem_intent_v3',
+	function ( $atts ) {
+		$atts = shortcode_atts(
+			array( 'problem' => '' ),
+			$atts,
+			'softkom_problem_intent_v3'
+		);
+		return softkom_v3_render_problem_intent( $atts['problem'] );
+	}
+);
+
+/**
  * Render a RC2.3 service decision page by catalog slug.
  *
  * @param string $slug Service id (e.g. business-systems).
@@ -930,6 +963,26 @@ function softkom_v3_head_meta() {
 		$title = 'Book a Discovery Call | Softkom';
 		$desc  = 'Start a focused conversation about Softkom platforms or a specialised product for your industry.';
 		$url   = home_url( '/contact/' );
+	} elseif ( is_page( 'automate-quote-follow-up-south-africa' ) ) {
+		$title = 'Automate Quote Follow-Up South Africa | Softkom';
+		$desc  = 'Build consistent quote follow-up, recover dormant opportunities and reduce manual sales chasing with practical automation for South African businesses.';
+		$url   = home_url( '/automate-quote-follow-up-south-africa/' );
+	} elseif ( is_page( 'reduce-manual-admin-business' ) ) {
+		$title = 'Reduce Manual Admin in Your Business | Softkom';
+		$desc  = 'Find repetitive admin, duplicate capture and manual hand-offs that can be simplified or automated without replacing every business system.';
+		$url   = home_url( '/reduce-manual-admin-business/' );
+	} elseif ( is_page( 'reduce-software-subscription-costs' ) ) {
+		$title = 'Reduce Software Subscription Costs | Softkom';
+		$desc  = 'Identify unused licences, overlapping SaaS tools and renewal waste with a practical software cost review for growing businesses.';
+		$url   = home_url( '/reduce-software-subscription-costs/' );
+	} elseif ( is_page( 'recover-old-sales-leads-south-africa' ) ) {
+		$title = 'Recover Old Sales Leads South Africa | Softkom';
+		$desc  = 'Find recoverable enquiries, quotes and dormant customers before spending more on new leads, then put a measurable follow-up process around them.';
+		$url   = home_url( '/recover-old-sales-leads-south-africa/' );
+	} elseif ( is_page( 'business-process-automation-johannesburg' ) ) {
+		$title = 'Business Process Automation Johannesburg | Softkom';
+		$desc  = 'Business process automation for Johannesburg SMEs: reduce repetitive work, connect systems and improve operational control with practical implementation.';
+		$url   = home_url( '/business-process-automation-johannesburg/' );
 	} else {
 		$queried = get_queried_object();
 		if ( $queried && ! empty( $queried->post_title ) ) {
@@ -1267,6 +1320,26 @@ function softkom_v3_install_pages() {
         'Business Systems Assessment',
         '[softkom_assessment_v3]'
     );
+
+    /*
+     * High-intent search entry pages. These are intentionally problem-led:
+     * each answers one commercial search intent and routes into a diagnostic.
+     */
+    $problem_pages = array(
+        'automate-quote-follow-up-south-africa' => 'Automate Quote Follow-Up South Africa',
+        'reduce-manual-admin-business' => 'Reduce Manual Admin in Your Business',
+        'reduce-software-subscription-costs' => 'Reduce Software Subscription Costs',
+        'recover-old-sales-leads-south-africa' => 'Recover Old Sales Leads South Africa',
+        'business-process-automation-johannesburg' => 'Business Process Automation Johannesburg',
+    );
+
+    foreach ( $problem_pages as $slug => $title ) {
+        $upsert_page(
+            $slug,
+            $title,
+            '[softkom_problem_intent_v3 problem="' . esc_attr( $slug ) . '"]'
+        );
+    }
 
     /*
      * Rebuild WordPress routes after changing hierarchy.
