@@ -1,0 +1,103 @@
+{
+  "engine": "Softkom Visibility Engine",
+  "version": 1,
+  "updated": "2026-11-03",
+  "opportunities": [
+    {
+      "priority": 1,
+      "slug": "automate-quote-follow-up-south-africa",
+      "intent": "commercial",
+      "status": "built_pending_deploy",
+      "funnel": "business-efficiency-review / lost-lead-recovery",
+      "reason": "Direct revenue-leak problem; local results include generic automation products but few problem-first diagnostic offers."
+    },
+    {
+      "priority": 2,
+      "slug": "reduce-manual-admin-business",
+      "intent": "commercial",
+      "status": "built_pending_deploy",
+      "funnel": "business-efficiency-review / business-process-review",
+      "reason": "Strong fit to Softkom positioning and broad SME pain without requiring a specific software stack."
+    },
+    {
+      "priority": 3,
+      "slug": "reduce-software-subscription-costs",
+      "intent": "commercial",
+      "status": "built_pending_deploy",
+      "funnel": "software-cost-check",
+      "reason": "Clear cost-saving intent with comparatively weak local service coverage."
+    },
+    {
+      "priority": 4,
+      "slug": "recover-old-sales-leads-south-africa",
+      "intent": "commercial",
+      "status": "built_pending_deploy",
+      "funnel": "lost-lead-recovery",
+      "reason": "High commercial value and directly measurable recovery outcome."
+    },
+    {
+      "priority": 5,
+      "slug": "business-process-automation-johannesburg",
+      "intent": "commercial_local",
+      "status": "built_pending_deploy",
+      "funnel": "business-process-review",
+      "reason": "Local SERP is mixed with jobs and broad consultancies, creating room for a buyer-focused SME page."
+    },
+    {
+      "priority": 6,
+      "slug": "invoice-chasing-automation-south-africa",
+      "intent": "commercial",
+      "status": "research_next",
+      "funnel": "payment-chaser / business-process-review",
+      "reason": "Clear pain and buying intent; local competitors exist, so Softkom must differentiate through integration, control and measurable recovery."
+    },
+    {
+      "priority": 7,
+      "slug": "automate-management-reporting-south-africa",
+      "intent": "commercial",
+      "status": "research_next",
+      "funnel": "digital-team / business-process-review",
+      "reason": "Recurring reporting is explicitly marketed by local automation competitors, validating demand."
+    },
+    {
+      "priority": 8,
+      "slug": "reduce-duplicate-data-entry",
+      "intent": "commercial",
+      "status": "research_next",
+      "funnel": "business-efficiency-review / systems-integration",
+      "reason": "Concrete operational pain with strong fit to Softkom integration capability."
+    },
+    {
+      "priority": 9,
+      "slug": "ai-policy-small-business-south-africa",
+      "intent": "decision_support",
+      "status": "research_next",
+      "funnel": "ai-usage-risk-review",
+      "reason": "Current South African AI governance uncertainty creates useful demand, but page must stay factual and current."
+    },
+    {
+      "priority": 10,
+      "slug": "business-depends-on-one-employee",
+      "intent": "problem_awareness",
+      "status": "research_next",
+      "funnel": "business-memory-continuity",
+      "reason": "Distinctive Softkom offer with less direct local competition and strong owner-level pain."
+    },
+    {
+      "priority": 11,
+      "slug": "website-enquiries-not-being-followed-up",
+      "intent": "commercial",
+      "status": "research_next",
+      "funnel": "revenue-lab / lost-lead-recovery",
+      "reason": "Connects website conversion with operational follow-up, which most SEO agencies treat separately."
+    },
+    {
+      "priority": 12,
+      "slug": "when-to-replace-spreadsheets-business",
+      "intent": "decision_support",
+      "status": "research_next",
+      "funnel": "business-efficiency-review / custom-software",
+      "reason": "Natural bridge from operational pain to custom systems without pushing a build too early."
+    }
+  ]
+}
