@@ -104,6 +104,78 @@ $pages = array(
         'secondary_label' => 'Start With an Efficiency Review',
         'secondary_url' => '/business-efficiency-review/'
     ),
+    'invoice-chasing-automation-south-africa' => array(
+        'eyebrow' => 'INVOICE CHASING AUTOMATION',
+        'title' => 'Automate invoice chasing without annoying good customers',
+        'intro' => 'Late payments create cash-flow pressure and repetitive admin. Softkom helps South African businesses build a controlled follow-up process around overdue invoices, with the right reminders, stop conditions, approvals and escalation points.',
+        'problem' => 'The opportunity is not to send more messages. It is to make sure every overdue account gets the right next action, while disputes, promises to pay and recent payments are handled correctly.',
+        'signals' => array(
+            'Invoices are chased only when someone remembers.',
+            'Finance staff work from ageing spreadsheets or exports.',
+            'Customers who already replied still receive generic reminders.',
+            'Promises to pay are not tracked consistently.',
+            'Management cannot see what is overdue, disputed or genuinely at risk.'
+        ),
+        'outcomes' => array(
+            'A clear reminder and escalation cadence.',
+            'Stop rules for paid, disputed or promised accounts.',
+            'Approval controls for sensitive or high-value cases.',
+            'A focused queue for accounts that need human judgement.',
+            'Better visibility of overdue debt and follow-up activity.'
+        ),
+        'cta_label' => 'Review Our Invoice Chasing Process',
+        'cta_url' => '/business-process-review/?source=seo-problem-page&offer=invoice-chasing',
+        'secondary_label' => 'See the Business Efficiency Review',
+        'secondary_url' => '/business-efficiency-review/'
+    ),
+    'automate-management-reporting-south-africa' => array(
+        'eyebrow' => 'MANAGEMENT REPORTING AUTOMATION',
+        'title' => 'Automate recurring management reports without rebuilding them by hand',
+        'intro' => 'Weekly and monthly reports often depend on someone exporting data, cleaning spreadsheets and combining information from several systems. Softkom helps businesses turn recurring reporting into a controlled, repeatable process.',
+        'problem' => 'Reporting becomes expensive when the same data is extracted, checked and reformatted every period before management can use it.',
+        'signals' => array(
+            'The same report is rebuilt every week or month.',
+            'Data is copied from accounting, CRM or operational systems into spreadsheets.',
+            'Different teams produce different versions of the same number.',
+            'Reports arrive late because one person has to assemble them.',
+            'Management spends time checking the report instead of acting on it.'
+        ),
+        'outcomes' => array(
+            'A defined source of truth for each metric.',
+            'Automated data collection and recurring report generation.',
+            'Exception flags where numbers need human review.',
+            'Consistent distribution to the right managers.',
+            'Less manual consolidation and faster decision-making.'
+        ),
+        'cta_label' => 'Review Our Reporting Process',
+        'cta_url' => '/business-process-review/?source=seo-problem-page&offer=management-reporting',
+        'secondary_label' => 'See the Business Efficiency Review',
+        'secondary_url' => '/business-efficiency-review/'
+    ),
+    'reduce-duplicate-data-entry' => array(
+        'eyebrow' => 'REDUCE DUPLICATE DATA ENTRY',
+        'title' => 'Stop entering the same business information into multiple systems',
+        'intro' => 'When customer, order or finance data is copied between CRM, accounting, ecommerce and spreadsheets, staff lose time and errors multiply. Softkom helps connect the hand-off so information is captured once and moved safely.',
+        'problem' => 'Integration is not just moving data. Each system needs a clear role, record-matching rules and a safe way to handle failed or uncertain updates.',
+        'signals' => array(
+            'Customer details are retyped between CRM and accounting.',
+            'Orders are copied manually into operational or finance systems.',
+            'Staff correct mismatched records after imports.',
+            'Nobody is sure which system owns a field.',
+            'Failed updates are discovered only when a customer or manager notices.'
+        ),
+        'outcomes' => array(
+            'Clear ownership for customer and transaction data.',
+            'One automated hand-off at a time, starting with the highest-value process.',
+            'Record matching and duplicate prevention rules.',
+            'Failure alerts instead of silent data loss.',
+            'Less retyping and fewer downstream corrections.'
+        ),
+        'cta_label' => 'Review Our System Hand-Offs',
+        'cta_url' => '/business-efficiency-review/?source=seo-problem-page&offer=duplicate-data-entry',
+        'secondary_label' => 'See Systems Integration',
+        'secondary_url' => '/services/process-integrations/'
+    ),
     'business-process-automation-johannesburg' => array(
         'eyebrow' => 'BUSINESS PROCESS AUTOMATION · JOHANNESBURG',
         'title' => 'Business process automation for Johannesburg SMEs',
