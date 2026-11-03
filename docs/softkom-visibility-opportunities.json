@@ -47,7 +47,7 @@
       "priority": 6,
       "slug": "invoice-chasing-automation-south-africa",
       "intent": "commercial",
-      "status": "research_next",
+      "status": "built_pending_deploy",
       "funnel": "payment-chaser / business-process-review",
       "reason": "Clear pain and buying intent; local competitors exist, so Softkom must differentiate through integration, control and measurable recovery."
     },
@@ -55,7 +55,7 @@
       "priority": 7,
       "slug": "automate-management-reporting-south-africa",
       "intent": "commercial",
-      "status": "research_next",
+      "status": "built_pending_deploy",
       "funnel": "digital-team / business-process-review",
       "reason": "Recurring reporting is explicitly marketed by local automation competitors, validating demand."
     },
@@ -63,7 +63,7 @@
       "priority": 8,
       "slug": "reduce-duplicate-data-entry",
       "intent": "commercial",
-      "status": "research_next",
+      "status": "built_pending_deploy",
       "funnel": "business-efficiency-review / systems-integration",
       "reason": "Concrete operational pain with strong fit to Softkom integration capability."
     },
