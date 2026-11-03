@@ -276,6 +276,9 @@ function softkom_v3_is_system_page() {
 		'reduce-software-subscription-costs',
 		'recover-old-sales-leads-south-africa',
 		'business-process-automation-johannesburg',
+		'invoice-chasing-automation-south-africa',
+		'automate-management-reporting-south-africa',
+		'reduce-duplicate-data-entry',
               'insights-3',
 		'insights',
 		'contact',
@@ -983,6 +986,18 @@ function softkom_v3_head_meta() {
 		$title = 'Business Process Automation Johannesburg | Softkom';
 		$desc  = 'Business process automation for Johannesburg SMEs: reduce repetitive work, connect systems and improve operational control with practical implementation.';
 		$url   = home_url( '/business-process-automation-johannesburg/' );
+	} elseif ( is_page( 'invoice-chasing-automation-south-africa' ) ) {
+		$title = 'Invoice Chasing Automation South Africa | Softkom';
+		$desc  = 'Automate overdue invoice follow-up with controlled reminders, stop rules, approvals and escalation for South African businesses.';
+		$url   = home_url( '/invoice-chasing-automation-south-africa/' );
+	} elseif ( is_page( 'automate-management-reporting-south-africa' ) ) {
+		$title = 'Automate Management Reporting South Africa | Softkom';
+		$desc  = 'Reduce manual spreadsheet consolidation with controlled recurring management reporting and clearer operational visibility.';
+		$url   = home_url( '/automate-management-reporting-south-africa/' );
+	} elseif ( is_page( 'reduce-duplicate-data-entry' ) ) {
+		$title = 'Reduce Duplicate Data Entry | Softkom';
+		$desc  = 'Connect business systems so customer, order and finance data is captured once, moved safely and checked when updates fail.';
+		$url   = home_url( '/reduce-duplicate-data-entry/' );
 	} else {
 		$queried = get_queried_object();
 		if ( $queried && ! empty( $queried->post_title ) ) {
@@ -1331,6 +1346,9 @@ function softkom_v3_install_pages() {
         'reduce-software-subscription-costs' => 'Reduce Software Subscription Costs',
         'recover-old-sales-leads-south-africa' => 'Recover Old Sales Leads South Africa',
         'business-process-automation-johannesburg' => 'Business Process Automation Johannesburg',
+        'invoice-chasing-automation-south-africa' => 'Invoice Chasing Automation South Africa',
+        'automate-management-reporting-south-africa' => 'Automate Management Reporting South Africa',
+        'reduce-duplicate-data-entry' => 'Reduce Duplicate Data Entry',
     );
 
     foreach ( $problem_pages as $slug => $title ) {
