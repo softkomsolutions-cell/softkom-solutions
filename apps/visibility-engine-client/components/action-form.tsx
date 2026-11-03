@@ -18,7 +18,14 @@ export function ActionForm({
       // Complete the action before refreshing the document. This also gives
       // the refreshed tree a consistent CSP nonce instead of merging two
       // streamed document contexts during a mutation.
-      sessionStorage.setItem("visibility-feedback", state.success);
+      sessionStorage.setItem(
+        "visibility-feedback",
+        JSON.stringify({
+          message: state.success,
+          pathname: window.location.pathname,
+          at: Date.now(),
+        }),
+      );
       window.location.reload();
     }
   }, [state]);
