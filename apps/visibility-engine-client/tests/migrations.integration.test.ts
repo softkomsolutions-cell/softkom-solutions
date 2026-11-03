@@ -69,6 +69,97 @@ afterAll(async () => {
   if (temporary) await rm(temporary, { recursive: true, force: true });
 });
 describe("additive migration safety on an existing database", () => {
+  it("rolls back the Phase 2 migration itself without losing V1 data", async () => {
+    const schema = `rollback_${randomUUID().replaceAll("-", "")}`;
+    await client.query(
+      `CREATE SCHEMA "${schema}"; SET search_path TO "${schema}"`,
+    );
+    try {
+      for (const migration of [
+        "202611030001_baseline",
+        "202611030002_client_workflow",
+        "202611030003_legacy_revision_snapshots",
+      ])
+        await client.query(
+          await readFile(
+            join(app, "prisma/migrations", migration, "migration.sql"),
+            "utf8",
+          ),
+        );
+      await client.query(
+        `INSERT INTO "Organisation" (id,name,slug,"updatedAt") VALUES ('rollback-org','Preserved','preserved',now()); INSERT INTO "Site" (id,"organisationId",name,"baseUrl","updatedAt") VALUES ('rollback-site','rollback-org','Preserved','https://example.test',now()); INSERT INTO "ContentItem" (id,"siteId",title,slug,body,"updatedAt") VALUES ('rollback-content','rollback-site','Preserve me','preserve','Original V1 content',now()); INSERT INTO "ContentRevision" (id,"contentId",number,title,body,"authorId") VALUES ('rollback-revision','rollback-content',1,'Preserve me','Original V1 content','legacy');`,
+      );
+      const sql = await readFile(
+        join(
+          app,
+          "prisma/migrations/202611030004_publish_search_loop/migration.sql",
+        ),
+        "utf8",
+      );
+      await client.query("BEGIN");
+      await client.query(sql);
+      await expect(client.query("SELECT 1 / 0")).rejects.toThrow();
+      await client.query("ROLLBACK");
+      expect(
+        (
+          await client.query(
+            `SELECT body FROM "ContentItem" WHERE id='rollback-content'`,
+          )
+        ).rows[0].body,
+      ).toBe("Original V1 content");
+      expect(
+        (
+          await client.query(
+            `SELECT count(*)::int AS n FROM information_schema.columns WHERE table_schema=$1 AND table_name='Publication' AND column_name='claimToken'`,
+            [schema],
+          )
+        ).rows[0].n,
+      ).toBe(0);
+      expect(
+        (
+          await client.query(`SELECT to_regclass($1) AS name`, [
+            `${schema}."SearchSync"`,
+          ])
+        ).rows[0].name,
+      ).toBeNull();
+      await client.query("BEGIN");
+      await client.query(sql);
+      await client.query("COMMIT");
+      expect(
+        (
+          await client.query(
+            `SELECT slug FROM "ContentRevision" WHERE id='rollback-revision'`,
+          )
+        ).rows[0].slug,
+      ).toBe("preserve");
+      const propertySql = await readFile(
+        join(
+          app,
+          "prisma/migrations/202611030005_search_property_scope/migration.sql",
+        ),
+        "utf8",
+      );
+      await client.query("BEGIN");
+      await client.query(propertySql);
+      await expect(client.query("SELECT 1 / 0")).rejects.toThrow();
+      await client.query("ROLLBACK");
+      expect(
+        (
+          await client.query(
+            `SELECT count(*)::int AS n FROM information_schema.columns WHERE table_schema=$1 AND table_name='SearchMetric' AND column_name='property'`,
+            [schema],
+          )
+        ).rows[0].n,
+      ).toBe(0);
+      await client.query("BEGIN");
+      await client.query(propertySql);
+      await client.query("COMMIT");
+    } finally {
+      await client.query("ROLLBACK");
+      await client.query("SET search_path TO public");
+      await client.query(`DROP SCHEMA "${schema}" CASCADE`);
+    }
+  });
   it("preserves existing content, snapshots revisions, and repeats without changes", async () => {
     await runner();
     const { rows } = await client.query(

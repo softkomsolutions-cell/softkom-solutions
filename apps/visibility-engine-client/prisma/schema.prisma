@@ -18,6 +18,7 @@ model Organisation {
   sites           Site[]
   auditEvents     AuditEvent[]
   businessProfile BusinessProfile?
+  brandedTerms    String           @default("")
   plan            Subscription?
 }
 
@@ -204,6 +205,12 @@ model Publication {
   publishedAt       DateTime?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
+  claimToken        String?
+  leaseUntil        DateTime?
+  lastAttemptAt     DateTime?
+  verifiedAt        DateTime?
+  verificationError String?
+  jobKey            String?       @unique
   site              Site          @relation(fields: [siteId], references: [id], onDelete: Cascade)
   content           ContentItem   @relation(fields: [contentId, siteId], references: [id, siteId], onDelete: Cascade)
 }
@@ -221,6 +228,7 @@ model SearchMetric {
   date        DateTime
   query       String?
   pageUrl     String?
+  property    String?
   clicks      Int          @default(0)
   impressions Int          @default(0)
   ctr         Float        @default(0)
@@ -228,7 +236,10 @@ model SearchMetric {
   source      MetricSource
   site        Site         @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
+  grainKey    String?      @unique
+
   @@index([siteId, date])
+  @@index([siteId, property, date])
 }
 
 enum MetricSource {
@@ -337,6 +348,8 @@ model ContentRevision {
   contentId     String
   content       ContentItem @relation(fields: [contentId], references: [id], onDelete: Cascade)
   number        Int
+  slug          String?
+  funnel        String?
   title         String
   body          String      @db.Text
   metaTitle     String?
@@ -382,6 +395,14 @@ model SiteConnection {
   lastSyncedAt         DateTime?
   error                String?
   updatedAt            DateTime           @updatedAt
+  label                String?
+  accountLabel         String?
+  verifiedAt           DateTime?
+  selectedProperty     String?
+  properties           Json?
+  tokenExpiresAt       DateTime?
+  generation           Int                @default(0)
+  sync                 SearchSync?
 
   @@unique([siteId, provider])
 }
@@ -393,6 +414,7 @@ enum ConnectionProvider {
 }
 
 enum ConnectionState {
+  CONNECTING
   NOT_CONNECTED
   COMING_SOON
   REQUIRES_SETUP
@@ -429,4 +451,35 @@ enum DataOrigin {
   MANUAL
   IMPORTED
   CRM
+}
+
+model OAuthState {
+  hash           String   @id
+  userId         String
+  organisationId String
+  siteId         String
+  verifier       String   @db.Text
+  expiresAt      DateTime
+  generation     Int
+}
+
+model SearchSync {
+  id             String         @id @default(cuid())
+  connectionId   String         @unique
+  connection     SiteConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  status         PublishStatus  @default(PENDING)
+  from           DateTime
+  to             DateTime
+  attempts       Int            @default(0)
+  claimToken     String?
+  leaseUntil     DateTime?
+  nextRetryAt    DateTime?
+  lastAttemptAt  DateTime?
+  lastSuccessAt  DateTime?
+  lastFrom       DateTime?
+  lastTo         DateTime?
+  latestDataDate DateTime?
+  error          String?
+  generation     Int
+  updatedAt      DateTime       @updatedAt
 }

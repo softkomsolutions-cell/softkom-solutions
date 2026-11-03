@@ -230,7 +230,7 @@ describe("real PostgreSQL tenant isolation", () => {
     const failed = await requestPublication(a, { id: contentA });
     expect(failed.status).toBe("FAILED");
     expect(failed.liveUrl).toBeNull();
-    expect(failed.error).toContain("not implemented");
+    expect(failed.error).toContain("verified connection");
     await reviseContent(a, {
       id: contentA,
       revision: 1,

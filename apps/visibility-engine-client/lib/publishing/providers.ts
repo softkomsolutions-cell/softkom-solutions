@@ -6,6 +6,8 @@ export type PublishInput = {
   metaTitle: string;
   metaDescription: string;
   idempotencyKey: string;
+  externalId?: string;
+  funnel?: string;
 };
 export type PublishResult = {
   externalId: string;
@@ -16,6 +18,7 @@ export type PublishResult = {
 export interface PublishingProvider {
   available: boolean;
   publish(input: PublishInput): Promise<PublishResult>;
+  verifyPublication?(result: PublishResult, input: PublishInput): Promise<void>;
 }
 class UnavailableProvider implements PublishingProvider {
   available = false;

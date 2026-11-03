@@ -7,7 +7,8 @@ import {
 } from "@prisma/client";
 import { z } from "zod";
 import { db } from "./db";
-import { type Context, scopedContent, scopedSite } from "./context";
+import { scopedContent, scopedSite } from "./scope";
+import type { Context } from "./context";
 import {
   AccessError,
   assertApproved,
@@ -17,7 +18,6 @@ import {
   text,
   webUrl,
 } from "./security";
-import { publishingProvider } from "./publishing/providers";
 
 const optional = z.string().trim().max(2000).default("");
 const slug = text(180).regex(
@@ -85,7 +85,7 @@ export async function addSite(ctx: Context, raw: unknown) {
         connections: {
           create: [
             { provider: "WORDPRESS", status: "REQUIRES_SETUP" },
-            { provider: "GOOGLE_SEARCH_CONSOLE", status: "COMING_SOON" },
+            { provider: "GOOGLE_SEARCH_CONSOLE", status: "REQUIRES_SETUP" },
             { provider: "GOOGLE_ANALYTICS_4", status: "COMING_SOON" },
           ],
         },
@@ -146,7 +146,11 @@ export async function createContent(ctx: Context, raw: unknown) {
   if (
     input.reviewerId &&
     !(await db.membership.findFirst({
-      where: { userId: input.reviewerId, organisationId: ctx.organisationId },
+      where: {
+        userId: input.reviewerId,
+        organisationId: ctx.organisationId,
+        role: { in: ["OWNER", "ADMIN", "CLIENT"] },
+      },
     }))
   )
     throw new AccessError(404, "Reviewer not found in this workspace.");
@@ -172,6 +176,8 @@ export async function createContent(ctx: Context, raw: unknown) {
         revisions: {
           create: {
             number: 1,
+            slug: input.slug,
+            funnel: input.funnel,
             title: input.title,
             body,
             metaTitle: input.metaTitle,
@@ -238,7 +244,15 @@ export async function reviseContent(ctx: Context, raw: unknown) {
       data: { ...snapshot, body, revision: number, status: "CLIENT_REVIEW" },
     });
     await tx.contentRevision.create({
-      data: { contentId: id, number, ...snapshot, body, authorId: ctx.user.id },
+      data: {
+        contentId: id,
+        number,
+        ...snapshot,
+        slug: content.slug,
+        funnel: content.funnel,
+        body,
+        authorId: ctx.user.id,
+      },
     });
     if (content.topicId)
       await tx.topic.updateMany({
@@ -279,6 +293,15 @@ export async function reviewContent(ctx: Context, raw: unknown) {
       throw new AccessError(
         403,
         "Client approval is required. Use the audited manager override for an exception.",
+      );
+    if (
+      input.decision !== "COMMENT" &&
+      content.reviewerId &&
+      content.reviewerId !== ctx.user.id
+    )
+      throw new AccessError(
+        403,
+        "Only the assigned reviewer may approve or request changes. All members may comment.",
       );
     if (input.decision !== "COMMENT") {
       if (
@@ -357,22 +380,43 @@ export async function requestPublication(ctx: Context, raw: unknown) {
         409,
         "Add content, SEO metadata and a funnel destination before publishing.",
       );
-    const provider = publishingProvider(content.site.cms);
-    // No network side effect inside a transaction. A future outbox worker must
-    // atomically claim PENDING records and use publication.id as idempotency key.
+    const existing = await tx.publication.findUnique({
+      where: { jobKey: `${content.id}:${content.revision}` },
+    });
+    if (existing) return existing;
+    const connection = await tx.siteConnection.findUnique({
+      where: {
+        siteId_provider: { siteId: content.siteId, provider: "WORDPRESS" },
+      },
+    });
+    const available =
+      content.site.cms === "WORDPRESS" &&
+      connection?.status === "CONNECTED" &&
+      !!connection.encryptedCredentials;
+    const snapshot = await tx.contentRevision.findUnique({
+      where: {
+        contentId_number: { contentId: content.id, number: content.revision },
+      },
+    });
+    if (!snapshot)
+      throw new AccessError(
+        409,
+        "Save this revision before requesting publication.",
+      );
     const publication = await tx.publication.create({
       data: {
         siteId: content.siteId,
         contentId: content.id,
         provider: content.site.cms,
         requestedRevision: content.revision,
+        jobKey: `${content.id}:${content.revision}`,
         requestedBy: ctx.user.id,
         overrideReason: input.overrideReason || null,
-        status: provider.available ? "PENDING" : "FAILED",
-        attempts: provider.available ? 0 : 1,
-        error: provider.available
+        status: available ? "PENDING" : "FAILED",
+        attempts: 0,
+        error: available
           ? null
-          : "WordPress publishing is not implemented. Requires Softkom setup. No content was sent.",
+          : "WordPress requires a verified connection. No content was sent.",
       },
     });
     await tx.auditEvent.create({

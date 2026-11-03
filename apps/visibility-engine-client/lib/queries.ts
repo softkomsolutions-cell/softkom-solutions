@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { db } from "./db";
-import { type Context, scopedSite } from "./context";
+import { scopedSite } from "./scope";
+import type { Context } from "./context";
 import { ContentStatus } from "@prisma/client";
 import { localDay } from "./time";
+import { connectionSelect } from "./connections/service";
 
 export type Filters = {
   site?: string;
@@ -60,13 +62,7 @@ export async function workspaceData(
       where: site,
       include: {
         connections: {
-          select: {
-            id: true,
-            provider: true,
-            status: true,
-            lastSyncedAt: true,
-            error: true,
-          },
+          select: { ...connectionSelect, properties: true },
         },
       },
       orderBy: { createdAt: "asc" },
@@ -139,7 +135,25 @@ export async function workspaceData(
     sites,
     topics,
     content,
-    metrics,
+    metrics: metrics.filter(
+      (metric) =>
+        metric.source !== "GOOGLE_SEARCH_CONSOLE" ||
+        (metric.property
+          ? sites
+              .find((site) => site.id === metric.siteId)
+              ?.connections.some(
+                (connection) =>
+                  connection.provider === "GOOGLE_SEARCH_CONSOLE" &&
+                  connection.selectedProperty === metric.property,
+              )
+          : !sites
+              .find((site) => site.id === metric.siteId)
+              ?.connections.some(
+                (connection) =>
+                  connection.provider === "GOOGLE_SEARCH_CONSOLE" &&
+                  connection.selectedProperty,
+              )),
+    ),
     leads,
     observations,
     audits,
