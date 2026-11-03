@@ -34,10 +34,10 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     'masthead',
     array(
       'variant'         => 'split',
-      'eyebrow'         => 'Business Systems · Automation · Integration',
-      'title'           => 'Build the systems your business needs to scale.',
-      'lead'            => 'Softkom helps growing companies replace manual work, connect disconnected systems and gain better operational control with custom business systems, AI automation and practical integrations.',
-      'primary_label'   => 'Book a Strategy Call',
+      'eyebrow'         => 'Business Systems · Automation · Real Results',
+      'title'           => 'Make the business easier to run.',
+      'lead'            => 'We fix the parts of the business that take too much time, create too much admin or rely on too much manual work — using better systems, automation, integration and practical AI where it makes sense.',
+      'primary_label'   => 'Find What Is Slowing Us Down',
       'primary_url'     => $start_discovery_url,
       'secondary_label' => 'Take the 3-Minute Assessment',
       'secondary_url'   => home_url( '/assessment/' ),
@@ -50,7 +50,7 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
     <div class="container">
       <div class="sk-reveal">
         <p class="eyebrow">What We Solve</p>
-        <h2 class="sk-display">When the business has outgrown spreadsheets, workarounds and disconnected software</h2>
+        <h2 class="sk-display">Less manual work. Fewer mistakes. Faster turnaround. Better visibility.</h2>
         <p class="lead sk-lead-narrow">Softkom focuses on the operational gaps that create delay, rework and poor visibility as a company grows.</p>
       </div>
       <div class="sk-grid sk-grid--3">
@@ -84,12 +84,12 @@ $start_discovery_url = function_exists( 'softkom_v3_cta_url' )
       <div class="sk-grid sk-grid--3">
         <?php
         $solutions = array(
-          array( 'Custom Business Systems', 'Purpose-built operational software for workflows, approvals, portals, reporting and internal control.' ),
-          array( 'AI & Automation', 'Automate repetitive work, customer interactions, document handling and decision support where the ROI is clear.' ),
-          array( 'Systems Integration', 'Connect the platforms your business already relies on and eliminate duplicate capture and brittle manual hand-offs.' ),
-          array( 'Operational Workflow Automation', 'Digitise recurring processes across operations, sales, service, stock, approvals and reporting.' ),
-          array( 'Compliance & Cybersecurity', 'Practical POPIA-aware controls, security, backup and compliance infrastructure for growing businesses.' ),
-          array( 'E-commerce & Digital Platforms', 'Build and improve commercial platforms where catalogue, ordering, workflows and integrations matter.' ),
+          array( 'Operational Systems', 'Build the missing operational layer around the way your team actually works.' ),
+          array( 'Process Automation', 'Remove repetitive steps, chasing and manual hand-offs where the business case is clear.' ),
+          array( 'Systems Integration', 'Connect the platforms your business already relies on and eliminate duplicate capture.' ),
+          array( 'Custom Software', 'Create focused software where off-the-shelf tools cannot cover the workflow properly.' ),
+          array( 'Reporting & Visibility', 'Give management a clearer view of operations without manual consolidation.' ),
+          array( 'Practical AI', 'Use AI where it saves real work, improves service or strengthens decision support.' ),
         );
         foreach ( $solutions as $solution ) :
           ?>
