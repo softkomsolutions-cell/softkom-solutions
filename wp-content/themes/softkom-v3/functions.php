@@ -278,6 +278,7 @@ function softkom_v3_is_system_page() {
 		'platforms',
 		'marketplaceos',
 		'brick-alpha',
+		'autoseo',
 		'privacy-policy',
 		'cookie',
 		'terms-of-service',
@@ -515,7 +516,7 @@ function softkom_v3_dequeue_bloat() {
 	// Only strip Elementor JS when the Softkom shortcode owns the page body
 	// (homepage / platforms / product pages) Ã¢â‚¬â€ avoid breaking non-Softkom Elementor layouts.
 	$softkom_owned = is_front_page()
-		|| is_page( array( 'platforms', 'marketplaceos', 'brick-alpha', 'company', 'contact', 'insights-3', 'insights', 'services', 'industries', 'case-studies' ) );
+		|| is_page( array( 'platforms', 'marketplaceos', 'brick-alpha', 'autoseo', 'company', 'contact', 'insights-3', 'insights', 'services', 'industries', 'case-studies' ) );
 	if ( $softkom_owned ) {
 		foreach ( $scripts as $handle ) {
 			wp_dequeue_script( $handle );
@@ -811,6 +812,9 @@ add_shortcode( 'softkom_product_marketplaceos_v3', function () {
 } );
 add_shortcode( 'softkom_product_brick_alpha_v3', function () {
 	return softkom_v3_render_partial( 'page-product-brick-alpha.php' );
+} );
+add_shortcode( 'softkom_product_autoseo_v3', function () {
+	return softkom_v3_render_partial( 'page-product-autoseo.php' );
 } );
 
 /**
