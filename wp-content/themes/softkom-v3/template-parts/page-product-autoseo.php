@@ -92,7 +92,25 @@ $p = softkom_v3_product_autoseo();
     </div>
   </section>
 
-  <section class="section" id="integrations">
+  <section class="section" id="ai-visibility">
+    <div class="container sk-product-split sk-reveal">
+      <div>
+        <p class="eyebrow">AI Visibility Tracker</p>
+        <h2 class="sk-display"><?php echo esc_html( $p['ai_visibility']['title'] ); ?></h2>
+        <p class="lead"><?php echo esc_html( $p['ai_visibility']['body'] ); ?></p>
+      </div>
+      <div class="sk-card">
+        <p class="eyebrow">Tracked Signals</p>
+        <ul class="sk-feature-list">
+          <?php foreach ( $p['ai_visibility']['metrics'] as $metric ) : ?>
+            <li><?php echo esc_html( $metric ); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-muted" id="integrations">
     <div class="container sk-reveal">
       <p class="eyebrow">Integrations</p>
       <h2 class="sk-display"><?php echo esc_html( $p['integrations']['title'] ); ?></h2>
