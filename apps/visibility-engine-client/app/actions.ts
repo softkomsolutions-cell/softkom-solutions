@@ -16,9 +16,11 @@ import {
 import {
   beginGoogle,
   chooseProperty,
+  chooseAnalyticsProperty,
   disconnectGoogle,
 } from "@/lib/analytics/service";
 import { requestSync } from "@/lib/analytics/sync";
+import { requestAnalyticsSync } from "@/lib/analytics/ga4-sync";
 import { retryPublication } from "@/lib/publishing/worker";
 import { providerError, ProviderError } from "@/lib/connections/http";
 import { idSchema } from "@/lib/security";
@@ -49,6 +51,16 @@ export async function mutate(
       case "searchSync":
         await requestSync(ctx, idSchema.parse(data.siteId));
         break;
+      case "analyticsProperty":
+        await chooseAnalyticsProperty(
+          ctx,
+          idSchema.parse(data.siteId),
+          z.string().max(128).parse(data.property),
+        );
+        break;
+      case "analyticsSync":
+        await requestAnalyticsSync(ctx, idSchema.parse(data.siteId));
+        break;
       case "retryPublication":
         await retryPublication(ctx, idSchema.parse(data.id));
         break;
@@ -58,9 +70,12 @@ export async function mutate(
       case "disconnect": {
         const siteId = idSchema.parse(data.siteId);
         const provider = z
-          .enum(["WORDPRESS", "GOOGLE_SEARCH_CONSOLE"])
+          .enum(["WORDPRESS", "GOOGLE_SEARCH_CONSOLE", "GOOGLE_ANALYTICS_4"])
           .parse(data.provider);
-        if (provider === "GOOGLE_SEARCH_CONSOLE")
+        if (
+          provider === "GOOGLE_SEARCH_CONSOLE" ||
+          provider === "GOOGLE_ANALYTICS_4"
+        )
           await disconnectGoogle(ctx, siteId);
         else await disconnect(ctx, siteId, provider);
         break;
