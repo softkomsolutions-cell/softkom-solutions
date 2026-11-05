@@ -69,7 +69,10 @@ export async function beginGoogle(ctx: Context, siteId: string) {
     client_id: config.clientId,
     redirect_uri: config.callback,
     response_type: "code",
-    scope: "https://www.googleapis.com/auth/webmasters.readonly",
+    scope: [
+      "https://www.googleapis.com/auth/webmasters.readonly",
+      "https://www.googleapis.com/auth/analytics.readonly",
+    ].join(" "),
     access_type: "offline",
     prompt: "consent",
     state,
@@ -136,6 +139,8 @@ export async function finishGoogle(
         "Google did not grant offline access. Reconnect and grant consent.",
       );
     const properties = await provider.properties(tokens.access_token);
+    const analyticsProperties = await provider.analyticsProperties(tokens.access_token);
+    const tokenEnvelope = encryptCredential(JSON.stringify(tokens));
     await db.$transaction(async (tx) => {
       const updated = await tx.siteConnection.updateMany({
         where: {
@@ -144,7 +149,7 @@ export async function finishGoogle(
           status: "CONNECTING",
         },
         data: {
-          encryptedCredentials: encryptCredential(JSON.stringify(tokens)),
+          encryptedCredentials: tokenEnvelope,
           tokenExpiresAt: new Date(tokens.expires_at!),
           properties,
           selectedProperty: null,
@@ -159,8 +164,43 @@ export async function finishGoogle(
       await tx.searchSync.deleteMany({
         where: { connectionId: connection.id },
       });
+      const analytics = await tx.siteConnection.upsert({
+        where: {
+          siteId_provider: {
+            siteId: saved.siteId,
+            provider: "GOOGLE_ANALYTICS_4",
+          },
+        },
+        create: {
+          siteId: saved.siteId,
+          provider: "GOOGLE_ANALYTICS_4",
+          status: "REQUIRES_SETUP",
+          generation: 1,
+          encryptedCredentials: tokenEnvelope,
+          tokenExpiresAt: new Date(tokens.expires_at!),
+          properties: analyticsProperties,
+          verifiedAt: new Date(),
+        },
+        update: {
+          status: "REQUIRES_SETUP",
+          generation: { increment: 1 },
+          encryptedCredentials: tokenEnvelope,
+          tokenExpiresAt: new Date(tokens.expires_at!),
+          properties: analyticsProperties,
+          selectedProperty: null,
+          lastSyncedAt: null,
+          verifiedAt: new Date(),
+          error: null,
+        },
+      });
+      await tx.analyticsSync.deleteMany({
+        where: { connectionId: analytics.id },
+      });
       await tx.auditEvent.create({
         data: event(ctx, "connection.tested", connection.id),
+      });
+      await tx.auditEvent.create({
+        data: event(ctx, "connection.tested", analytics.id),
       });
     });
   } catch (error) {
@@ -193,7 +233,7 @@ export async function googleAccess(
   )
     throw new ProviderError(
       "oauth",
-      "Google Search Console requires reconnection.",
+      "Google connection requires reconnection.",
     );
   const tokens = JSON.parse(
     decryptCredential(c.encryptedCredentials),
@@ -335,6 +375,53 @@ export async function chooseProperty(
     });
   });
 }
+export async function chooseAnalyticsProperty(
+  ctx: Context,
+  siteId: string,
+  property: string,
+  transport?: Transport,
+) {
+  connectionPermission(ctx);
+  await scopedSite(ctx, siteId);
+  if (!/^properties\/\d+$/.test(property))
+    throw new AccessError(409, "Google Analytics property is invalid.");
+  const c = await db.siteConnection.findUniqueOrThrow({
+    where: { siteId_provider: { siteId, provider: "GOOGLE_ANALYTICS_4" } },
+  });
+  const { tokens } = await googleAccess(c.id, transport);
+  const properties = await new GoogleSearchProvider(
+    transport,
+  ).analyticsProperties(tokens.access_token);
+  if (!properties.some((p) => p.property === property))
+    throw new AccessError(
+      403,
+      "This Google account cannot access the selected Analytics property.",
+    );
+  await db.$transaction(async (tx) => {
+    const update = await tx.siteConnection.updateMany({
+      where: { id: c.id, generation: c.generation },
+      data: {
+        selectedProperty: property,
+        lastSyncedAt: null,
+        properties,
+        status: "CONNECTED",
+        verifiedAt: new Date(),
+        error: null,
+        generation: { increment: 1 },
+      },
+    });
+    if (!update.count)
+      throw new AccessError(
+        409,
+        "Connection changed. Reload before selecting a property.",
+      );
+    await tx.analyticsSync.deleteMany({ where: { connectionId: c.id } });
+    await tx.auditEvent.create({
+      data: event(ctx, "analytics.property_selected", c.id, { property }),
+    });
+  });
+}
+
 export async function disconnectGoogle(
   ctx: Context,
   siteId: string,
@@ -347,6 +434,10 @@ export async function disconnectGoogle(
   });
   // Local access is removed even if Google's revocation service is unavailable.
   await disconnect(ctx, siteId, "GOOGLE_SEARCH_CONSOLE");
+  const ga4 = await db.siteConnection.findUnique({
+    where: { siteId_provider: { siteId, provider: "GOOGLE_ANALYTICS_4" } },
+  });
+  if (ga4) await disconnect(ctx, siteId, "GOOGLE_ANALYTICS_4");
   if (c?.encryptedCredentials)
     try {
       await new GoogleSearchProvider(transport).revoke(
