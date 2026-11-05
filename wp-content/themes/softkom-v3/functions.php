@@ -1381,3 +1381,77 @@ add_action(
 
 
 
+
+
+/**
+ * Send real Softkom website enquiries into Visibility Engine attribution.
+ *
+ * Credentials are stored as WordPress options and are never committed to the theme.
+ * Expected options:
+ * - softkom_visibility_webhook_url
+ * - softkom_visibility_site_id
+ * - softkom_visibility_webhook_secret
+ *
+ * @param array $fields    WPForms processed fields.
+ * @param array $entry     WPForms entry data.
+ * @param array $form_data WPForms form definition.
+ * @param int   $entry_id  Saved entry ID.
+ */
+function softkom_v3_visibility_capture_wpforms( $fields, $entry, $form_data, $entry_id ) {
+	if ( empty( $form_data['id'] ) || 2501 !== (int) $form_data['id'] || empty( $entry_id ) ) {
+		return;
+	}
+
+	$url     = trim( (string) get_option( 'softkom_visibility_webhook_url', '' ) );
+	$site_id = trim( (string) get_option( 'softkom_visibility_site_id', '' ) );
+	$secret  = trim( (string) get_option( 'softkom_visibility_webhook_secret', '' ) );
+	if ( '' === $url || '' === $site_id || '' === $secret ) {
+		return;
+	}
+
+	$landing = '';
+	if ( ! empty( $entry['meta']['page_url'] ) ) {
+		$landing = esc_url_raw( (string) $entry['meta']['page_url'] );
+	} elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		$landing = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+	}
+	if ( '' === $landing ) {
+		$landing = home_url( '/' );
+	}
+
+	$query = array();
+	$parts = wp_parse_url( $landing );
+	if ( ! empty( $parts['query'] ) ) {
+		parse_str( $parts['query'], $query );
+	}
+
+	$payload = array(
+		'siteId'     => $site_id,
+		'landingUrl' => $landing,
+		'source'     => isset( $query['utm_source'] ) ? sanitize_text_field( $query['utm_source'] ) : '',
+		'medium'     => isset( $query['utm_medium'] ) ? sanitize_text_field( $query['utm_medium'] ) : '',
+		'campaign'   => isset( $query['utm_campaign'] ) ? sanitize_text_field( $query['utm_campaign'] ) : '',
+		'funnel'     => 'Website enquiry',
+		'leadId'     => 'wpforms:2501:' . (int) $entry_id,
+		'stage'      => 'LEAD',
+		'revenue'    => 0,
+		'currency'   => 'ZAR',
+		'createdAt'  => current_time( 'c', true ),
+	);
+
+	wp_remote_post(
+		$url,
+		array(
+			'timeout'     => 8,
+			'redirection' => 0,
+			'headers'     => array(
+				'Authorization' => 'Bearer ' . $secret,
+				'Content-Type'  => 'application/json',
+			),
+			'body'        => wp_json_encode( $payload ),
+			'data_format' => 'body',
+			'blocking'    => false,
+		)
+	);
+}
+add_action( 'wpforms_process_complete', 'softkom_v3_visibility_capture_wpforms', 20, 4 );
