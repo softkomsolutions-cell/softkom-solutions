@@ -78,28 +78,41 @@ export class WordPressProvider implements PublishingProvider {
   }
   async publish(input: PublishInput): Promise<PublishResult> {
     await this.verify();
-    const marker = `${input.slug}-ve-${createHash("sha256").update(input.idempotencyKey).digest("hex").slice(0, 24)}`;
-    // WordPress core exposes slug filtering without a custom plugin. The stable
-    // publication marker survives lost API responses and process restarts.
+    const marker = `visibility-engine:${createHash("sha256").update(input.idempotencyKey).digest("hex").slice(0, 24)}`;
+    // Keep the public URL clean while retaining a stable hidden marker for
+    // idempotent recovery after lost API responses or worker restarts.
     const matches = await this.api<RemotePage[]>(
-      `wp/v2/pages?slug=${marker}&context=edit&status=publish,draft,pending,private&per_page=2`,
+      `wp/v2/pages?slug=${encodeURIComponent(input.slug)}&context=edit&status=publish,draft,pending,private&per_page=2`,
     );
     if (!Array.isArray(matches) || matches.length > 1)
       throw new ProviderError(
         "conflict",
-        "Publication identity is ambiguous. Manual recovery is required.",
+        "The approved slug matches multiple WordPress pages. Manual recovery is required.",
+      );
+    const matched = matches[0];
+    const matchedMarker =
+      matched?.content?.raw?.includes(marker) ||
+      matched?.content?.rendered?.includes(marker);
+    if (
+      matched &&
+      !matchedMarker &&
+      (!input.externalId || String(matched.id) !== input.externalId)
+    )
+      throw new ProviderError(
+        "conflict",
+        "The approved slug is already used by another WordPress page. Choose a different slug or reconcile the existing page.",
       );
     if (
       input.externalId &&
-      matches[0] &&
-      String(matches[0].id) !== input.externalId
+      matched &&
+      String(matched.id) !== input.externalId
     )
       throw new ProviderError(
         "conflict",
         "Remote publication identity changed. Manual recovery is required.",
       );
     const id =
-      input.externalId || (matches[0] ? String(matches[0].id) : undefined);
+      input.externalId || (matchedMarker && matched ? String(matched.id) : undefined);
     const body = `${input.html}\n<!-- ${marker} -->`;
     const page = await this.api<RemotePage>(
       `wp/v2/pages${id ? `/${encodeURIComponent(id)}` : ""}`,
@@ -107,7 +120,7 @@ export class WordPressProvider implements PublishingProvider {
       {
         title: input.title,
         content: body,
-        slug: marker,
+        slug: input.slug,
         status: "publish",
         excerpt: input.metaDescription,
       },
@@ -117,7 +130,7 @@ export class WordPressProvider implements PublishingProvider {
       page.id < 1 ||
       (id && String(page.id) !== id) ||
       page.status !== "publish" ||
-      page.slug !== marker
+      page.slug !== input.slug
     )
       throw new ProviderError(
         "publication",
@@ -150,7 +163,7 @@ export class WordPressProvider implements PublishingProvider {
       String(page.id) !== result.externalId ||
       page.status !== "publish" ||
       !marker ||
-      page.slug !== marker ||
+      page.slug !== input.slug ||
       !page.content?.raw?.includes(marker) ||
       !page.content.raw.includes(input.html)
     )
