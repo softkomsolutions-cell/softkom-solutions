@@ -254,82 +254,122 @@ export class GoogleSearchProvider {
   ): Promise<Ga4Observation[]> {
     if (!/^properties\/\d+$/.test(property))
       throw new ProviderError("property", "Google Analytics property is invalid.");
-    const result = json<{
-      rows?: {
-        dimensionValues?: { value?: string }[];
-        metricValues?: { value?: string }[];
-      }[];
-    }>(
-      await this.transport(
-        `https://analyticsdata.googleapis.com/v1beta/${property}:runReport`,
-        {
-          method: "POST",
-          origin: "https://analyticsdata.googleapis.com",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            dateRanges: [
-              {
-                startDate: from.toISOString().slice(0, 10),
-                endDate: to.toISOString().slice(0, 10),
-              },
-            ],
-            dimensions: [
-              { name: "date" },
-              { name: "landingPagePlusQueryString" },
-              { name: "sessionSource" },
-              { name: "sessionMedium" },
-            ],
-            metrics: [
-              { name: "sessions" },
-              { name: "engagedSessions" },
-              { name: "keyEvents" },
-              { name: "totalRevenue" },
-            ],
-            limit: 100000,
-            keepEmptyRows: false,
-          }),
-        },
-      ),
-    );
     const observations: Ga4Observation[] = [];
-    for (const row of result.rows || []) {
-      const dims = row.dimensionValues || [];
-      const metrics = row.metricValues || [];
-      if (dims.length !== 4 || metrics.length !== 4)
-        throw new ProviderError("metrics", "Google Analytics returned an unexpected report shape.");
-      const rawDate = dims[0]?.value || "";
-      if (!/^\d{8}$/.test(rawDate))
-        throw new ProviderError("metrics", "Google Analytics returned an invalid date.");
-      const date = new Date(
-        `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}T00:00:00Z`,
+    const limit = 100000;
+    for (let offset = 0; offset < 500000; offset += limit) {
+      const result = json<{
+        rowCount?: number;
+        rows?: {
+          dimensionValues?: { value?: string }[];
+          metricValues?: { value?: string }[];
+        }[];
+      }>(
+        await this.transport(
+          `https://analyticsdata.googleapis.com/v1beta/${property}:runReport`,
+          {
+            method: "POST",
+            origin: "https://analyticsdata.googleapis.com",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              dateRanges: [
+                {
+                  startDate: from.toISOString().slice(0, 10),
+                  endDate: to.toISOString().slice(0, 10),
+                },
+              ],
+              dimensions: [
+                { name: "date" },
+                { name: "landingPagePlusQueryString" },
+                { name: "sessionSource" },
+                { name: "sessionMedium" },
+              ],
+              metrics: [
+                { name: "sessions" },
+                { name: "engagedSessions" },
+                { name: "keyEvents" },
+                { name: "totalRevenue" },
+              ],
+              limit,
+              offset,
+              keepEmptyRows: false,
+            }),
+          },
+        ),
       );
-      const sessions = Number(metrics[0]?.value || 0);
-      const engagedSessions = Number(metrics[1]?.value || 0);
-      const conversions = Number(metrics[2]?.value || 0);
-      const totalRevenue = Number(metrics[3]?.value || 0);
-      if (
-        ![sessions, engagedSessions, conversions, totalRevenue].every(Number.isFinite) ||
-        sessions < 0 ||
-        engagedSessions < 0 ||
-        conversions < 0 ||
-        totalRevenue < 0
-      )
-        throw new ProviderError("metrics", "Google Analytics returned invalid measurements.");
-      observations.push({
-        date,
-        landingPage: dims[1]?.value || "(not set)",
-        source: dims[2]?.value || "(direct)",
-        medium: dims[3]?.value || "(none)",
-        sessions,
-        engagedSessions,
-        conversions,
-        totalRevenue,
-      });
+      const page = result.rows || [];
+      for (const row of page) {
+        const dims = row.dimensionValues || [];
+        const metrics = row.metricValues || [];
+        if (dims.length !== 4 || metrics.length !== 4)
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned an unexpected report shape.",
+          );
+        const rawDate = dims[0]?.value || "";
+        if (!/^\d{8}$/.test(rawDate))
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned an invalid date.",
+          );
+        const date = new Date(
+          `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}T00:00:00Z`,
+        );
+        if (!Number.isFinite(date.getTime()) || date < from || date > to)
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned data outside the requested range.",
+          );
+        const sessions = Number(metrics[0]?.value || 0);
+        const engagedSessions = Number(metrics[1]?.value || 0);
+        const conversions = Number(metrics[2]?.value || 0);
+        const totalRevenue = Number(metrics[3]?.value || 0);
+        if (
+          !Number.isSafeInteger(sessions) ||
+          !Number.isSafeInteger(engagedSessions) ||
+          sessions < 0 ||
+          engagedSessions < 0 ||
+          engagedSessions > sessions ||
+          !Number.isFinite(conversions) ||
+          conversions < 0 ||
+          !Number.isFinite(totalRevenue) ||
+          totalRevenue < 0
+        )
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned invalid measurements.",
+          );
+        observations.push({
+          date,
+          landingPage: dims[1]?.value || "(not set)",
+          source: dims[2]?.value || "(direct)",
+          medium: dims[3]?.value || "(none)",
+          sessions,
+          engagedSessions,
+          conversions,
+          totalRevenue,
+        });
+      }
+      const rowCount = Number(result.rowCount ?? page.length);
+      if (!Number.isSafeInteger(rowCount) || rowCount < page.length)
+        throw new ProviderError(
+          "metrics",
+          "Google Analytics returned an invalid row count.",
+        );
+      if (offset + page.length >= rowCount) return observations;
+      if (page.length === 0)
+        throw new ProviderError(
+          "partial",
+          "Google Analytics returned an incomplete report. Retry the sync.",
+          true,
+        );
     }
-    return observations;
+    throw new ProviderError(
+      "partial",
+      "Google Analytics sync exceeded the supported row limit. Use a shorter range.",
+    );
   }
   async revoke(tokens: GoogleTokens) {
     const result = await this.transport(
