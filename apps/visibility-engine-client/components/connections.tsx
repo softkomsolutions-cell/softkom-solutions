@@ -31,6 +31,9 @@ export function ConnectionPanels({
         const wp = site.connections.find((c) => c.provider === "WORDPRESS"),
           gsc = site.connections.find(
             (c) => c.provider === "GOOGLE_SEARCH_CONSOLE",
+          ),
+          ga4 = site.connections.find(
+            (c) => c.provider === "GOOGLE_ANALYTICS_4",
           );
         const properties = Array.isArray(gsc?.properties)
           ? gsc.properties.filter(
@@ -40,6 +43,17 @@ export function ConnectionPanels({
                 !Array.isArray(p) &&
                 typeof p.siteUrl === "string" &&
                 typeof p.permissionLevel === "string",
+            )
+          : [];
+        const analyticsProperties = Array.isArray(ga4?.properties)
+          ? ga4.properties.filter(
+              (p): p is { property: string; displayName: string; account: string } =>
+                !!p &&
+                typeof p === "object" &&
+                !Array.isArray(p) &&
+                typeof p.property === "string" &&
+                typeof p.displayName === "string" &&
+                typeof p.account === "string",
             )
           : [];
         return (
@@ -224,12 +238,85 @@ export function ConnectionPanels({
                 )}
               </article>
               <article className="connection-card">
+                <span className="connection-symbol">A</span>
                 <h3>Google Analytics 4</h3>
-                <Badge value="COMING_SOON" />
+                <Badge value={ga4?.status || "NOT_CONNECTED"} />
                 <p>
-                  Conversion analytics are not connected. No GA4 measurements
-                  are shown.
+                  {ga4?.selectedProperty
+                    ? analyticsProperties.find(
+                        (p) => p.property === ga4.selectedProperty,
+                      )?.displayName || ga4.selectedProperty
+                    : "Choose a GA4 property after Google authorisation."}
                 </p>
+                <p className="fine">
+                  Last verified: {timestamp(ga4?.verifiedAt)}
+                  <br />
+                  Last sync: {timestamp(ga4?.lastSyncedAt)}
+                </p>
+                {ga4?.error && <p className="notice error">{ga4.error}</p>}
+                {manage && (
+                  <>
+                    <ActionForm action={startGoogle}>
+                      <input type="hidden" name="siteId" value={site.id} />
+                      <button className="secondary">
+                        {ga4?.verifiedAt ? "Reconnect Google Analytics" : "Connect Google Analytics"}
+                      </button>
+                    </ActionForm>
+                    {analyticsProperties.length > 0 && (
+                      <ActionForm operation="analyticsProperty">
+                        <input type="hidden" name="siteId" value={site.id} />
+                        <Select
+                          label="Analytics property"
+                          name="property"
+                          defaultValue={ga4?.selectedProperty || ""}
+                        >
+                          <option value="" disabled>
+                            Select a property
+                          </option>
+                          {analyticsProperties.map((p) => (
+                            <option key={p.property} value={p.property}>
+                              {p.displayName} · {p.account}
+                            </option>
+                          ))}
+                        </Select>
+                        <button className="secondary">Select property</button>
+                      </ActionForm>
+                    )}
+                    {ga4?.status === "CONNECTED" && (
+                      <ActionForm operation="analyticsSync">
+                        <input type="hidden" name="siteId" value={site.id} />
+                        <button className="secondary">Sync analytics data</button>
+                      </ActionForm>
+                    )}
+                    <ActionForm operation="disconnect">
+                      <input type="hidden" name="siteId" value={site.id} />
+                      <input type="hidden" name="provider" value="GOOGLE_ANALYTICS_4" />
+                      <button className="secondary">Disconnect Google</button>
+                    </ActionForm>
+                  </>
+                )}
+                {ga4?.analyticsSync && (
+                  <div className="notice">
+                    <strong>
+                      Analytics sync:{" "}
+                      {ga4.analyticsSync.status === "LIVE"
+                        ? "Completed"
+                        : label(ga4.analyticsSync.status)}
+                    </strong>
+                    <p>
+                      Range: {date(ga4.analyticsSync.from)} – {date(ga4.analyticsSync.to)}
+                      <br />
+                      Last attempt: {timestamp(ga4.analyticsSync.lastAttemptAt)}
+                      <br />
+                      Last success: {timestamp(ga4.analyticsSync.lastSuccessAt)}
+                      <br />
+                      Latest data: {date(ga4.analyticsSync.latestDataDate)}
+                      <br />
+                      Attempts: {ga4.analyticsSync.attempts} of 5
+                    </p>
+                    {ga4.analyticsSync.error && <p>{ga4.analyticsSync.error}</p>}
+                  </div>
+                )}
               </article>
             </div>
           </section>
