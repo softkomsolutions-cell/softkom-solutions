@@ -12,6 +12,7 @@ import {
   json,
 } from "../lib/connections/http";
 import { WordPressProvider } from "../lib/publishing/wordpress";
+import { GoogleSearchProvider } from "../lib/analytics/google";
 import { brandClass, canonicalPage } from "../lib/analytics/reporting";
 import { grain, syncWindow } from "../lib/analytics/sync";
 describe("destination and credential boundaries", () => {
@@ -136,6 +137,127 @@ describe("transparent measurements", () => {
     );
   });
 });
+describe("Google Analytics provider", () => {
+  it("discovers properties and parses observed GA4 measurements", async () => {
+    const requests: { url: string; body?: string }[] = [];
+    const transport = async (
+      url: string,
+      options: { body?: string } = {},
+    ) => {
+      requests.push({ url, body: options.body });
+      if (url.includes("accountSummaries"))
+        return {
+          status: 200,
+          body: JSON.stringify({
+            accountSummaries: [
+              {
+                displayName: "Softkom",
+                propertySummaries: [
+                  {
+                    property: "properties/123456",
+                    displayName: "Softkom Solutions",
+                  },
+                ],
+              },
+            ],
+          }),
+          headers: {},
+          url,
+        };
+      return {
+        status: 200,
+        body: JSON.stringify({
+          rows: [
+            {
+              dimensionValues: [
+                { value: "20261101" },
+                { value: "/services?utm_source=google" },
+                { value: "google" },
+                { value: "organic" },
+              ],
+              metricValues: [
+                { value: "12" },
+                { value: "9" },
+                { value: "2" },
+                { value: "1500.50" },
+              ],
+            },
+          ],
+        }),
+        headers: {},
+        url,
+      };
+    };
+    const provider = new GoogleSearchProvider(transport);
+    await expect(provider.analyticsProperties("token")).resolves.toEqual([
+      {
+        property: "properties/123456",
+        displayName: "Softkom Solutions",
+        account: "Softkom",
+      },
+    ]);
+    await expect(
+      provider.fetchAnalytics(
+        "token",
+        "properties/123456",
+        new Date("2026-11-01T00:00:00Z"),
+        new Date("2026-11-02T00:00:00Z"),
+      ),
+    ).resolves.toEqual([
+      {
+        date: new Date("2026-11-01T00:00:00Z"),
+        landingPage: "/services?utm_source=google",
+        source: "google",
+        medium: "organic",
+        sessions: 12,
+        engagedSessions: 9,
+        conversions: 2,
+        totalRevenue: 1500.5,
+      },
+    ]);
+    expect(JSON.parse(requests[1].body || "{}").metrics).toEqual([
+      { name: "sessions" },
+      { name: "engagedSessions" },
+      { name: "keyEvents" },
+      { name: "totalRevenue" },
+    ]);
+  });
+
+  it("rejects invalid GA4 measurements instead of storing them", async () => {
+    const provider = new GoogleSearchProvider(async (url) => ({
+      status: 200,
+      body: JSON.stringify({
+        rows: [
+          {
+            dimensionValues: [
+              { value: "20261101" },
+              { value: "/" },
+              { value: "google" },
+              { value: "organic" },
+            ],
+            metricValues: [
+              { value: "-1" },
+              { value: "0" },
+              { value: "0" },
+              { value: "0" },
+            ],
+          },
+        ],
+      }),
+      headers: {},
+      url,
+    }));
+    await expect(
+      provider.fetchAnalytics(
+        "token",
+        "properties/123456",
+        new Date("2026-11-01T00:00:00Z"),
+        new Date("2026-11-02T00:00:00Z"),
+      ),
+    ).rejects.toThrow("invalid measurements");
+  });
+});
+
 describe("WordPress provider", () => {
   it("reconciles a lost create response and reuses the same remote page", async () => {
     const fixture = wordpressFixture();
