@@ -251,6 +251,7 @@ export async function disconnect(
       },
     });
     await tx.searchSync.deleteMany({ where: { connectionId: c.id } });
+    await tx.analyticsSync.deleteMany({ where: { connectionId: c.id } });
     await tx.oAuthState.deleteMany({
       where: { siteId, organisationId: ctx.organisationId },
     });
