@@ -23,6 +23,7 @@ export const connectionSelect = {
   selectedProperty: true,
   tokenExpiresAt: true,
   sync: true,
+  analyticsSync: true,
 } as const;
 export function event(
   ctx: Pick<Context, "organisationId" | "user">,
