@@ -126,6 +126,51 @@ export async function processAnalyticsSync(
   transport?: Transport,
 ) {
   const now = new Date();
+
+  const exhausted = await db.analyticsSync.findMany({
+    where: {
+      ...(id ? { id } : {}),
+      status: "PUBLISHING",
+      attempts: { gte: MAX_ATTEMPTS },
+      leaseUntil: { lt: now },
+    },
+    take: 20,
+    include: {
+      connection: { include: { site: { select: { organisationId: true } } } },
+    },
+  });
+  for (const stale of exhausted) {
+    await db.$transaction(async (tx) => {
+      const changed = await tx.analyticsSync.updateMany({
+        where: {
+          id: stale.id,
+          status: "PUBLISHING",
+          claimToken: stale.claimToken,
+          leaseUntil: { lt: now },
+        },
+        data: {
+          status: "FAILED",
+          error:
+            "The final analytics sync attempt expired. Check the Google connection and request a new sync.",
+          claimToken: null,
+          leaseUntil: null,
+          nextRetryAt: null,
+        },
+      });
+      if (changed.count) {
+        await tx.auditEvent.create({
+          data: {
+            organisationId: stale.connection.site.organisationId,
+            actorId: "analytics-worker",
+            action: "analytics.sync_failed",
+            entityId: stale.id,
+            detail: { code: "lease_exhausted" },
+          },
+        });
+      }
+    });
+  }
+
   const candidate = await db.analyticsSync.findFirst({
     where: {
       ...(id ? { id } : {}),
