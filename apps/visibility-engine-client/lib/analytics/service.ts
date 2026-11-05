@@ -139,7 +139,15 @@ export async function finishGoogle(
         "Google did not grant offline access. Reconnect and grant consent.",
       );
     const properties = await provider.properties(tokens.access_token);
-    const analyticsProperties = await provider.analyticsProperties(tokens.access_token);
+    let analyticsProperties: Awaited<
+      ReturnType<GoogleSearchProvider["analyticsProperties"]>
+    > = [];
+    let analyticsError: string | null = null;
+    try {
+      analyticsProperties = await provider.analyticsProperties(tokens.access_token);
+    } catch (error) {
+      analyticsError = providerError(error).message;
+    }
     const tokenEnvelope = encryptCredential(JSON.stringify(tokens));
     await db.$transaction(async (tx) => {
       const updated = await tx.siteConnection.updateMany({
@@ -174,15 +182,16 @@ export async function finishGoogle(
         create: {
           siteId: saved.siteId,
           provider: "GOOGLE_ANALYTICS_4",
-          status: "REQUIRES_SETUP",
+          status: analyticsError ? "ERROR" : "REQUIRES_SETUP",
           generation: 1,
           encryptedCredentials: tokenEnvelope,
           tokenExpiresAt: new Date(tokens.expires_at!),
           properties: analyticsProperties,
           verifiedAt: new Date(),
+          error: analyticsError,
         },
         update: {
-          status: "REQUIRES_SETUP",
+          status: analyticsError ? "ERROR" : "REQUIRES_SETUP",
           generation: { increment: 1 },
           encryptedCredentials: tokenEnvelope,
           tokenExpiresAt: new Date(tokens.expires_at!),
@@ -190,7 +199,7 @@ export async function finishGoogle(
           selectedProperty: null,
           lastSyncedAt: null,
           verifiedAt: new Date(),
-          error: null,
+          error: analyticsError,
         },
       });
       await tx.analyticsSync.deleteMany({
