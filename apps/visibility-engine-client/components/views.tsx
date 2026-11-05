@@ -46,10 +46,26 @@ function Revenue({ data }: { data: WorkspaceData }) {
     <>—</>
   );
 }
+function analyticsTotals(
+  rows: WorkspaceData["analytics"],
+) {
+  return rows.reduce(
+    (totals, row) => ({
+      sessions: totals.sessions + row.sessions,
+      engagedSessions: totals.engagedSessions + row.engagedSessions,
+      conversions: totals.conversions + row.conversions,
+      revenue: totals.revenue + Number(row.totalRevenue),
+    }),
+    { sessions: 0, engagedSessions: 0, conversions: 0, revenue: 0 },
+  );
+}
 export function Dashboard({ data, ctx }: Props) {
   const reviews = data.content.filter((c) => c.status === "CLIENT_REVIEW");
   const totals = searchTotals(
     data.metrics.filter((m) => m.date >= data.range.from),
+  );
+  const analytics = analyticsTotals(
+    data.analytics.filter((m) => m.date >= data.range.from),
   );
   const next = reviews.length
     ? {
@@ -194,13 +210,21 @@ export function Dashboard({ data, ctx }: Props) {
               </strong>
             </div>
             <div>
-              <span>Qualified actions</span>
+              <span>
+                Website sessions <small>{data.range.month}</small>
+              </span>
               <strong>
-                {
-                  data.leads.filter((l) =>
-                    ["QUALIFIED", "OPPORTUNITY", "WON"].includes(l.stage),
-                  ).length
-                }
+                {data.analytics.length ? analytics.sessions.toLocaleString() : "—"}
+              </strong>
+            </div>
+            <div>
+              <span>GA4 key events</span>
+              <strong>
+                {data.analytics.length
+                  ? analytics.conversions.toLocaleString(undefined, {
+                      maximumFractionDigits: 1,
+                    })
+                  : "—"}
               </strong>
             </div>
             <div>
@@ -221,8 +245,8 @@ export function Dashboard({ data, ctx }: Props) {
             </div>
           </div>
           <p className="fine">
-            Leads and revenue reflect recorded attribution, not proof of
-            causation. Search data appears when measured.
+            Search and GA4 values are observed connector data. Leads and won
+            revenue reflect recorded attribution and are not proof of causation.
           </p>
           <Link className="inline-link" href="/workspace/leads">
             Explore the attribution trail <ArrowRight size={14} />
@@ -1201,6 +1225,12 @@ export function Reports({ data, ctx, filters }: Props) {
   const before = searchTotals(
     data.metrics.filter((m) => m.date < data.range.from),
   );
+  const gaNow = analyticsTotals(
+    data.analytics.filter((m) => m.date >= data.range.from),
+  );
+  const gaBefore = analyticsTotals(
+    data.analytics.filter((m) => m.date < data.range.from),
+  );
   return (
     <>
       <FiltersBar data={data} filters={filters} />
@@ -1239,10 +1269,14 @@ export function Reports({ data, ctx, filters }: Props) {
             <h3>Visibility change</h3>
             {data.metrics.length ? (
               <p>
-                {now.clicks} clicks this month; {before.clicks} in the prior
-                month. {now.impressions} impressions; {before.impressions}{" "}
-                previously. Only recorded observations are compared; differing
-                coverage can affect this comparison.
+                {now.clicks} search clicks this month; {before.clicks} in the
+                prior month. {now.impressions} search impressions;{" "}
+                {before.impressions} previously.
+                {data.analytics.length
+                  ? ` GA4 recorded ${gaNow.sessions} sessions and ${gaNow.conversions.toFixed(1)} key events this month, versus ${gaBefore.sessions} sessions and ${gaBefore.conversions.toFixed(1)} previously.`
+                  : ""}{" "}
+                Only recorded observations are compared; differing coverage can
+                affect this comparison.
               </p>
             ) : (
               <p>
@@ -1271,6 +1305,16 @@ export function Reports({ data, ctx, filters }: Props) {
               ).join(", ") || "No attributed revenue data"}
               . Currencies are kept separate.
             </p>
+            {data.analytics.length > 0 && (
+              <p className="fine">
+                GA4 observed site revenue for this month:{" "}
+                {new Intl.NumberFormat("en-ZA", {
+                  style: "currency",
+                  currency: "ZAR",
+                }).format(gaNow.revenue)}
+                . This is analytics revenue, not CRM-attributed won revenue.
+              </p>
+            )}
           </section>
         </div>
         <h3>Next recommendations</h3>
