@@ -11,6 +11,7 @@ CREATE TABLE "AnalyticsMetric" (
   "engagedSessions" INTEGER NOT NULL DEFAULT 0,
   "conversions" DOUBLE PRECISION NOT NULL DEFAULT 0,
   "totalRevenue" DECIMAL(14,2) NOT NULL DEFAULT 0,
+  "currency" TEXT NOT NULL DEFAULT 'ZAR',
   "grainKey" TEXT NOT NULL,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
