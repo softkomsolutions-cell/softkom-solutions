@@ -1308,10 +1308,25 @@ export function Reports({ data, ctx, filters }: Props) {
             {data.analytics.length > 0 && (
               <p className="fine">
                 GA4 observed site revenue for this month:{" "}
-                {new Intl.NumberFormat("en-ZA", {
-                  style: "currency",
-                  currency: "ZAR",
-                }).format(gaNow.revenue)}
+                {Array.from(
+                  data.analytics
+                    .filter((row) => row.date >= data.range.from)
+                    .reduce((totals, row) => {
+                      totals.set(
+                        row.currency,
+                        (totals.get(row.currency) || 0) +
+                          Number(row.totalRevenue),
+                      );
+                      return totals;
+                    }, new Map<string, number>()),
+                )
+                  .map(([currency, amount]) =>
+                    new Intl.NumberFormat("en-ZA", {
+                      style: "currency",
+                      currency,
+                    }).format(amount),
+                  )
+                  .join(" · ") || "—"}
                 . This is analytics revenue, not CRM-attributed won revenue.
               </p>
             )}
