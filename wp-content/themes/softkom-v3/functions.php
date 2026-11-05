@@ -452,6 +452,18 @@ function softkom_v3_enqueue_assets() {
 		}
 	}
 
+	if ( is_front_page() ) {
+		$clean_home = get_stylesheet_directory() . '/assets/css/softkom-home-clean.css';
+		if ( is_readable( $clean_home ) ) {
+			wp_enqueue_style(
+				'softkom-v3-home-clean',
+				$base . '/css/softkom-home-clean.css',
+				array( 'softkom-v3-bundle' ),
+				(string) filemtime( $clean_home )
+			);
+		}
+	}
+
 	wp_enqueue_script(
 		'softkom-v3-site',
 		$base . '/js/softkom-site.js',
