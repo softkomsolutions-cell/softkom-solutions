@@ -7,6 +7,17 @@ export type GoogleTokens = {
   expires_at?: number;
 };
 export type Property = { siteUrl: string; permissionLevel: string };
+export type Ga4Property = { property: string; displayName: string; account: string };
+export type Ga4Observation = {
+  date: Date;
+  landingPage: string;
+  source: string;
+  medium: string;
+  sessions: number;
+  engagedSessions: number;
+  conversions: number;
+  totalRevenue: number;
+};
 export function googleConfig() {
   const {
     GOOGLE_CLIENT_ID: clientId,
@@ -203,6 +214,122 @@ export class GoogleSearchProvider {
       "partial",
       "Search Console sync exceeded the supported row limit. Use a shorter range.",
     );
+  }
+  async analyticsProperties(accessToken: string) {
+    const result = json<{
+      accountSummaries?: {
+        account?: string;
+        displayName?: string;
+        propertySummaries?: { property?: string; displayName?: string }[];
+      }[];
+    }>(
+      await this.transport(
+        "https://analyticsadmin.googleapis.com/v1beta/accountSummaries?pageSize=200",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          origin: "https://analyticsadmin.googleapis.com",
+        },
+      ),
+    );
+    return (result.accountSummaries || []).flatMap((account) =>
+      (account.propertySummaries || [])
+        .filter(
+          (property) =>
+            typeof property.property === "string" &&
+            /^properties\/\d+$/.test(property.property) &&
+            typeof property.displayName === "string",
+        )
+        .map((property) => ({
+          property: property.property!,
+          displayName: property.displayName!,
+          account: account.displayName || account.account || "Google Analytics",
+        })),
+    );
+  }
+  async fetchAnalytics(
+    accessToken: string,
+    property: string,
+    from: Date,
+    to: Date,
+  ): Promise<Ga4Observation[]> {
+    if (!/^properties\/\d+$/.test(property))
+      throw new ProviderError("property", "Google Analytics property is invalid.");
+    const result = json<{
+      rows?: {
+        dimensionValues?: { value?: string }[];
+        metricValues?: { value?: string }[];
+      }[];
+    }>(
+      await this.transport(
+        `https://analyticsdata.googleapis.com/v1beta/${property}:runReport`,
+        {
+          method: "POST",
+          origin: "https://analyticsdata.googleapis.com",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dateRanges: [
+              {
+                startDate: from.toISOString().slice(0, 10),
+                endDate: to.toISOString().slice(0, 10),
+              },
+            ],
+            dimensions: [
+              { name: "date" },
+              { name: "landingPagePlusQueryString" },
+              { name: "sessionSource" },
+              { name: "sessionMedium" },
+            ],
+            metrics: [
+              { name: "sessions" },
+              { name: "engagedSessions" },
+              { name: "keyEvents" },
+              { name: "totalRevenue" },
+            ],
+            limit: 100000,
+            keepEmptyRows: false,
+          }),
+        },
+      ),
+    );
+    const observations: Ga4Observation[] = [];
+    for (const row of result.rows || []) {
+      const dims = row.dimensionValues || [];
+      const metrics = row.metricValues || [];
+      if (dims.length !== 4 || metrics.length !== 4)
+        throw new ProviderError("metrics", "Google Analytics returned an unexpected report shape.");
+      const rawDate = dims[0]?.value || "";
+      if (!/^\d{8}$/.test(rawDate))
+        throw new ProviderError("metrics", "Google Analytics returned an invalid date.");
+      const date = new Date(
+        `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}T00:00:00Z`,
+      );
+      const sessions = Number(metrics[0]?.value || 0);
+      const engagedSessions = Number(metrics[1]?.value || 0);
+      const conversions = Number(metrics[2]?.value || 0);
+      const totalRevenue = Number(metrics[3]?.value || 0);
+      if (
+        ![sessions, engagedSessions, conversions, totalRevenue].every(Number.isFinite) ||
+        sessions < 0 ||
+        engagedSessions < 0 ||
+        conversions < 0 ||
+        totalRevenue < 0
+      )
+        throw new ProviderError("metrics", "Google Analytics returned invalid measurements.");
+      observations.push({
+        date,
+        landingPage: dims[1]?.value || "(not set)",
+        source: dims[2]?.value || "(direct)",
+        medium: dims[3]?.value || "(none)",
+        sessions,
+        engagedSessions,
+        conversions,
+        totalRevenue,
+      });
+    }
+    return observations;
   }
   async revoke(tokens: GoogleTokens) {
     const result = await this.transport(
