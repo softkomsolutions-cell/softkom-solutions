@@ -72,6 +72,7 @@ model Site {
   connections    SiteConnection[]
   aiObservations AIObservation[]
   leads          LeadAttribution[]
+  analyticsMetrics AnalyticsMetric[]
 }
 
 enum CmsType {
@@ -269,6 +270,27 @@ model LeadAttribution {
   site       Site         @relation(fields: [siteId], references: [id], onDelete: Cascade)
 }
 
+model AnalyticsMetric {
+  id              String   @id @default(cuid())
+  siteId          String
+  site            Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  date            DateTime
+  property        String
+  landingPage     String
+  source          String
+  medium          String
+  sessions        Int      @default(0)
+  engagedSessions Int      @default(0)
+  conversions     Float    @default(0)
+  totalRevenue    Decimal  @default(0) @db.Decimal(14, 2)
+  grainKey        String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([siteId, date])
+  @@index([siteId, property, date])
+}
+
 model Subscription {
   id             String       @id @default(cuid())
   organisationId String       @unique
@@ -403,6 +425,7 @@ model SiteConnection {
   tokenExpiresAt       DateTime?
   generation           Int                @default(0)
   sync                 SearchSync?
+  analyticsSync        AnalyticsSync?
 
   @@unique([siteId, provider])
 }
@@ -461,6 +484,25 @@ model OAuthState {
   verifier       String   @db.Text
   expiresAt      DateTime
   generation     Int
+}
+
+model AnalyticsSync {
+  id             String         @id @default(cuid())
+  connectionId   String         @unique
+  connection     SiteConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  status         PublishStatus  @default(PENDING)
+  from           DateTime
+  to             DateTime
+  attempts       Int            @default(0)
+  claimToken     String?
+  leaseUntil     DateTime?
+  nextRetryAt    DateTime?
+  lastAttemptAt  DateTime?
+  lastSuccessAt  DateTime?
+  latestDataDate DateTime?
+  error          String?
+  generation     Int
+  updatedAt      DateTime       @updatedAt
 }
 
 model SearchSync {
