@@ -455,10 +455,13 @@ function softkom_v3_enqueue_assets() {
 	if ( is_front_page() ) {
 		$clean_home = get_stylesheet_directory() . '/assets/css/softkom-home-clean.css';
 		if ( is_readable( $clean_home ) ) {
+			$clean_home_deps = $bundle
+				? array( 'softkom-v3-bundle' )
+				: ( ! empty( $prev ) ? array( $prev ) : array( 'softkom-v3-fonts' ) );
 			wp_enqueue_style(
 				'softkom-v3-home-clean',
 				$base . '/css/softkom-home-clean.css',
-				array( 'softkom-v3-bundle' ),
+				$clean_home_deps,
 				(string) filemtime( $clean_home )
 			);
 		}
