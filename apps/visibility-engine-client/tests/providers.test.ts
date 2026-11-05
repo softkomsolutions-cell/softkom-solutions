@@ -167,6 +167,7 @@ describe("Google Analytics provider", () => {
       return {
         status: 200,
         body: JSON.stringify({
+          metadata: { currencyCode: "ZAR", timeZone: "Africa/Johannesburg" },
           rows: [
             {
               dimensionValues: [
@@ -213,6 +214,7 @@ describe("Google Analytics provider", () => {
         engagedSessions: 9,
         conversions: 2,
         totalRevenue: 1500.5,
+        currency: "ZAR",
       },
     ]);
     expect(JSON.parse(requests[1].body || "{}").metrics).toEqual([
@@ -227,6 +229,7 @@ describe("Google Analytics provider", () => {
     const provider = new GoogleSearchProvider(async (url) => ({
       status: 200,
       body: JSON.stringify({
+        metadata: { currencyCode: "ZAR", timeZone: "Africa/Johannesburg" },
         rows: [
           {
             dimensionValues: [
