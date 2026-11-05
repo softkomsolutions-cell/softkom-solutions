@@ -474,6 +474,7 @@ enum DataOrigin {
   MANUAL
   IMPORTED
   CRM
+  WEBHOOK
 }
 
 model OAuthState {
