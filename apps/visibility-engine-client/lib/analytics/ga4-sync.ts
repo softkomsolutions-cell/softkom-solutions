@@ -235,11 +235,15 @@ export async function processAnalyticsSync(
         "Google Analytics property changed. Request a new sync.",
       );
 
+    const selectedProperty = connection.selectedProperty;
+    if (!selectedProperty)
+      throw new ProviderError(
+        "changed",
+        "Google Analytics property changed. Request a new sync.",
+      );
     const provider = new GoogleSearchProvider(transport);
     const properties = await provider.analyticsProperties(tokens.access_token);
-    if (
-      !properties.some((p) => p.property === connection.selectedProperty)
-    )
+    if (!properties.some((p) => p.property === selectedProperty))
       throw new ProviderError(
         "property",
         "Selected Google Analytics property is no longer accessible.",
@@ -247,7 +251,7 @@ export async function processAnalyticsSync(
 
     const rows = await provider.fetchAnalytics(
       tokens.access_token,
-      connection.selectedProperty,
+      selectedProperty,
       job.from,
       job.to,
     );
@@ -291,7 +295,7 @@ export async function processAnalyticsSync(
         await tx.analyticsMetric.deleteMany({
           where: {
             siteId: connection.siteId,
-            property: connection.selectedProperty,
+            property: selectedProperty,
             date: { gte: job.from, lte: job.to },
           },
         });
@@ -299,7 +303,7 @@ export async function processAnalyticsSync(
         for (const row of rows) {
           const grainKey = grain(
             connection.siteId,
-            connection.selectedProperty!,
+            selectedProperty,
             row.date,
             row.landingPage,
             row.source,
@@ -308,7 +312,7 @@ export async function processAnalyticsSync(
           await tx.analyticsMetric.create({
             data: {
               siteId: connection.siteId,
-              property: connection.selectedProperty!,
+              property: selectedProperty,
               ...row,
               grainKey,
             },
