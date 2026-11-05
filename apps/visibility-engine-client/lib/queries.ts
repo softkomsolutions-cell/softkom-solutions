@@ -52,6 +52,8 @@ export async function workspaceData(
     topics,
     content,
     metrics,
+    analytics,
+    analytics,
     leads,
     observations,
     audits,
@@ -93,6 +95,10 @@ export async function workspaceData(
       orderBy: [{ scheduledAt: "asc" }, { updatedAt: "desc" }],
     }),
     db.searchMetric.findMany({
+      where: { site, date: { gte: range.previous, lt: range.to } },
+      orderBy: { date: "desc" },
+    }),
+    db.analyticsMetric.findMany({
       where: { site, date: { gte: range.previous, lt: range.to } },
       orderBy: { date: "desc" },
     }),
