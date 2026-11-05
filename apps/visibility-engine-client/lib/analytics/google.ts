@@ -17,6 +17,7 @@ export type Ga4Observation = {
   engagedSessions: number;
   conversions: number;
   totalRevenue: number;
+  currency: string;
 };
 export function googleConfig() {
   const {
@@ -259,6 +260,7 @@ export class GoogleSearchProvider {
     for (let offset = 0; offset < 500000; offset += limit) {
       const result = json<{
         rowCount?: number;
+        metadata?: { currencyCode?: string; timeZone?: string };
         rows?: {
           dimensionValues?: { value?: string }[];
           metricValues?: { value?: string }[];
@@ -299,6 +301,12 @@ export class GoogleSearchProvider {
           },
         ),
       );
+      const currency = result.metadata?.currencyCode || "";
+      if (!/^[A-Z]{3}$/.test(currency))
+        throw new ProviderError(
+          "metrics",
+          "Google Analytics did not return a valid report currency.",
+        );
       const page = result.rows || [];
       for (const row of page) {
         const dims = row.dimensionValues || [];
@@ -350,6 +358,7 @@ export class GoogleSearchProvider {
           engagedSessions,
           conversions,
           totalRevenue,
+          currency,
         });
       }
       const rowCount = Number(result.rowCount ?? page.length);
