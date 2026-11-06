@@ -891,7 +891,7 @@ export function Analytics({ data, filters, ctx }: Props) {
     </>
   );
 }
-export function AIVisibility({ data, filters }: Props) {
+export function AIVisibility({ data, ctx, filters }: Props) {
   return (
     <>
       <FiltersBar data={data} filters={filters} />
@@ -907,8 +907,8 @@ export function AIVisibility({ data, filters }: Props) {
         <section className="panel">
           <Empty title="No AI observations recorded yet.">
             {process.env.OPENAI_API_KEY
-              ? "Automated monitoring is configured. The worker records prompt-level observations on its next scheduled run; no synthetic visibility score is created."
-              : "The monitoring pipeline is installed but no AI provider key is configured for this environment. No observations are fabricated."}
+              ? "Automated monitoring is configured. The worker records prompt-level observations on its next scheduled run; verified observations can also be recorded below."
+              : "No automated AI provider key is configured in this environment. Verified observations can still be recorded below or sent through the secure intake endpoint; no results are fabricated."}
           </Empty>
         </section>
       ) : (
@@ -938,6 +938,67 @@ export function AIVisibility({ data, filters }: Props) {
             </article>
           ))}
         </div>
+      )}
+      {canManage(ctx.role) && data.sites.length > 0 && (
+        <details className="panel editor">
+          <summary>Record a verified AI observation</summary>
+          <ActionForm operation="aiObservation">
+            <div className="form-grid">
+              <Select label="Site" name="siteId">
+                <SiteOptions data={data} />
+              </Select>
+              <Field label="Platform" name="platform" required maxLength={120} />
+              <Field
+                label="Observed date"
+                name="observedAt"
+                type="date"
+                defaultValue={localDay()}
+                required
+              />
+              <Select label="Brand mentioned" name="brandMentioned">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </Select>
+              <Select label="Page cited" name="pageCited">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </Select>
+              <Field
+                label="Citation URL (when a page was cited)"
+                name="citationUrl"
+                type="url"
+              />
+              <Field label="Competitor mentioned" name="competitorMentioned" />
+              <Field
+                label="Confidence / evidence quality"
+                name="confidence"
+                required
+                placeholder="e.g. Direct captured response"
+                maxLength={120}
+              />
+              <Field
+                label="Source"
+                name="source"
+                required
+                placeholder="e.g. ChatGPT manual check"
+                maxLength={500}
+              />
+            </div>
+            <Area
+              label="Exact prompt measured"
+              name="prompt"
+              required
+              rows={5}
+              maxLength={12000}
+            />
+            <p className="fine">
+              Record only observations you actually measured. Do not infer
+              coverage from a single response or convert this into a synthetic
+              ranking score.
+            </p>
+            <button>Record observation</button>
+          </ActionForm>
+        </details>
       )}
     </>
   );
@@ -1042,8 +1103,9 @@ export function Leads({ data, ctx, filters }: Props) {
           </div>
         ) : (
           <Empty title="Connect the work to the outcome.">
-            There are no attribution records yet. Your manager can record a
-            verified result manually while CRM integration is unavailable.
+            There are no attribution records yet. A secure intake endpoint is
+            available for source systems, and your manager can record a
+            verified result manually until a source is connected.
           </Empty>
         )}
       </section>

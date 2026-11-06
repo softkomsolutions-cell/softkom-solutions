@@ -104,6 +104,9 @@ export async function mutate(
       case "lead":
         await workflow.recordLead(ctx, data);
         break;
+      case "aiObservation":
+        await workflow.recordAIObservation(ctx, data);
+        break;
       default:
         throw new AccessError(403, "This action is not available.");
     }
