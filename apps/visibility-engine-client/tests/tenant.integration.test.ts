@@ -7,6 +7,7 @@ import {
   addSite,
   createContent,
   createTopic,
+  recordAIObservation,
   recordLead,
   requestPublication,
   reviewContent,
@@ -101,6 +102,9 @@ afterAll(async () => {
     where: { content: { site: { organisationId: { in: orgIds } } } },
   });
   await db.leadAttribution.deleteMany({
+    where: { site: { organisationId: { in: orgIds } } },
+  });
+  await db.aIObservation.deleteMany({
     where: { site: { organisationId: { in: orgIds } } },
   });
   await db.contentItem.deleteMany({
@@ -288,6 +292,42 @@ describe("real PostgreSQL tenant isolation", () => {
       }),
     ).toBe(1);
   });
+  it("records verified AI observations without allowing cross-tenant or foreign citations", async () => {
+    const raw = {
+      siteId: siteA,
+      platform: "ChatGPT",
+      prompt: "Who helps South African SMEs automate manual processes?",
+      brandMentioned: "yes",
+      pageCited: "yes",
+      citationUrl: "https://a.example.test/automation",
+      competitorMentioned: "",
+      confidence: "Direct captured response",
+      source: "Manual verification",
+      observedAt: "2026-11-06",
+    };
+    await expect(
+      recordAIObservation(a, { ...raw, siteId: siteB }),
+    ).rejects.toMatchObject({ status: 404 });
+    await expect(
+      recordAIObservation(a, {
+        ...raw,
+        citationUrl: "https://foreign.example/page",
+      }),
+    ).rejects.toMatchObject({ status: 409 });
+    const observation = await recordAIObservation(a, raw);
+    expect(observation.brandMentioned).toBe(true);
+    expect(observation.pageCited).toBe(true);
+    expect(
+      await db.auditEvent.count({
+        where: {
+          organisationId: a.organisationId,
+          entityId: observation.id,
+          action: "ai_observation.manual",
+        },
+      }),
+    ).toBe(1);
+  });
+
   it("rejects cross-tenant attribution links and keeps valid manual results identified", async () => {
     const raw = {
       siteId: siteA,
