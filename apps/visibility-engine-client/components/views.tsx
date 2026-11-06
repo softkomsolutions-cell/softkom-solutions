@@ -906,9 +906,7 @@ export function AIVisibility({ data, ctx, filters }: Props) {
       {!data.observations.length ? (
         <section className="panel">
           <Empty title="No AI observations recorded yet.">
-            {process.env.OPENAI_API_KEY
-              ? "Automated monitoring is configured. The worker records prompt-level observations on its next scheduled run; verified observations can also be recorded below."
-              : "No automated AI provider key is configured in this environment. Verified observations can still be recorded below or sent through the secure intake endpoint; no results are fabricated."}
+            Automated monitoring runs through the configured worker provider when credentials are available. Verified observations can also be recorded below or sent through the secure intake endpoint; no results are fabricated.
           </Empty>
         </section>
       ) : (
