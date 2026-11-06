@@ -196,7 +196,9 @@ async function observeMistral(
   return classify(evidence.text, evidence.citations, organisationName, siteUrl);
 }
 
-export function configuredAIProvider(env = process.env): {
+export function configuredAIProvider(
+  env: Record<string, string | undefined> = process.env,
+): {
   provider: AIProvider;
   apiKey: string | undefined;
   model: string;
