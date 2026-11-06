@@ -7,6 +7,7 @@ import type { Context } from "@/lib/context";
 import { canManage } from "@/lib/security";
 import { searchTotals, type WorkspaceData, type Filters } from "@/lib/queries";
 import { ActionForm } from "./action-form";
+import { comparablePeriods } from "@/lib/reporting/comparison";
 import {
   Area,
   Badge,
@@ -905,9 +906,9 @@ export function AIVisibility({ data, filters }: Props) {
       {!data.observations.length ? (
         <section className="panel">
           <Empty title="No AI observations recorded yet.">
-            Platform observations will appear here with their source, confidence
-            and the exact prompt measured. Automated monitoring is not
-            connected.
+            {process.env.OPENAI_API_KEY
+              ? "Automated monitoring is configured. The worker records prompt-level observations on its next scheduled run; no synthetic visibility score is created."
+              : "The monitoring pipeline is installed but no AI provider key is configured for this environment. No observations are fabricated."}
           </Empty>
         </section>
       ) : (
@@ -1219,18 +1220,14 @@ export function Reports({ data, ctx, filters }: Props) {
     .filter(
       (p) => p.status === "LIVE" && p.publishedAt && inMonth(p.publishedAt),
     );
-  const now = searchTotals(
-    data.metrics.filter((m) => m.date >= data.range.from),
-  );
-  const before = searchTotals(
-    data.metrics.filter((m) => m.date < data.range.from),
-  );
-  const gaNow = analyticsTotals(
-    data.analytics.filter((m) => m.date >= data.range.from),
-  );
-  const gaBefore = analyticsTotals(
-    data.analytics.filter((m) => m.date < data.range.from),
-  );
+  const searchPeriods = comparablePeriods(data.metrics, data.range.month);
+  const analyticsPeriods = comparablePeriods(data.analytics, data.range.month);
+  const now = searchTotals(searchPeriods.current);
+  const before = searchTotals(searchPeriods.previous);
+  const gaNow = analyticsTotals(analyticsPeriods.current);
+  const gaBefore = analyticsTotals(analyticsPeriods.previous);
+  const coverage = (range: { from: Date; to: Date } | null) =>
+    range ? `${date(range.from)} – ${date(range.to)}` : "No comparable data";
   return (
     <>
       <FiltersBar data={data} filters={filters} />
@@ -1269,14 +1266,15 @@ export function Reports({ data, ctx, filters }: Props) {
             <h3>Visibility change</h3>
             {data.metrics.length ? (
               <p>
-                {now.clicks} search clicks this month; {before.clicks} in the
-                prior month. {now.impressions} search impressions;{" "}
-                {before.impressions} previously.
+                Search Console: {now.clicks} clicks and {now.impressions} impressions
+                for {coverage(searchPeriods.currentCoverage)}, compared with{" "}
+                {before.clicks} clicks and {before.impressions} impressions for{" "}
+                {coverage(searchPeriods.previousCoverage)}.
                 {data.analytics.length
-                  ? ` GA4 recorded ${gaNow.sessions} sessions and ${gaNow.conversions.toFixed(1)} key events this month, versus ${gaBefore.sessions} sessions and ${gaBefore.conversions.toFixed(1)} previously.`
+                  ? ` GA4: ${gaNow.sessions} sessions and ${gaNow.conversions.toFixed(1)} key events for ${coverage(analyticsPeriods.currentCoverage)}, compared with ${gaBefore.sessions} sessions and ${gaBefore.conversions.toFixed(1)} key events for ${coverage(analyticsPeriods.previousCoverage)}.`
                   : ""}{" "}
-                Only recorded observations are compared; differing coverage can
-                affect this comparison.
+                Comparisons are capped to equivalent observed day coverage so a
+                partial month is not compared with a full prior month.
               </p>
             ) : (
               <p>
