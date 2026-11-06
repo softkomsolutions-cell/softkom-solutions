@@ -480,3 +480,64 @@ export async function recordLead(ctx: Context, raw: unknown) {
     return lead;
   });
 }
+
+
+export async function recordAIObservation(ctx: Context, raw: unknown) {
+  requireManager(ctx.role);
+  const input = z
+    .object({
+      siteId: idSchema,
+      platform: text(120),
+      prompt: text(12000),
+      brandMentioned: z.enum(["yes", "no"]),
+      pageCited: z.enum(["yes", "no"]),
+      citationUrl: z.string().trim().max(2048).default(""),
+      competitorMentioned: optional,
+      confidence: text(120),
+      source: text(500),
+      observedAt: z.coerce.date(),
+    })
+    .parse(raw);
+
+  await scopedSite(ctx, input.siteId);
+
+  if (input.citationUrl) {
+    let parsed: URL;
+    try {
+      parsed = new URL(input.citationUrl);
+    } catch {
+      throw new AccessError(400, "Citation URL must be a valid URL.");
+    }
+    if (!["http:", "https:"].includes(parsed.protocol))
+      throw new AccessError(400, "Citation URL must use HTTP or HTTPS.");
+  }
+  if (input.pageCited === "yes" && !input.citationUrl)
+    throw new AccessError(
+      400,
+      "Add the cited page URL when the observation says a page was cited.",
+    );
+
+  return db.$transaction(async (tx) => {
+    const observation = await tx.aIObservation.create({
+      data: {
+        siteId: input.siteId,
+        platform: input.platform,
+        prompt: input.prompt,
+        brandMentioned: input.brandMentioned === "yes",
+        pageCited: input.pageCited === "yes",
+        citationUrl: input.citationUrl || null,
+        competitorMentioned: input.competitorMentioned || null,
+        observedAt: input.observedAt,
+        confidence: input.confidence,
+        source: input.source,
+      },
+    });
+    await tx.auditEvent.create({
+      data: audit(ctx, "ai_observation.manual", observation.id, {
+        siteId: input.siteId,
+        platform: input.platform,
+      }),
+    });
+    return observation;
+  });
+}
