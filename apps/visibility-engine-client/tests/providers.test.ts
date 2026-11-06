@@ -15,6 +15,7 @@ import { WordPressProvider } from "../lib/publishing/wordpress";
 import { GoogleSearchProvider } from "../lib/analytics/google";
 import { brandClass, canonicalPage } from "../lib/analytics/reporting";
 import { grain, syncWindow } from "../lib/analytics/sync";
+import { configuredAIProvider, extractMistral } from "../lib/ai/monitor";
 describe("destination and credential boundaries", () => {
   it("rejects private, metadata, transition and encoded destinations", async () => {
     for (const ip of [
@@ -294,5 +295,59 @@ describe("WordPress provider", () => {
     await provider.publish({ ...input, externalId: result.externalId });
     expect(fixture.creates).toBe(1);
     expect(JSON.stringify(result)).not.toContain("fixture-only");
+  });
+});
+
+
+describe("AI visibility providers", () => {
+  it("defaults to Mistral and keeps OpenAI optional", () => {
+    expect(
+      configuredAIProvider({
+        MISTRAL_API_KEY: "fixture-mistral",
+      } as NodeJS.ProcessEnv),
+    ).toMatchObject({
+      provider: "mistral",
+      apiKey: "fixture-mistral",
+      model: "mistral-small-2603",
+      platform: "Mistral web search",
+    });
+
+    expect(
+      configuredAIProvider({
+        AI_VISIBILITY_PROVIDER: "openai",
+        OPENAI_API_KEY: "fixture-openai",
+        AI_VISIBILITY_MODEL: "gpt-fixture",
+      } as NodeJS.ProcessEnv),
+    ).toMatchObject({
+      provider: "openai",
+      apiKey: "fixture-openai",
+      model: "gpt-fixture",
+      platform: "OpenAI web search",
+    });
+  });
+
+  it("extracts Mistral answer text and cited URLs without inventing evidence", () => {
+    expect(
+      extractMistral({
+        outputs: [
+          {
+            content: [
+              {
+                type: "text",
+                text: "Softkom Solutions is one provider.\\nCOMPETITORS: Example Co",
+              },
+              {
+                type: "tool_reference",
+                url: "https://softkomsolutions.com/services",
+                title: "Softkom",
+              },
+            ],
+          },
+        ],
+      }),
+    ).toEqual({
+      text: "Softkom Solutions is one provider.\\nCOMPETITORS: Example Co",
+      citations: ["https://softkomsolutions.com/services"],
+    });
   });
 });
