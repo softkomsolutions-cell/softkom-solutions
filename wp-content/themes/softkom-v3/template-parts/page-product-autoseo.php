@@ -123,6 +123,74 @@ $p = softkom_v3_product_autoseo();
     </div>
   </section>
 
+  <?php $autoseo_demo = function_exists( 'softkom_v3_autoseo_demo_dashboard' ) ? softkom_v3_autoseo_demo_dashboard() : array(); ?>
+  <?php if ( ! empty( $autoseo_demo ) ) : ?>
+  <section class="section" id="dashboard-preview">
+    <div class="container">
+      <div class="sk-reveal">
+        <p class="eyebrow">Opportunity Engine Preview</p>
+        <h2 class="sk-display">Decide what to fix next — not how many articles to publish</h2>
+        <p class="lead sk-lead-narrow"><?php echo esc_html( $autoseo_demo['label'] ); ?>. These values demonstrate the product workflow and are not live customer performance data.</p>
+      </div>
+
+      <div class="sk-grid sk-grid--4">
+        <?php foreach ( $autoseo_demo['kpis'] as $kpi ) : ?>
+          <article class="sk-card sk-reveal">
+            <p class="eyebrow"><?php echo esc_html( $kpi['label'] ); ?></p>
+            <h3><?php echo esc_html( $kpi['value'] ); ?></h3>
+            <p><?php echo esc_html( $kpi['note'] ); ?></p>
+          </article>
+        <?php endforeach; ?>
+      </div>
+
+      <div class="sk-product-split">
+        <div class="sk-card sk-reveal">
+          <p class="eyebrow">Weekly AI visibility</p>
+          <h3>Track citation frequency, not a single snapshot</h3>
+          <div class="sk-service-ledger">
+            <?php foreach ( $autoseo_demo['ai_engines'] as $engine ) : ?>
+              <article class="sk-service-ledger-item">
+                <span><?php echo esc_html( $engine['frequency'] ); ?>%</span>
+                <div>
+                  <h3><?php echo esc_html( $engine['name'] ); ?></h3>
+                  <p><?php echo esc_html( $engine['status'] ); ?> visibility in this simulated prompt set.</p>
+                </div>
+              </article>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <div class="sk-card sk-reveal">
+          <p class="eyebrow">Operating workflow</p>
+          <h3>Discover → prioritise → approve → measure</h3>
+          <ol class="sk-feature-list">
+            <?php foreach ( $autoseo_demo['workflow'] as $step ) : ?>
+              <li><?php echo esc_html( $step ); ?></li>
+            <?php endforeach; ?>
+          </ol>
+        </div>
+      </div>
+
+      <div class="sk-reveal">
+        <p class="eyebrow">Prioritised action queue</p>
+        <h3>Highest-value work rises to the top</h3>
+      </div>
+      <div class="sk-service-ledger">
+        <?php foreach ( $autoseo_demo['opportunities'] as $opportunity ) : ?>
+          <article class="sk-service-ledger-item sk-reveal">
+            <span><?php echo esc_html( $opportunity['score'] ); ?></span>
+            <div>
+              <p class="eyebrow"><?php echo esc_html( $opportunity['priority'] . ' · ' . $opportunity['type'] ); ?></p>
+              <h3><?php echo esc_html( $opportunity['title'] ); ?></h3>
+              <p><?php echo esc_html( $opportunity['reason'] ); ?></p>
+            </div>
+          </article>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </section>
+  <?php endif; ?>
+
   <section class="section section-muted" id="benefits">
     <div class="container">
       <div class="sk-reveal">
