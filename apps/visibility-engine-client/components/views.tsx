@@ -890,7 +890,7 @@ export function Analytics({ data, filters, ctx }: Props) {
     </>
   );
 }
-export function AIVisibility({ data, filters }: Props) {
+export function AIVisibility({ data, ctx, filters }: Props) {
   return (
     <>
       <FiltersBar data={data} filters={filters} />
@@ -905,9 +905,9 @@ export function AIVisibility({ data, filters }: Props) {
       {!data.observations.length ? (
         <section className="panel">
           <Empty title="No AI observations recorded yet.">
-            Platform observations will appear here with their source, confidence
-            and the exact prompt measured. Automated monitoring is not
-            connected.
+            Verified observations can be recorded below. Automated monitoring
+            can also feed the secure intake endpoint when a provider is
+            configured.
           </Empty>
         </section>
       ) : (
@@ -937,6 +937,70 @@ export function AIVisibility({ data, filters }: Props) {
             </article>
           ))}
         </div>
+      )}
+      {canManage(ctx.role) && data.sites.length > 0 && (
+        <details className="panel editor">
+          <summary>Record a verified AI observation</summary>
+          <ActionForm operation="aiObservation">
+            <div className="form-grid">
+              <Select label="Site" name="siteId">
+                <SiteOptions data={data} />
+              </Select>
+              <Field label="Platform" name="platform" required maxLength={120} />
+              <Field
+                label="Observed date"
+                name="observedAt"
+                type="date"
+                defaultValue={localDay()}
+                required
+              />
+              <Select label="Brand mentioned" name="brandMentioned">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </Select>
+              <Select label="Page cited" name="pageCited">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </Select>
+              <Field
+                label="Citation URL (when a page was cited)"
+                name="citationUrl"
+                type="url"
+              />
+              <Field
+                label="Competitor mentioned"
+                name="competitorMentioned"
+              />
+              <Field
+                label="Confidence / evidence quality"
+                name="confidence"
+                required
+                placeholder="e.g. Direct captured response"
+                maxLength={120}
+              />
+              <Field
+                label="Source"
+                name="source"
+                required
+                placeholder="e.g. ChatGPT manual check"
+                maxLength={500}
+              />
+            </div>
+            <Area
+              label="Exact prompt measured"
+              name="prompt"
+              required
+              rows={5}
+              maxLength={12000}
+            />
+            <p className="fine">
+              Record only observations you actually measured. Do not infer
+              coverage from a single response or convert this into a synthetic
+              ranking score.
+            </p>
+            <button>Record observation</button>
+          </ActionForm>
+        </details>
       )}
     </>
   );
