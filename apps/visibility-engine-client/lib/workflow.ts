@@ -499,8 +499,7 @@ export async function recordAIObservation(ctx: Context, raw: unknown) {
     })
     .parse(raw);
 
-  await scopedSite(ctx, input.siteId);
-
+  const site = await scopedSite(ctx, input.siteId);
   if (input.citationUrl) {
     let parsed: URL;
     try {
@@ -510,6 +509,11 @@ export async function recordAIObservation(ctx: Context, raw: unknown) {
     }
     if (!["http:", "https:"].includes(parsed.protocol))
       throw new AccessError(400, "Citation URL must use HTTP or HTTPS.");
+    if (parsed.origin !== new URL(site.baseUrl).origin)
+      throw new AccessError(
+        409,
+        "Citation URL must belong to the selected website.",
+      );
   }
   if (input.pageCited === "yes" && !input.citationUrl)
     throw new AccessError(
