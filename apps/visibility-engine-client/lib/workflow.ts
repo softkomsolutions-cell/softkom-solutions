@@ -505,10 +505,10 @@ export async function recordAIObservation(ctx: Context, raw: unknown) {
     try {
       parsed = new URL(input.citationUrl);
     } catch {
-      throw new AccessError(400, "Citation URL must be a valid URL.");
+      throw new AccessError(409, "Citation URL must be a valid URL.");
     }
     if (!["http:", "https:"].includes(parsed.protocol))
-      throw new AccessError(400, "Citation URL must use HTTP or HTTPS.");
+      throw new AccessError(409, "Citation URL must use HTTP or HTTPS.");
     if (parsed.origin !== new URL(site.baseUrl).origin)
       throw new AccessError(
         409,
