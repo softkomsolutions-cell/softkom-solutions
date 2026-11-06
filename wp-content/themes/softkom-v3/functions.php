@@ -95,10 +95,7 @@ function softkom_v3_get_custom_logo_filter( $html, $blog_id = 0 ) {
 		return $html;
 	}
 
-	$alt = get_post_meta( $custom_logo_id, '_wp_attachment_image_alt', true );
-	if ( '' === $alt ) {
-		$alt = get_bloginfo( 'name', 'display' );
-	}
+	$alt = 'Softkom Solutions';
 
 	// Prefer theme header lockup (smaller) over full-size media library PNG.
 	// First call (header) is eager; subsequent (footer) is lazy.
@@ -514,6 +511,7 @@ function softkom_v3_dequeue_bloat() {
 		// Astra duplicate Google fonts (Softkom loads Inter + Plus Jakarta only).
 		'astra-google-fonts',
 		'astra-google-fonts-css',
+		'softkom-authority-bridge',
 	);
 	foreach ( $styles as $handle ) {
 		wp_dequeue_style( $handle );
@@ -935,6 +933,14 @@ function softkom_v3_og_image_url() {
  * Core meta + Open Graph + Twitter for Softkom system pages when no SEO plugin owns them.
  */
 function softkom_v3_head_meta() {
+	if (
+		defined( 'AIOSEO_VERSION' )
+		|| function_exists( 'aioseo' )
+		|| defined( 'WPSEO_VERSION' )
+		|| defined( 'RANK_MATH_VERSION' )
+	) {
+		return;
+	}
 	if ( ! function_exists( 'softkom_v3_is_system_page' ) || ! softkom_v3_is_system_page() ) {
 		return;
 	}
@@ -997,6 +1003,14 @@ add_action( 'wp_head', 'softkom_v3_head_meta', 5 );
  * BreadcrumbList on product and platforms pages.
  */
 function softkom_v3_schema_jsonld() {
+	if (
+		defined( 'AIOSEO_VERSION' )
+		|| function_exists( 'aioseo' )
+		|| defined( 'WPSEO_VERSION' )
+		|| defined( 'RANK_MATH_VERSION' )
+	) {
+		return;
+	}
 	if ( ! function_exists( 'softkom_v3_is_system_page' ) || ! softkom_v3_is_system_page() ) {
 		return;
 	}
