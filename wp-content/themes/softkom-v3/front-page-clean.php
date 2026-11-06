@@ -21,6 +21,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 <?php echo softkom_v3_render_partial( 'home-v3.php' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-<?php wp_footer(); ?>
+<?php
+ob_start();
+wp_footer();
+$softkom_footer_output = ob_get_clean();
+$softkom_footer_output = preg_replace(
+	'~<section class="sk-authority-bridge"\\b[^>]*>.*?</section>~is',
+	'',
+	$softkom_footer_output,
+	1
+);
+echo $softkom_footer_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+?>
 </body>
 </html>
