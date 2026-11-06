@@ -1105,8 +1105,9 @@ export function Leads({ data, ctx, filters }: Props) {
           </div>
         ) : (
           <Empty title="Connect the work to the outcome.">
-            There are no attribution records yet. Your manager can record a
-            verified result manually while CRM integration is unavailable.
+            There are no attribution records yet. A secure intake endpoint is
+            available for source systems, and your manager can record a
+            verified result manually until a source is connected.
           </Empty>
         )}
       </section>
