@@ -95,10 +95,7 @@ function softkom_v3_get_custom_logo_filter( $html, $blog_id = 0 ) {
 		return $html;
 	}
 
-	$alt = get_post_meta( $custom_logo_id, '_wp_attachment_image_alt', true );
-	if ( '' === $alt ) {
-		$alt = get_bloginfo( 'name', 'display' );
-	}
+	$alt = 'Softkom Solutions';
 
 	// Prefer theme header lockup (smaller) over full-size media library PNG.
 	// First call (header) is eager; subsequent (footer) is lazy.
@@ -452,6 +449,21 @@ function softkom_v3_enqueue_assets() {
 		}
 	}
 
+	if ( is_front_page() ) {
+		$clean_home = get_stylesheet_directory() . '/assets/css/softkom-home-clean.css';
+		if ( is_readable( $clean_home ) ) {
+			$clean_home_deps = $bundle
+				? array( 'softkom-v3-bundle' )
+				: ( ! empty( $prev ) ? array( $prev ) : array( 'softkom-v3-fonts' ) );
+			wp_enqueue_style(
+				'softkom-v3-home-clean',
+				$base . '/css/softkom-home-clean.css',
+				$clean_home_deps,
+				(string) filemtime( $clean_home )
+			);
+		}
+	}
+
 	wp_enqueue_script(
 		'softkom-v3-site',
 		$base . '/js/softkom-site.js',
@@ -499,6 +511,7 @@ function softkom_v3_dequeue_bloat() {
 		// Astra duplicate Google fonts (Softkom loads Inter + Plus Jakarta only).
 		'astra-google-fonts',
 		'astra-google-fonts-css',
+		'softkom-authority-bridge',
 	);
 	foreach ( $styles as $handle ) {
 		wp_dequeue_style( $handle );
@@ -782,6 +795,26 @@ function softkom_v3_render_partial( $relative ) {
 add_shortcode( 'softkom_home_v3', function () {
 	return softkom_v3_render_partial( 'home-v3.php' );
 } );
+
+/**
+ * Bypass the legacy Astra/page shell on the static front page.
+ *
+ * The homepage shortcode already renders Softkom's complete visible chrome,
+ * so routing the front page through the normal page template causes duplicate
+ * header/banner/footer output around the new homepage.
+ *
+ * @param string $template Resolved WordPress template path.
+ * @return string
+ */
+function softkom_v3_front_page_template( $template ) {
+	if ( ! is_front_page() ) {
+		return $template;
+	}
+
+	$clean = get_stylesheet_directory() . '/front-page-clean.php';
+	return is_readable( $clean ) ? $clean : $template;
+}
+add_filter( 'template_include', 'softkom_v3_front_page_template', 99 );
 add_shortcode( 'softkom_services_v3', function () {
 	return softkom_v3_render_partial( 'page-services.php' );
 } );
@@ -900,6 +933,14 @@ function softkom_v3_og_image_url() {
  * Core meta + Open Graph + Twitter for Softkom system pages when no SEO plugin owns them.
  */
 function softkom_v3_head_meta() {
+	if (
+		defined( 'AIOSEO_VERSION' )
+		|| function_exists( 'aioseo' )
+		|| defined( 'WPSEO_VERSION' )
+		|| defined( 'RANK_MATH_VERSION' )
+	) {
+		return;
+	}
 	if ( ! function_exists( 'softkom_v3_is_system_page' ) || ! softkom_v3_is_system_page() ) {
 		return;
 	}
@@ -962,6 +1003,14 @@ add_action( 'wp_head', 'softkom_v3_head_meta', 5 );
  * BreadcrumbList on product and platforms pages.
  */
 function softkom_v3_schema_jsonld() {
+	if (
+		defined( 'AIOSEO_VERSION' )
+		|| function_exists( 'aioseo' )
+		|| defined( 'WPSEO_VERSION' )
+		|| defined( 'RANK_MATH_VERSION' )
+	) {
+		return;
+	}
 	if ( ! function_exists( 'softkom_v3_is_system_page' ) || ! softkom_v3_is_system_page() ) {
 		return;
 	}
@@ -1369,3 +1418,77 @@ add_action(
 
 
 
+
+
+/**
+ * Send real Softkom website enquiries into Visibility Engine attribution.
+ *
+ * Credentials are stored as WordPress options and are never committed to the theme.
+ * Expected options:
+ * - softkom_visibility_webhook_url
+ * - softkom_visibility_site_id
+ * - softkom_visibility_webhook_secret
+ *
+ * @param array $fields    WPForms processed fields.
+ * @param array $entry     WPForms entry data.
+ * @param array $form_data WPForms form definition.
+ * @param int   $entry_id  Saved entry ID.
+ */
+function softkom_v3_visibility_capture_wpforms( $fields, $entry, $form_data, $entry_id ) {
+	if ( empty( $form_data['id'] ) || 2501 !== (int) $form_data['id'] || empty( $entry_id ) ) {
+		return;
+	}
+
+	$url     = trim( (string) get_option( 'softkom_visibility_webhook_url', '' ) );
+	$site_id = trim( (string) get_option( 'softkom_visibility_site_id', '' ) );
+	$secret  = trim( (string) get_option( 'softkom_visibility_webhook_secret', '' ) );
+	if ( '' === $url || '' === $site_id || '' === $secret ) {
+		return;
+	}
+
+	$landing = '';
+	if ( ! empty( $entry['meta']['page_url'] ) ) {
+		$landing = esc_url_raw( (string) $entry['meta']['page_url'] );
+	} elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		$landing = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+	}
+	if ( '' === $landing ) {
+		$landing = home_url( '/' );
+	}
+
+	$query = array();
+	$parts = wp_parse_url( $landing );
+	if ( ! empty( $parts['query'] ) ) {
+		parse_str( $parts['query'], $query );
+	}
+
+	$payload = array(
+		'siteId'     => $site_id,
+		'landingUrl' => $landing,
+		'source'     => isset( $query['utm_source'] ) ? sanitize_text_field( $query['utm_source'] ) : '',
+		'medium'     => isset( $query['utm_medium'] ) ? sanitize_text_field( $query['utm_medium'] ) : '',
+		'campaign'   => isset( $query['utm_campaign'] ) ? sanitize_text_field( $query['utm_campaign'] ) : '',
+		'funnel'     => 'Website enquiry',
+		'leadId'     => 'wpforms:2501:' . (int) $entry_id,
+		'stage'      => 'LEAD',
+		'revenue'    => 0,
+		'currency'   => 'ZAR',
+		'createdAt'  => current_time( 'c', true ),
+	);
+
+	wp_remote_post(
+		$url,
+		array(
+			'timeout'     => 8,
+			'redirection' => 0,
+			'headers'     => array(
+				'Authorization' => 'Bearer ' . $secret,
+				'Content-Type'  => 'application/json',
+			),
+			'body'        => wp_json_encode( $payload ),
+			'data_format' => 'body',
+			'blocking'    => false,
+		)
+	);
+}
+add_action( 'wpforms_process_complete', 'softkom_v3_visibility_capture_wpforms', 20, 4 );
