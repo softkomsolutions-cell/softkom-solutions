@@ -517,7 +517,7 @@ export async function recordAIObservation(ctx: Context, raw: unknown) {
   }
   if (input.pageCited === "yes" && !input.citationUrl)
     throw new AccessError(
-      400,
+      409,
       "Add the cited page URL when the observation says a page was cited.",
     );
 
