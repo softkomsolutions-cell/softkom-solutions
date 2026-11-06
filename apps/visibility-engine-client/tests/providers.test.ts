@@ -304,7 +304,7 @@ describe("AI visibility providers", () => {
     expect(
       configuredAIProvider({
         MISTRAL_API_KEY: "fixture-mistral",
-      } as NodeJS.ProcessEnv),
+      }),
     ).toMatchObject({
       provider: "mistral",
       apiKey: "fixture-mistral",
@@ -317,7 +317,7 @@ describe("AI visibility providers", () => {
         AI_VISIBILITY_PROVIDER: "openai",
         OPENAI_API_KEY: "fixture-openai",
         AI_VISIBILITY_MODEL: "gpt-fixture",
-      } as NodeJS.ProcessEnv),
+      }),
     ).toMatchObject({
       provider: "openai",
       apiKey: "fixture-openai",
