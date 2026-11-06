@@ -26,7 +26,7 @@ ob_start();
 wp_footer();
 $softkom_footer_output = ob_get_clean();
 $softkom_footer_output = preg_replace(
-	'~<section class="sk-authority-bridge"\\b[^>]*>.*?</section>~is',
+	'~<section class="sk-authority-bridge"[^>]*>.*?</section>~is',
 	'',
 	$softkom_footer_output,
 	1
