@@ -797,6 +797,26 @@ function softkom_v3_render_partial( $relative ) {
 add_shortcode( 'softkom_home_v3', function () {
 	return softkom_v3_render_partial( 'home-v3.php' );
 } );
+
+/**
+ * Bypass the legacy Astra/page shell on the static front page.
+ *
+ * The homepage shortcode already renders Softkom's complete visible chrome,
+ * so routing the front page through the normal page template causes duplicate
+ * header/banner/footer output around the new homepage.
+ *
+ * @param string $template Resolved WordPress template path.
+ * @return string
+ */
+function softkom_v3_front_page_template( $template ) {
+	if ( ! is_front_page() ) {
+		return $template;
+	}
+
+	$clean = get_stylesheet_directory() . '/front-page-clean.php';
+	return is_readable( $clean ) ? $clean : $template;
+}
+add_filter( 'template_include', 'softkom_v3_front_page_template', 99 );
 add_shortcode( 'softkom_services_v3', function () {
 	return softkom_v3_render_partial( 'page-services.php' );
 } );
