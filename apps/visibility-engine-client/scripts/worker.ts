@@ -6,11 +6,15 @@ import {
   scheduleAnalyticsSyncs,
 } from "../lib/analytics/ga4-sync";
 import { db } from "../lib/db";
+import { monitorAIVisibility } from "../lib/ai/monitor";
+import { generateEvidenceOpportunities } from "../lib/intelligence/opportunities";
 // Run once from a scheduler each minute; bounded batches let overlapping invocations
 // cooperate through atomic database claims. Logs contain counts, never payloads.
 try {
   const scheduled = await scheduleSyncs();
   const analyticsScheduled = await scheduleAnalyticsSyncs();
+  const aiVisibility = await monitorAIVisibility();
+  const opportunitiesGenerated = await generateEvidenceOpportunities();
   let publications = 0,
     syncs = 0,
     analyticsSyncs = 0;
@@ -30,6 +34,8 @@ try {
     JSON.stringify({
       scheduled,
       analyticsScheduled,
+      aiVisibility,
+      opportunitiesGenerated,
       publications,
       syncs,
       analyticsSyncs,
