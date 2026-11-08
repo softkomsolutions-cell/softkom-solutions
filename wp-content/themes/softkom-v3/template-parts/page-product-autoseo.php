@@ -124,7 +124,7 @@ $p = softkom_v3_product_autoseo();
   </section>
 
   <?php
-  $autoseo_live = function_exists( 'softkom_v3_autoseo_live_dashboard' ) ? softkom_v3_autoseo_live_dashboard( false ) : array();
+  $autoseo_live = function_exists( 'softkom_v3_autoseo_live_dashboard_v2' ) ? softkom_v3_autoseo_live_dashboard_v2( false ) : ( function_exists( 'softkom_v3_autoseo_live_dashboard' ) ? softkom_v3_autoseo_live_dashboard( false ) : array() );
   $autoseo_has_live = ! empty( $autoseo_live['status'] ) && (
     'connected' === ( $autoseo_live['status']['gsc'] ?? '' ) ||
     'connected' === ( $autoseo_live['status']['ga4'] ?? '' )
