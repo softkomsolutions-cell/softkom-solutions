@@ -202,3 +202,113 @@ function softkom_v3_autoseo_measurement_model() {
 		array( 'id' => 'revenue', 'title' => 'Revenue signal', 'body' => 'Where CRM or transaction data is available, tie organic and AI-assisted journeys back to commercial outcomes.' ),
 	);
 }
+
+
+/**
+ * Simulated dashboard data driven by the real scoring engine.
+ *
+ * This is presentation/demo data only until live collectors are connected.
+ *
+ * @return array<string,mixed>
+ */
+function softkom_v3_autoseo_demo_dashboard() {
+	$seed = array(
+		array(
+			'title'   => 'Improve high-impression service page',
+			'type'    => 'Search Console',
+			'reason'  => 'Strong impressions, weak CTR and clear commercial intent.',
+			'signals' => array(
+				'traffic_potential'      => 86,
+				'buyer_intent'           => 92,
+				'conversion_value'       => 88,
+				'implementation_effort'  => 24,
+				'ranking_page'           => true,
+				'low_ctr'                => true,
+			),
+		),
+		array(
+			'title'   => 'Strengthen AI-answer authority around core service',
+			'type'    => 'AI visibility',
+			'reason'  => 'Competitors are cited more frequently and third-party corroboration is weak.',
+			'signals' => array(
+				'traffic_potential'      => 74,
+				'buyer_intent'           => 90,
+				'conversion_value'       => 84,
+				'implementation_effort'  => 48,
+				'authority_gap'          => true,
+			),
+		),
+		array(
+			'title'   => 'Refresh declining article with service intent',
+			'type'    => 'Content decay',
+			'reason'  => 'Existing page has history and relevance, so refreshing beats publishing a duplicate.',
+			'signals' => array(
+				'traffic_potential'      => 70,
+				'buyer_intent'           => 62,
+				'conversion_value'       => 64,
+				'implementation_effort'  => 28,
+				'ranking_page'           => true,
+				'content_decay'          => true,
+			),
+		),
+		array(
+			'title'   => 'Create comparison page for validated buyer query',
+			'type'    => 'Content gap',
+			'reason'  => 'New buyer-language demand has no focused answer on the site.',
+			'signals' => array(
+				'traffic_potential'       => 64,
+				'buyer_intent'            => 88,
+				'conversion_value'        => 78,
+				'implementation_effort'   => 44,
+				'comparison_intent_gap'   => true,
+			),
+		),
+	);
+
+	$labels = softkom_v3_autoseo_action_labels();
+	$opportunities = array();
+
+	foreach ( $seed as $item ) {
+		$score  = softkom_v3_autoseo_opportunity_score( $item['signals'] );
+		$action = softkom_v3_autoseo_recommended_action( $item['signals'] );
+
+		$opportunities[] = array(
+			'title'    => $item['title'],
+			'type'     => $item['type'],
+			'reason'   => $item['reason'],
+			'score'    => $score,
+			'priority' => $score >= 65 ? 'High' : ( $score >= 45 ? 'Medium' : 'Low' ),
+			'action'   => isset( $labels[ $action ] ) ? $labels[ $action ] : $action,
+		);
+	}
+
+	usort(
+		$opportunities,
+		function ( $a, $b ) {
+			return (int) $b['score'] <=> (int) $a['score'];
+		}
+	);
+
+	return array(
+		'label' => 'Simulated AutoSEO dashboard',
+		'kpis'  => array(
+			array( 'label' => 'Tracked prompts', 'value' => '70', 'note' => 'Repeatable buyer-intent prompt set across major AI assistants.' ),
+			array( 'label' => 'AI citation frequency', 'value' => '41%', 'note' => 'Illustrative baseline across tracked prompts.' ),
+			array( 'label' => 'Open opportunities', 'value' => (string) count( $opportunities ), 'note' => 'Commercially prioritised actions, not raw issue count.' ),
+			array( 'label' => 'Approval queue', 'value' => '2', 'note' => 'Prepared actions waiting for human review.' ),
+		),
+		'ai_engines' => array(
+			array( 'name' => 'ChatGPT', 'frequency' => 48, 'status' => 'Moderate' ),
+			array( 'name' => 'Gemini', 'frequency' => 39, 'status' => 'Moderate' ),
+			array( 'name' => 'Perplexity', 'frequency' => 44, 'status' => 'Moderate' ),
+			array( 'name' => 'Google AI', 'frequency' => 33, 'status' => 'Developing' ),
+		),
+		'workflow' => array_map(
+			function ( $step ) {
+				return $step['title'] . ' — ' . $step['body'];
+			},
+			softkom_v3_autoseo_workflow()
+		),
+		'opportunities' => $opportunities,
+	);
+}
