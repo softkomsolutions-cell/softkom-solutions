@@ -123,14 +123,27 @@ $p = softkom_v3_product_autoseo();
     </div>
   </section>
 
-  <?php $autoseo_demo = function_exists( 'softkom_v3_autoseo_demo_dashboard' ) ? softkom_v3_autoseo_demo_dashboard() : array(); ?>
-  <?php if ( ! empty( $autoseo_demo ) ) : ?>
+  <?php
+  $autoseo_live = function_exists( 'softkom_v3_autoseo_live_dashboard' ) ? softkom_v3_autoseo_live_dashboard( false ) : array();
+  $autoseo_has_live = ! empty( $autoseo_live['status'] ) && (
+    'connected' === ( $autoseo_live['status']['gsc'] ?? '' ) ||
+    'connected' === ( $autoseo_live['status']['ga4'] ?? '' )
+  );
+  $autoseo_demo = function_exists( 'softkom_v3_autoseo_demo_dashboard' ) ? softkom_v3_autoseo_demo_dashboard() : array();
+?>
+  <?php if ( $autoseo_has_live || ! empty( $autoseo_demo ) ) : ?>
   <section class="section" id="dashboard-preview">
     <div class="container">
       <div class="sk-reveal">
         <p class="eyebrow">Opportunity Engine Preview</p>
         <h2 class="sk-display">Decide what to fix next — not how many articles to publish</h2>
-        <p class="lead sk-lead-narrow"><?php echo esc_html( $autoseo_demo['label'] ); ?>. These values demonstrate the product workflow and are not live customer performance data.</p>
+        <p class="lead sk-lead-narrow">
+          <?php if ( $autoseo_has_live ) : ?>
+            Live connected data is available. Search Console and/or GA4 metrics below are pulled from the configured Softkom connection and cached for performance.
+          <?php else : ?>
+            <?php echo esc_html( $autoseo_demo['label'] ); ?>. These values demonstrate the product workflow and are not live customer performance data.
+          <?php endif; ?>
+        </p>
       </div>
 
       <div class="sk-grid sk-grid--4">
@@ -171,6 +184,24 @@ $p = softkom_v3_product_autoseo();
         </div>
       </div>
 
+      <?php if ( $autoseo_has_live && ! empty( $autoseo_live['opportunities'] ) ) : ?>
+      <div class="sk-reveal">
+        <p class="eyebrow">Live Search Console opportunities</p>
+        <h3>Highest-value real opportunities rise to the top</h3>
+      </div>
+      <div class="sk-service-ledger">
+        <?php foreach ( array_slice( $autoseo_live['opportunities'], 0, 8 ) as $opportunity ) : ?>
+          <article class="sk-service-ledger-item sk-reveal">
+            <span><?php echo esc_html( (string) $opportunity['score'] ); ?></span>
+            <div>
+              <p class="eyebrow">Position <?php echo esc_html( number_format_i18n( (float) $opportunity['position'], 1 ) ); ?> · <?php echo esc_html( number_format_i18n( (float) $opportunity['impressions'], 0 ) ); ?> impressions</p>
+              <h3><?php echo esc_html( $opportunity['query'] ); ?></h3>
+              <p><?php echo esc_html( $opportunity['action'] ); ?></p>
+            </div>
+          </article>
+        <?php endforeach; ?>
+      </div>
+      <?php else : ?>
       <div class="sk-reveal">
         <p class="eyebrow">Prioritised action queue</p>
         <h3>Highest-value work rises to the top</h3>
@@ -187,6 +218,7 @@ $p = softkom_v3_product_autoseo();
           </article>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
     </div>
   </section>
   <?php endif; ?>
