@@ -159,7 +159,7 @@ function softkom_v3_autoseo_collect_gsc( $force = false ) {
 	$end   = gmdate( 'Y-m-d', strtotime( '-1 day' ) );
 	$start = gmdate( 'Y-m-d', strtotime( '-28 days' ) );
 
-	$url = 'https://www.googleapis.com/webmasters/v3/sites/' . rawurlencode( $site ) . '/searchAnalytics/query';
+	$url = 'https://searchconsole.googleapis.com/webmasters/v3/sites/' . rawurlencode( $site ) . '/searchAnalytics/query';
 	$data = softkom_v3_autoseo_google_post(
 		$url,
 		array(
@@ -298,7 +298,7 @@ function softkom_v3_autoseo_collect_ga4( $force = false ) {
 			),
 			'metrics' => array(
 				array( 'name' => 'sessions' ),
-				array( 'name' => 'conversions' ),
+				array( 'name' => 'keyEvents' ),
 				array( 'name' => 'totalRevenue' ),
 			),
 		)
@@ -315,7 +315,7 @@ function softkom_v3_autoseo_collect_ga4( $force = false ) {
 		$channels[] = array(
 			'channel'     => sanitize_text_field( $dims[0]['value'] ?? '' ),
 			'sessions'    => (float) ( $metrics[0]['value'] ?? 0 ),
-			'conversions' => (float) ( $metrics[1]['value'] ?? 0 ),
+			'key_events'  => (float) ( $metrics[1]['value'] ?? 0 ),
 			'revenue'     => (float) ( $metrics[2]['value'] ?? 0 ),
 		);
 	}
