@@ -1,4 +1,5 @@
 FROM node:24.22.1-bookworm-slim
+# Runtime refresh: force a clean Railway image build after provider-secret update.
 
 WORKDIR /app
 
