@@ -30,6 +30,8 @@ function softkom_v3_autoseo_config( $key, $default = '' ) {
 		'google_refresh_token' => 'SOFTKOM_AUTOSEO_GOOGLE_REFRESH_TOKEN',
 		'gsc_site_url'         => 'SOFTKOM_AUTOSEO_GSC_SITE_URL',
 		'ga4_property_id'      => 'SOFTKOM_AUTOSEO_GA4_PROPERTY_ID',
+		'visibility_bridge_url'=> 'SOFTKOM_AUTOSEO_VISIBILITY_BRIDGE_URL',
+		'visibility_bridge_secret'=> 'SOFTKOM_AUTOSEO_VISIBILITY_BRIDGE_SECRET',
 	);
 
 	$value = $default;
@@ -527,3 +529,114 @@ add_action(
 		softkom_v3_autoseo_live_dashboard( true );
 	}
 );
+
+
+/**
+ * Fetch consolidated Search Console, GA4, AI visibility and lead data
+ * from the existing Softkom Visibility Engine.
+ *
+ * @param bool $force Ignore cache.
+ * @return array<string,mixed>|WP_Error
+ */
+function softkom_v3_autoseo_collect_visibility_bridge( $force = false ) {
+	$cache_key = 'softkom_autoseo_visibility_bridge';
+	if ( ! $force ) {
+		$cached = get_transient( $cache_key );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+	}
+
+	$base   = rtrim( softkom_v3_autoseo_config( 'visibility_bridge_url' ), '/' );
+	$secret = softkom_v3_autoseo_config( 'visibility_bridge_secret' );
+
+	if ( '' === $base || '' === $secret ) {
+		return new WP_Error( 'autoseo_bridge_not_configured', 'Visibility Engine bridge is not configured.' );
+	}
+
+	$url = add_query_arg(
+		array( 'site' => home_url( '/' ) ),
+		$base . '/api/autoseo/export'
+	);
+
+	$response = wp_remote_get(
+		$url,
+		array(
+			'timeout' => 25,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $secret,
+				'Accept'        => 'application/json',
+			),
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return $response;
+	}
+
+	$code = (int) wp_remote_retrieve_response_code( $response );
+	$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+	if ( 200 !== $code || ! is_array( $body ) ) {
+		return new WP_Error(
+			'autoseo_bridge_failed',
+			'Visibility Engine bridge request failed.',
+			array( 'status' => $code )
+		);
+	}
+
+	set_transient( $cache_key, $body, 30 * MINUTE_IN_SECONDS );
+	return $body;
+}
+
+/**
+ * Convert bridge Search Console rows into AutoSEO opportunities.
+ *
+ * @param array<string,mixed> $bridge Bridge payload.
+ * @return array<int,array<string,mixed>>
+ */
+function softkom_v3_autoseo_bridge_opportunities( $bridge ) {
+	$gsc = array(
+		'rows' => array_map(
+			function ( $row ) {
+				return array(
+					'query'       => $row['query'] ?? '',
+					'page'        => $row['pageUrl'] ?? '',
+					'clicks'      => (float) ( $row['clicks'] ?? 0 ),
+					'impressions' => (float) ( $row['impressions'] ?? 0 ),
+					'ctr'         => (float) ( $row['ctr'] ?? 0 ),
+					'position'    => (float) ( $row['position'] ?? 0 ),
+				);
+			},
+			(array) ( $bridge['search'] ?? array() )
+		),
+	);
+
+	return softkom_v3_autoseo_gsc_opportunities( $gsc );
+}
+
+/**
+ * Prefer Visibility Engine as the live source of truth when configured.
+ *
+ * @param bool $force Refresh cached collectors.
+ * @return array<string,mixed>
+ */
+function softkom_v3_autoseo_live_dashboard_v2( $force = false ) {
+	$bridge = softkom_v3_autoseo_collect_visibility_bridge( $force );
+
+	if ( ! is_wp_error( $bridge ) ) {
+		return array(
+			'status' => array(
+				'bridge' => 'connected',
+				'gsc'    => ! empty( $bridge['search'] ) ? 'connected' : 'empty',
+				'ga4'    => ! empty( $bridge['analytics']['channels'] ) ? 'connected' : 'empty',
+				'ai'     => ! empty( $bridge['ai']['platforms'] ) ? 'connected' : 'empty',
+			),
+			'bridge'        => $bridge,
+			'opportunities' => softkom_v3_autoseo_bridge_opportunities( $bridge ),
+			'fetched_at'    => current_time( 'mysql', true ),
+		);
+	}
+
+	return softkom_v3_autoseo_live_dashboard( $force );
+}
