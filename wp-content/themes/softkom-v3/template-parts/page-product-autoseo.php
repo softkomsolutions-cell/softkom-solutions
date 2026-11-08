@@ -209,6 +209,23 @@ $p = softkom_v3_product_autoseo();
     </div>
   </section>
 
+  <section class="section section-muted" id="measurement">
+    <div class="container">
+      <div class="sk-reveal">
+        <p class="eyebrow">Commercial Measurement</p>
+        <h2 class="sk-display">Measure what turns into business, not just what moved in a ranking tool.</h2>
+      </div>
+      <div class="sk-grid sk-grid--2 sk-modules">
+        <?php foreach ( softkom_v3_autoseo_measurement_model() as $metric ) : ?>
+          <article class="sk-module-card sk-reveal">
+            <h3><?php echo esc_html( $metric['title'] ); ?></h3>
+            <p><?php echo esc_html( $metric['body'] ); ?></p>
+          </article>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="early-access">
     <div class="container">
       <div class="sk-card sk-reveal">
