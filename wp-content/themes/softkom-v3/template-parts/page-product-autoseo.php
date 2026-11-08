@@ -130,6 +130,64 @@ $p = softkom_v3_product_autoseo();
     'connected' === ( $autoseo_live['status']['ga4'] ?? '' )
   );
   $autoseo_demo = function_exists( 'softkom_v3_autoseo_demo_dashboard' ) ? softkom_v3_autoseo_demo_dashboard() : array();
+
+  $autoseo_kpis = $autoseo_demo['kpis'] ?? array();
+  $autoseo_ai_engines = $autoseo_demo['ai_engines'] ?? array();
+
+  if ( $autoseo_has_live && ! empty( $autoseo_live['bridge'] ) ) {
+    $bridge = $autoseo_live['bridge'];
+    $search_rows = (array) ( $bridge['search'] ?? array() );
+    $channels = (array) ( $bridge['analytics']['channels'] ?? array() );
+    $ai_platforms = (array) ( $bridge['ai']['platforms'] ?? array() );
+    $leads = (array) ( $bridge['leads'] ?? array() );
+
+    $organic_clicks = 0;
+    $organic_impressions = 0;
+    foreach ( $search_rows as $row ) {
+      $organic_clicks += (float) ( $row['clicks'] ?? 0 );
+      $organic_impressions += (float) ( $row['impressions'] ?? 0 );
+    }
+
+    $sessions = 0;
+    $key_events = 0;
+    foreach ( $channels as $channel ) {
+      $sessions += (float) ( $channel['sessions'] ?? 0 );
+      $key_events += (float) ( $channel['keyEvents'] ?? 0 );
+    }
+
+    $autoseo_kpis = array(
+      array(
+        'label' => 'Organic clicks',
+        'value' => number_format_i18n( $organic_clicks, 0 ),
+        'note'  => number_format_i18n( $organic_impressions, 0 ) . ' Search Console impressions in the connected reporting window.',
+      ),
+      array(
+        'label' => 'GA4 sessions',
+        'value' => number_format_i18n( $sessions, 0 ),
+        'note'  => number_format_i18n( $key_events, 0 ) . ' key events across the connected GA4 channels.',
+      ),
+      array(
+        'label' => 'AI platforms observed',
+        'value' => number_format_i18n( count( $ai_platforms ), 0 ),
+        'note'  => 'Stored AI visibility observations in the connected reporting window.',
+      ),
+      array(
+        'label' => 'Attributed leads',
+        'value' => number_format_i18n( count( $leads ), 0 ),
+        'note'  => 'Lead-attribution records currently available to AutoSEO.',
+      ),
+    );
+
+    $autoseo_ai_engines = array();
+    foreach ( $ai_platforms as $platform ) {
+      $frequency = 100 * (float) ( $platform['mentionFrequency'] ?? 0 );
+      $autoseo_ai_engines[] = array(
+        'name'      => sanitize_text_field( $platform['platform'] ?? 'AI platform' ),
+        'frequency' => round( $frequency ),
+        'status'    => 'Observed',
+      );
+    }
+  }
 ?>
   <?php if ( $autoseo_has_live || ! empty( $autoseo_demo ) ) : ?>
   <section class="section" id="dashboard-preview">
@@ -147,7 +205,7 @@ $p = softkom_v3_product_autoseo();
       </div>
 
       <div class="sk-grid sk-grid--4">
-        <?php foreach ( $autoseo_demo['kpis'] as $kpi ) : ?>
+        <?php foreach ( $autoseo_kpis as $kpi ) : ?>
           <article class="sk-card sk-reveal">
             <p class="eyebrow"><?php echo esc_html( $kpi['label'] ); ?></p>
             <h3><?php echo esc_html( $kpi['value'] ); ?></h3>
@@ -161,12 +219,12 @@ $p = softkom_v3_product_autoseo();
           <p class="eyebrow">Weekly AI visibility</p>
           <h3>Track citation frequency, not a single snapshot</h3>
           <div class="sk-service-ledger">
-            <?php foreach ( $autoseo_demo['ai_engines'] as $engine ) : ?>
+            <?php foreach ( $autoseo_ai_engines as $engine ) : ?>
               <article class="sk-service-ledger-item">
                 <span><?php echo esc_html( $engine['frequency'] ); ?>%</span>
                 <div>
                   <h3><?php echo esc_html( $engine['name'] ); ?></h3>
-                  <p><?php echo esc_html( $engine['status'] ); ?> visibility in this simulated prompt set.</p>
+                  <p><?php echo esc_html( $engine['status'] ); ?><?php echo $autoseo_has_live ? ' in the connected reporting window.' : ' visibility in this simulated prompt set.'; ?></p>
                 </div>
               </article>
             <?php endforeach; ?>
