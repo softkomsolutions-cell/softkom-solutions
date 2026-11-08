@@ -1,0 +1,14 @@
+FROM node:22-bookworm
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npm run db:generate \
+ && npm run typecheck \
+ && npm run test:unit
+
+CMD ["npm","run","worker"]
