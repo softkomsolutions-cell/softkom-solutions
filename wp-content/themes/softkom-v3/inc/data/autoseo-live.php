@@ -39,6 +39,13 @@ function softkom_v3_autoseo_config( $key, $default = '' ) {
 		$value = (string) constant( $map[ $key ] );
 	}
 
+	if ( '' === $value && in_array( $key, array( 'visibility_bridge_url', 'visibility_bridge_secret' ), true ) ) {
+		$option = get_option( 'softkom_autoseo_' . $key, '' );
+		if ( is_string( $option ) ) {
+			$value = $option;
+		}
+	}
+
 	return (string) apply_filters( 'softkom_v3_autoseo_config_' . $key, $value );
 }
 
