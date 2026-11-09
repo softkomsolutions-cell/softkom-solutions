@@ -571,6 +571,52 @@
                     }
 
                     const result = payload.data;
+
+                    /*
+                     * GA4 conversion tracking.
+                     * Fire only after the server confirms a successful
+                     * assessment submission, so generate_lead represents a
+                     * persisted lead rather than a button click or partial form.
+                     */
+                    if (!window.softkomAssessmentGenerateLeadTracked) {
+                        window.softkomAssessmentGenerateLeadTracked = true;
+
+                        const conversion = {
+                            method: 'business_assessment',
+                            form_name: 'Business Systems & AI Readiness Assessment',
+                            lead_temperature: result.lead_temperature || '',
+                            lead_score: Math.round(
+                                Number(
+                                    result.scores && result.scores.overall_lead
+                                        ? result.scores.overall_lead
+                                        : 0
+                                ) || 0
+                            )
+                        };
+
+                        if (typeof window.gtag === 'function') {
+                            window.gtag('event', 'generate_lead', conversion);
+                        } else {
+                            window.dataLayer = window.dataLayer || [];
+                            window.dataLayer.push(
+                                Object.assign(
+                                    { event: 'generate_lead' },
+                                    conversion
+                                )
+                            );
+                        }
+
+                        try {
+                            window.dispatchEvent(
+                                new CustomEvent(
+                                    'softkom:generate_lead',
+                                    { detail: conversion }
+                                )
+                            );
+                        } catch (error) {
+                            /* Tracking must never block result rendering. */
+                        }
+                    }
                     const scores = result.scores || {};
                     const maturityScore =
                         Math.round(Number(scores.maturity) || 0);
