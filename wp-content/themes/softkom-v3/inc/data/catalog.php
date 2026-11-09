@@ -341,6 +341,12 @@ function softkom_v3_data_roadmap() {
 			'url'    => '/platforms/brick-alpha/',
 		),
 		array(
+			'title'  => 'Softkom Growth Engine',
+			'body'   => 'Continuous SEO, AI-search visibility and controlled website improvement',
+			'status' => 'soon',
+			'url'    => '/platforms/growth-engine/',
+		),
+		array(
 			'title'  => 'Product Studio',
 			'body'   => 'Third platform in the ecosystem',
 			'status' => 'soon',
