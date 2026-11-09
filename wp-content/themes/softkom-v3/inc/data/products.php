@@ -146,3 +146,59 @@ function softkom_v3_product_brick_alpha() {
 		),
 	);
 }
+
+
+/**
+ * Softkom Growth Engine product page content.
+ *
+ * @return array<string, mixed>
+ */
+function softkom_v3_product_autoseo() {
+	return array(
+		'id'        => 'growth-engine',
+		'title'     => 'Softkom Growth Engine',
+		'tagline'   => 'Continuous SEO and AI-search improvement for businesses that want their website to keep getting better',
+		'eyebrow'   => 'Softkom Platform · Early Access',
+		'hero_lead' => 'Softkom Growth Engine monitors search visibility, finds the highest-value opportunities, prepares safe improvements and helps publish approved changes — with business impact and lead generation at the centre.',
+		'challenge' => array(
+			'title' => 'SEO work is too often reactive, fragmented and hard to measure',
+			'body'  => "Most businesses check SEO occasionally, commission a report, fix a handful of issues and then move on. Rankings change, competitors publish, content decays and technical problems reappear.\n\nThe result is a website that slowly loses visibility while nobody has a clear view of what matters commercially.",
+		),
+		'solution' => array(
+			'title' => 'A continuous improvement layer for search and conversion',
+			'body'  => 'Softkom Growth Engine combines technical monitoring, Search Console intelligence, competitor and content-gap analysis, AI-search visibility and controlled WordPress publishing. It prioritises work by likely business value, not by the size of an SEO checklist.',
+		),
+		'modules' => array(
+			array( 'title' => 'Technical SEO monitor', 'body' => 'Track indexing, metadata, canonicals, redirects, broken links, sitemaps, robots directives and other technical issues that affect discoverability.' ),
+			array( 'title' => 'Search opportunity engine', 'body' => 'Use Search Console and site data to find declining pages, high-impression low-click queries, content gaps and pages with realistic upside.' ),
+			array( 'title' => 'AI-search visibility', 'body' => 'Track the signals that help a business surface in AI-assisted discovery and identify where stronger source content, entities and evidence are needed.' ),
+			array( 'title' => 'Content & publishing workflow', 'body' => 'Prepare briefs, updates and new pages, then send them through an approval gate before WordPress publication.' ),
+			array( 'title' => 'Conversion layer', 'body' => 'Connect search visibility to actual enquiries, calls and form submissions so growth activity is measured against business outcomes.' ),
+			array( 'title' => 'Executive reporting', 'body' => 'Show what changed, why it mattered, what improved and what should be done next without burying decision-makers in SEO jargon.' ),
+		),
+		'ai' => array(
+			'title' => 'AI where it speeds up analysis and execution',
+			'body'  => 'AI helps classify issues, analyse page intent, draft improvements and surface patterns. High-impact edits remain reviewable, with approval gates before publishing.',
+			'items' => array(
+				'Issue clustering and commercial prioritisation',
+				'Content decay and opportunity detection',
+				'Brief and page-update drafting',
+				'Internal-link and metadata recommendations',
+				'AI-search visibility research',
+				'Monthly growth summaries',
+			),
+		),
+		'integrations' => array(
+			'title' => 'Connected to the systems that show real performance',
+			'body'  => 'Softkom Growth Engine is designed around first-party data and controlled publishing rather than isolated keyword reports.',
+			'items' => array( 'Google Search Console', 'GA4', 'WordPress', 'Google Business Profile', 'CRM / lead data', 'AI-search research' ),
+		),
+		'benefits' => array(
+			array( 'title' => 'Continuous improvement', 'body' => 'Problems and opportunities are found while they still matter.' ),
+			array( 'title' => 'Commercial prioritisation', 'body' => 'Work is ranked by likely traffic, lead and conversion impact.' ),
+			array( 'title' => 'Controlled automation', 'body' => 'Speed up execution without giving up approval over important website changes.' ),
+			array( 'title' => 'One growth picture', 'body' => 'Search visibility, content performance and lead outcomes are viewed together.' ),
+		),
+		'status' => 'early-access',
+	);
+}
