@@ -36,5 +36,10 @@ export const auth = betterAuth({
       "/sign-up/email": { window: 300, max: 3 },
     },
   },
-  advanced: { useSecureCookies: process.env.NODE_ENV === "production" },
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production",
+    ipAddress: {
+      ipAddressHeaders: ["x-real-ip"],
+    },
+  },
 });
