@@ -21,7 +21,7 @@ npm run dev
 
 `BETTER_AUTH_URL` must match the application's exact origin. Use HTTPS outside
 local development. Production startup fails without a strong authentication
-secret. There is no public signup, demo seeding, or production sample performance.
+secret. Public signup is enabled for a 14-day trial. Production sample performance is never seeded or fabricated.
 
 Provision accounts through the server-side operator command. Supply
 `PROVISION_EMAIL`, `PROVISION_NAME`, `PROVISION_PASSWORD` (12–128 characters),
@@ -242,8 +242,4 @@ persisted IDs prevent duplicates in the tested retry/concurrency paths. A
 third-party WordPress plugin that changes slugs, strips identity markers or
 hides pages from REST requires explicit compatibility validation.
 
-Real Google consent/refresh/revocation, provider quotas and deployment egress
-remain manual staging checks requiring a configured Google project/account.
-GA4, automated AI observations, CRM imports, general inline comment anchors,
-billing, backlinks, public signup, extra CMSs and cross-client administration
-remain intentionally deferred. No merge or production deployment is included.
+Real Google consent/refresh/revocation, provider quotas and deployment egress remain staging checks requiring configured provider accounts. Search Console, GA4, automated AI observations, WordPress publishing, secure attribution intake, trial signup, invitations, plan limits and subscription-state enforcement are implemented. External payment checkout remains optional: paid plans may be activated by Softkom after invoicing, or via BILLING_* checkout URLs plus the authenticated billing webhook. CRM imports, general inline comment anchors, backlink acquisition, additional CMS publishing providers and broad cross-client administration remain outside the current resale baseline.
