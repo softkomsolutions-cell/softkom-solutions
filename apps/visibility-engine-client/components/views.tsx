@@ -892,6 +892,17 @@ export function Analytics({ data, filters, ctx }: Props) {
     </>
   );
 }
+const competitorSummary = (value: string | null, limit = 5) => {
+  if (!value) return "Not observed";
+  const names = value
+    .split(/[;,]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const unique = Array.from(new Set(names));
+  if (unique.length <= limit) return unique.join("; ");
+  return `${unique.slice(0, limit).join("; ")} +${unique.length - limit} more`;
+};
+
 export function AIVisibility({ data, ctx, filters }: Props) {
   const automated = data.observations.filter(
     (o) =>
@@ -968,7 +979,7 @@ export function AIVisibility({ data, ctx, filters }: Props) {
                   Open citation ↗
                 </a>
               )}
-              <p>Competitor: {o.competitorMentioned || "Not observed"}</p>
+              <p>Competitors: {competitorSummary(o.competitorMentioned)}</p>
               <p className="fine">
                 {date(o.observedAt)} · Source: {o.source} · Confidence:{" "}
                 {o.confidence}
