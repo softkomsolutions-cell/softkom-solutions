@@ -26,6 +26,8 @@ import { providerError, ProviderError } from "@/lib/connections/http";
 import { idSchema } from "@/lib/security";
 import { CmsType } from "@prisma/client";
 import { trialEndsAt } from "@/lib/plans";
+import { assertMemberCapacity, invitationHash, invitationToken } from "@/lib/saas";
+import { OrgRole } from "@prisma/client";
 
 export type ActionState = { error?: string; success?: string };
 export async function mutate(
@@ -108,6 +110,40 @@ export async function mutate(
       case "aiObservation":
         await workflow.recordAIObservation(ctx, data);
         break;
+      case "invite": {
+        await assertMemberCapacity(ctx);
+        const input = z.object({
+          email: z.string().email().max(254).transform((v) => v.toLowerCase()),
+          role: z.nativeEnum(OrgRole),
+        }).parse(data);
+        if (input.role === "SOFTKOM_MANAGER")
+          throw new AccessError(403, "Softkom manager access cannot be invited from a client workspace.");
+        const existing = await db.membership.findFirst({
+          where: { organisationId: ctx.organisationId, user: { email: input.email } },
+        });
+        if (existing) throw new AccessError(409, "This person is already a workspace member.");
+        const token = invitationToken();
+        await db.invitation.create({
+          data: {
+            organisationId: ctx.organisationId,
+            email: input.email,
+            role: input.role,
+            tokenHash: invitationHash(token),
+            invitedBy: ctx.user.id,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          },
+        });
+        await db.auditEvent.create({
+          data: {
+            organisationId: ctx.organisationId,
+            actorId: ctx.user.id,
+            action: "membership.invited",
+            entityId: input.email,
+            detail: { role: input.role },
+          },
+        });
+        return { success: `Invitation created. Share this secure link: /invite/${token}` };
+      }
       default:
         throw new AccessError(403, "This action is not available.");
     }
@@ -290,4 +326,53 @@ export async function startGoogle(
     };
   }
   redirect(url);
+}
+
+
+export async function acceptInvitation(form: FormData) {
+  const user = await currentUser();
+  const token = z.string().min(20).max(200).parse(form.get("token"));
+  const hash = invitationHash(token);
+  const invite = await db.invitation.findUnique({ where: { tokenHash: hash } });
+  if (!invite || invite.acceptedAt || invite.expiresAt <= new Date())
+    redirect("/forbidden");
+  if (user.email.toLowerCase() !== invite.email.toLowerCase())
+    redirect("/forbidden");
+  await db.$transaction(async (tx) => {
+    await tx.membership.upsert({
+      where: {
+        organisationId_userId: {
+          organisationId: invite.organisationId,
+          userId: user.id,
+        },
+      },
+      create: {
+        organisationId: invite.organisationId,
+        userId: user.id,
+        role: invite.role,
+      },
+      update: { role: invite.role },
+    });
+    await tx.invitation.update({
+      where: { id: invite.id },
+      data: { acceptedAt: new Date() },
+    });
+    await tx.auditEvent.create({
+      data: {
+        organisationId: invite.organisationId,
+        actorId: user.id,
+        action: "membership.accepted",
+        entityId: user.id,
+        detail: { role: invite.role },
+      },
+    });
+  });
+  (await cookies()).set("visibility-org", invite.organisationId, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 86400,
+  });
+  redirect("/workspace/dashboard");
 }
