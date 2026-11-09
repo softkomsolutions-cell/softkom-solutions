@@ -14,6 +14,9 @@ if (
 export const auth = betterAuth({
   appName: "Softkom Visibility Engine",
   baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins: process.env.BETTER_AUTH_URL
+    ? [new URL(process.env.BETTER_AUTH_URL).origin]
+    : [],
   secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(db, { provider: "postgresql" }),
   emailAndPassword: {
@@ -38,6 +41,8 @@ export const auth = betterAuth({
   },
   advanced: {
     useSecureCookies: process.env.NODE_ENV === "production",
+    disableOriginCheck: false,
+    disableCSRFCheck: false,
     ipAddress: {
       ipAddressHeaders: ["x-real-ip"],
     },
