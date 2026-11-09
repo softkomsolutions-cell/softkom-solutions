@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { PLANS, planKey, subscriptionActive } from "../plans";
 
 type Observation = {
   brandMentioned: boolean;
@@ -58,15 +59,23 @@ function promptsFor(
   customers: string,
   market: string,
   topics: { title: string }[],
+  limit: number,
 ) {
-  const prompts = topics.slice(0, 2).map(
-    (topic) =>
-      `What are reputable providers or practical solutions for ${clean(topic.title, 110)} in ${clean(market, 90)}?`,
-  );
-  prompts.push(
-    `Which companies are credible providers of ${clean(services, 120)} for ${clean(customers, 100)} in ${clean(market, 90)}?`,
-  );
-  return Array.from(new Set(prompts)).slice(0, 3);
+  const service = clean(services, 120);
+  const audience = clean(customers, 100);
+  const region = clean(market, 90);
+  const prompts = [
+    `Which companies are credible providers of ${service} for ${audience} in ${region}?`,
+    `What are the best providers of ${service} for ${audience} in ${region}?`,
+    `What practical solutions should ${audience} consider for ${service} in ${region}?`,
+    `How should ${audience} choose a provider for ${service} in ${region}?`,
+    `Which vendors or consultancies are strong alternatives for ${service} in ${region}?`,
+    ...topics.flatMap((topic) => [
+      `What are reputable providers or practical solutions for ${clean(topic.title, 110)} in ${region}?`,
+      `Which companies can help ${audience} with ${clean(topic.title, 110)} in ${region}?`,
+    ]),
+  ];
+  return Array.from(new Set(prompts)).slice(0, limit);
 }
 
 function instruction(prompt: string) {
@@ -243,27 +252,45 @@ export async function monitorAIVisibility() {
   const since = new Date(Date.now() - 23 * 60 * 60 * 1000);
   const sites = await db.site.findMany({
     include: {
-      organisation: { include: { businessProfile: true } },
+      organisation: { include: { businessProfile: true, plan: true } },
       topics: {
         where: { status: { not: "PAUSED" } },
         orderBy: { priority: "desc" },
-        take: 4,
+        take: 8,
       },
     },
   });
 
   let created = 0;
   let errors = 0;
+  const usedByOrganisation = new Map<string, number>();
 
   for (const site of sites) {
     const profile = site.organisation.businessProfile;
-    if (!profile) continue;
+    const subscription = site.organisation.plan;
+    if (!profile || !subscriptionActive(subscription)) continue;
+
+    const key = planKey(subscription?.plan);
+    const dailyLimit = PLANS[key].aiObservationsPerDay;
+    let used = usedByOrganisation.get(site.organisationId);
+    if (used === undefined) {
+      used = await db.aIObservation.count({
+        where: {
+          site: { organisationId: site.organisationId },
+          observedAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        },
+      });
+      usedByOrganisation.set(site.organisationId, used);
+    }
+    const remaining = Math.max(0, dailyLimit - used);
+    if (!remaining) continue;
 
     for (const prompt of promptsFor(
       profile.services,
       profile.customers,
       profile.market,
       site.topics,
+      remaining,
     )) {
       const existing = await db.aIObservation.findFirst({
         where: {
@@ -305,6 +332,9 @@ export async function monitorAIVisibility() {
           },
         });
         created++;
+        used++;
+        usedByOrganisation.set(site.organisationId, used);
+        if (used >= dailyLimit) break;
       } catch {
         errors++;
       }
