@@ -28,6 +28,21 @@ const evidence = (...lines: string[]) =>
     "Review before acting; this is a recommendation, not a guaranteed outcome.",
   ].join("\n");
 
+const isDiagnosticQuery = (query: string) =>
+  /^\s*(site|cache|info|related|inurl|intitle|allinurl|allintitle):/i.test(query);
+
+const landingLabel = (page: string) => {
+  const value = page.trim();
+  if (!value || value === "/") return "the homepage";
+  try {
+    const parsed = new URL(value);
+    if (parsed.pathname === "/" && !parsed.search && !parsed.hash) return "the homepage";
+    return parsed.pathname || value;
+  } catch {
+    return value;
+  }
+};
+
 export async function generateEvidenceOpportunities() {
   const since = new Date(Date.now() - 40 * 86400000);
   const sites = await db.site.findMany({
@@ -77,7 +92,7 @@ export async function generateEvidenceOpportunities() {
 
     const queries = new Map<string, { impressions: number; clicks: number; pos: number }>();
     for (const row of site.metrics) {
-      if (!row.query) continue;
+      if (!row.query || isDiagnosticQuery(row.query)) continue;
       const item = queries.get(row.query) || { impressions: 0, clicks: 0, pos: 0 };
       item.impressions += row.impressions;
       item.clicks += row.clicks;
@@ -141,8 +156,9 @@ export async function generateEvidenceOpportunities() {
     }
     for (const [page, item] of landing) {
       if (item.sessions < 20 || item.conversions > 0) continue;
+      const destination = landingLabel(page);
       candidates.push({
-        title: `Strengthen conversion on ${clean(page || "a high-traffic landing page", 90)}`,
+        title: `Strengthen conversion on ${clean(destination, 90)}`,
         slug: slugKey("traffic-no-conversion", page),
         cluster: "Revenue Recovery",
         intent: "COMMERCIAL",
@@ -154,7 +170,7 @@ export async function generateEvidenceOpportunities() {
           "Traffic without a recorded conversion deserves a conversion-path review before more acquisition is added. Check the offer, CTA prominence, form journey, mobile usability and key-event configuration.",
         contentType: "Conversion improvement",
         evidence: evidence(
-          `Landing page: ${page || "(not set)"}`,
+          `Landing page: ${page || "/"} (${destination}).`,
           `Observed sessions: ${item.sessions}.`,
           `Observed key events: ${item.conversions.toFixed(1)}.`,
         ),
@@ -203,6 +219,23 @@ export async function generateEvidenceOpportunities() {
           `Observed prompts with competitor mentions and no brand mention: ${competitorGap.length}.`,
         ),
       });
+    }
+
+    const allowedSlugs = new Set(candidates.slice(0, 8).map((candidate) => candidate.slug));
+    const staleAutoTopics = await db.topic.findMany({
+      where: { siteId: site.id, slug: { startsWith: "auto-" }, status: { not: "PUBLISHED" } },
+      select: { id: true, slug: true, title: true },
+    });
+    for (const stale of staleAutoTopics) {
+      const diagnostic =
+        stale.title.includes("site:") ||
+        stale.title.includes("cache:") ||
+        stale.title.includes("info:") ||
+        stale.title.includes("related:");
+      if (diagnostic && !allowedSlugs.has(stale.slug)) {
+        await db.topic.delete({ where: { id: stale.id } });
+        changed++;
+      }
     }
 
     for (const candidate of candidates.slice(0, 8)) {
