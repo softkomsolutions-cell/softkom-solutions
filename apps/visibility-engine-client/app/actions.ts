@@ -25,7 +25,7 @@ import { retryPublication } from "@/lib/publishing/worker";
 import { providerError, ProviderError } from "@/lib/connections/http";
 import { idSchema } from "@/lib/security";
 import { CmsType } from "@prisma/client";
-import { PLANS, trialEndsAt } from "@/lib/plans";
+import { PLANS, planKey, subscriptionActive, trialEndsAt } from "@/lib/plans";
 import { assertMemberCapacity, invitationHash, invitationToken, requireActivePlan } from "@/lib/saas";
 import { OrgRole } from "@prisma/client";
 
@@ -221,6 +221,25 @@ export async function completeOnboarding(
         403,
         "An organisation manager must complete setup.",
       );
+    if (membership) {
+      const [subscription, siteCount] = await Promise.all([
+        db.subscription.findUnique({
+          where: { organisationId: membership.organisationId },
+        }),
+        db.site.count({ where: { organisationId: membership.organisationId } }),
+      ]);
+      if (!subscriptionActive(subscription))
+        throw new AccessError(
+          403,
+          "Your trial or subscription has ended. Choose a plan before changing workspace setup.",
+        );
+      const limit = PLANS[planKey(subscription?.plan)].sites;
+      if (siteCount >= limit)
+        throw new AccessError(
+          409,
+          `Your current plan supports ${limit} site${limit === 1 ? "" : "s"}. Upgrade before adding another site.`,
+        );
+    }
     organisationId = await db.$transaction(
       async (tx) => {
         const org = membership
