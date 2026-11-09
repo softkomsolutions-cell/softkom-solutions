@@ -1,49 +1,14 @@
 "use client";
-import { useState, useActionState } from "react";
+import { useActionState } from "react";
 import { completeOnboarding } from "@/app/actions";
 
 export function Onboarding({ businessName }: { businessName: string }) {
-  const [step, setStep] = useState(0);
   const [state, action, pending] = useActionState(completeOnboarding, {});
-  const steps = ["Organisation", "Website", "Business", "Visibility"];
-
-  const advance = (form: HTMLFormElement) => {
-    const fieldset = form.querySelector<HTMLFieldSetElement>(
-      `fieldset[data-step="${step}"]`,
-    );
-    if (!fieldset) return;
-    const fields = fieldset.querySelectorAll<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >("input, textarea, select");
-    if (Array.from(fields).every((field) => field.reportValidity())) {
-      setStep((current) => Math.min(3, current + 1));
-    }
-  };
-
   return (
     <div className="onboarding">
-      <ol className="steps">
-        {steps.map((s, i) => (
-          <li
-            className={i === step ? "current" : i < step ? "done" : ""}
-            key={s}
-          >
-            <span>{i + 1}</span>
-            {s}
-          </li>
-        ))}
-      </ol>
-      <form
-        action={action}
-        className="form"
-        onSubmit={(event) => {
-          if (step < 3) {
-            event.preventDefault();
-            advance(event.currentTarget);
-          }
-        }}
-      >
-        <fieldset data-step="0" hidden={step !== 0} disabled={pending}>
+      <form action={action} className="form">
+        <section className="panel">
+          <p className="eyebrow">1 · ORGANISATION</p>
           <h2>Let’s start with your business.</h2>
           <p>This will be your private organisation workspace.</p>
           <label>
@@ -55,8 +20,10 @@ export function Onboarding({ businessName }: { businessName: string }) {
               maxLength={300}
             />
           </label>
-        </fieldset>
-        <fieldset data-step="1" hidden={step !== 1} disabled={pending}>
+        </section>
+
+        <section className="panel">
+          <p className="eyebrow">2 · WEBSITE</p>
           <h2>Where should visibility grow?</h2>
           <p>Add your website. You can connect analytics and publishing after setup.</p>
           <label>
@@ -81,8 +48,10 @@ export function Onboarding({ businessName }: { businessName: string }) {
               <option value="OTHER">Other</option>
             </select>
           </label>
-        </fieldset>
-        <fieldset data-step="2" hidden={step !== 2} disabled={pending}>
+        </section>
+
+        <section className="panel">
+          <p className="eyebrow">3 · COMMERCIAL PROFILE</p>
           <h2>What matters commercially?</h2>
           <p>Your offers and customers should shape every recommendation.</p>
           <label>
@@ -106,51 +75,35 @@ export function Onboarding({ businessName }: { businessName: string }) {
               maxLength={300}
             />
           </label>
-        </fieldset>
-        <fieldset data-step="3" hidden={step !== 3} disabled={pending}>
+        </section>
+
+        <section className="panel">
+          <p className="eyebrow">4 · CONNECTIONS</p>
           <h2>A clear starting point.</h2>
           <p>
-            Your site will be saved now. No external service is connected by
-            this step.
+            Your workspace and first site will be created now. External services
+            remain disconnected until you authorise them.
           </p>
           <div className="connection-row">
-            <strong>Google Search Console</strong>
+            <strong>Google Search Console & GA4</strong>
             <span className="badge">Connect after setup</span>
           </div>
           <div className="connection-row">
             <strong>CMS publishing</strong>
             <span className="badge">Connect after setup</span>
           </div>
-          <p>
-            Search results and publishing success will appear only when
-            supported by real data.
-          </p>
-        </fieldset>
+        </section>
+
         {state.error && (
           <p role="alert" className="notice error">
             {state.error}
           </p>
         )}
+
         <div className="form-actions">
-          {step > 0 && (
-            <button
-              type="button"
-              className="secondary"
-              onClick={() => setStep((current) => current - 1)}
-              disabled={pending}
-            >
-              Back
-            </button>
-          )}
-          {step < 3 ? (
-            <button type="submit" disabled={pending}>
-              Continue →
-            </button>
-          ) : (
-            <button type="submit" disabled={pending}>
-              {pending ? "Creating workspace…" : "Open your workspace →"}
-            </button>
-          )}
+          <button type="submit" disabled={pending}>
+            {pending ? "Creating workspace…" : "Create workspace & start trial →"}
+          </button>
         </div>
       </form>
     </div>
