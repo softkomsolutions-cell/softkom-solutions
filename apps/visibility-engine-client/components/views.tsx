@@ -892,17 +892,56 @@ export function Analytics({ data, filters, ctx }: Props) {
   );
 }
 export function AIVisibility({ data, ctx, filters }: Props) {
+  const automated = data.observations.filter(
+    (o) =>
+      o.source.includes("Mistral Conversations API") ||
+      o.source.includes("OpenAI Responses API"),
+  );
+  const mentions = data.observations.filter((o) => o.brandMentioned).length;
+  const citations = data.observations.filter((o) => o.pageCited).length;
+  const competitors = data.observations.filter(
+    (o) => Boolean(o.competitorMentioned),
+  ).length;
+
   return (
     <>
       <FiltersBar data={data} filters={filters} />
       <div className="notice">
-        <strong>Evidence, not an AI ranking score.</strong>
+        <strong>
+          {automated.length
+            ? "Automated AI monitoring is active."
+            : "Evidence, not an AI ranking score."}
+        </strong>
         <p>
-          Each observation records a platform, prompt, date and source. A
-          mention or citation in one response does not establish universal AI
-          visibility.
+          {automated.length
+            ? `${automated.length} automated observation${automated.length === 1 ? "" : "s"} were recorded for this period. Each result keeps the exact prompt, provider source and observation date.`
+            : "Each observation records a platform, prompt, date and source. A mention or citation in one response does not establish universal AI visibility."}
         </p>
       </div>
+      {data.observations.length > 0 && (
+        <div className="kpis">
+          <Metric
+            title="AI observations"
+            value={data.observations.length}
+            note={automated.length ? `${automated.length} automated` : "Recorded evidence"}
+          />
+          <Metric
+            title="Brand mentions"
+            value={mentions}
+            note="Observed responses mentioning the brand"
+          />
+          <Metric
+            title="Page citations"
+            value={citations}
+            note="Observed responses citing this website"
+          />
+          <Metric
+            title="Competitor mentions"
+            value={competitors}
+            note="Responses where a competitor was identified"
+          />
+        </div>
+      )}
       {!data.observations.length ? (
         <section className="panel">
           <Empty title="No AI observations recorded yet.">
@@ -1390,6 +1429,21 @@ export function Reports({ data, ctx, filters }: Props) {
             )}
           </section>
         </div>
+        <section>
+          <h3>AI visibility evidence</h3>
+          {data.observations.length ? (
+            <p>
+              {data.observations.length} observed AI responses this month:{" "}
+              {data.observations.filter((o) => o.brandMentioned).length} brand
+              mentions and{" "}
+              {data.observations.filter((o) => o.pageCited).length} page
+              citations. Results are stored as prompt-level evidence, not a
+              synthetic AI ranking score.
+            </p>
+          ) : (
+            <p>No AI observations were recorded for this month.</p>
+          )}
+        </section>
         <h3>Next recommendations</h3>
         {data.topics
           .filter((t) => !["PAUSED", "PUBLISHED"].includes(t.status))
