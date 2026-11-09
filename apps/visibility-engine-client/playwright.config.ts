@@ -30,7 +30,7 @@ export default defineConfig({
     },
     {
       command:
-        "node --import ./tests/fixtures/preload.mjs ./node_modules/next/dist/bin/next start --hostname 0.0.0.0",
+        "node --import ./tests/fixtures/preload.mjs ./node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port 3000",
       env: {
         BETTER_AUTH_URL: "https://localhost:3443",
         GOOGLE_CLIENT_ID: "controlled-client",
