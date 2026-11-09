@@ -409,7 +409,9 @@ export async function activatePlan(form: FormData) {
 
   const organisationId = idSchema.parse(form.get("organisationId"));
   const plan = z.enum(["TRIAL", "STARTER", "GROWTH", "PRO"]).parse(form.get("plan"));
+  const currency = z.enum(["ZAR", "USD"]).parse(form.get("currency") || "ZAR");
   const config = PLANS[plan];
+  const monthlyPrice = currency === "USD" ? config.usdMonthlyPrice : config.monthlyPrice;
   const now = new Date();
   await db.subscription.upsert({
     where: { organisationId },
@@ -417,7 +419,8 @@ export async function activatePlan(form: FormData) {
       organisationId,
       plan,
       status: plan === "TRIAL" ? "TRIALING" : "ACTIVE",
-      monthlyPrice: config.monthlyPrice,
+      monthlyPrice,
+      currency,
       trialStartedAt: plan === "TRIAL" ? now : null,
       trialEndsAt: plan === "TRIAL" ? trialEndsAt(now) : null,
       currentPeriodEndsAt:
@@ -427,7 +430,8 @@ export async function activatePlan(form: FormData) {
     update: {
       plan,
       status: plan === "TRIAL" ? "TRIALING" : "ACTIVE",
-      monthlyPrice: config.monthlyPrice,
+      monthlyPrice,
+      currency,
       trialStartedAt: plan === "TRIAL" ? now : null,
       trialEndsAt: plan === "TRIAL" ? trialEndsAt(now) : null,
       currentPeriodEndsAt:
@@ -442,7 +446,7 @@ export async function activatePlan(form: FormData) {
       actorId: user.id,
       action: "subscription.activated",
       entityId: organisationId,
-      detail: { plan, monthlyPrice: config.monthlyPrice },
+      detail: { plan, monthlyPrice, currency },
     },
   });
   redirect("/admin");
