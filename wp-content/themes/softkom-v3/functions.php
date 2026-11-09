@@ -278,6 +278,7 @@ function softkom_v3_is_system_page() {
 		'platforms',
 		'marketplaceos',
 		'brick-alpha',
+		'growth-engine',
 		'autoseo',
 		'privacy-policy',
 		'cookie',
@@ -516,7 +517,7 @@ function softkom_v3_dequeue_bloat() {
 	// Only strip Elementor JS when the Softkom shortcode owns the page body
 	// (homepage / platforms / product pages) Ã¢â‚¬â€ avoid breaking non-Softkom Elementor layouts.
 	$softkom_owned = is_front_page()
-		|| is_page( array( 'platforms', 'marketplaceos', 'brick-alpha', 'autoseo', 'company', 'contact', 'insights-3', 'insights', 'services', 'industries', 'case-studies' ) );
+		|| is_page( array( 'platforms', 'marketplaceos', 'brick-alpha', 'growth-engine', 'autoseo', 'company', 'contact', 'insights-3', 'insights', 'services', 'industries', 'case-studies' ) );
 	if ( $softkom_owned ) {
 		foreach ( $scripts as $handle ) {
 			wp_dequeue_script( $handle );
@@ -926,10 +927,10 @@ function softkom_v3_head_meta() {
 		$title = 'Brick Alpha | Softkom';
 		$desc  = 'Brick Alpha Ã¢â‚¬â€ investment intelligence for LEGO and collectibles from Softkom.';
 		$url   = home_url( '/platforms/brick-alpha/' );
-	} elseif ( is_page( 'autoseo' ) || is_page( 'platforms/autoseo' ) ) {
-		$title = 'AutoSEO | Softkom';
-		$desc  = 'AutoSEO from Softkom combines continuous SEO monitoring, AI-search visibility, content opportunity detection and controlled WordPress publishing.';
-		$url   = home_url( '/platforms/autoseo/' );
+	} elseif ( is_page( 'growth-engine' ) || is_page( 'platforms/growth-engine' ) || is_page( 'autoseo' ) || is_page( 'platforms/autoseo' ) ) {
+		$title = 'Softkom Growth Engine | Search & AI Visibility';
+		$desc  = 'Softkom Growth Engine combines continuous search monitoring, AI-search visibility, content opportunity detection and controlled website improvement.';
+		$url   = home_url( '/platforms/growth-engine/' );
 	} elseif ( is_page( 'company' ) ) {
 		$title = 'Company | Softkom';
 		$desc  = 'Softkom builds specialised software platforms Ã¢â‚¬â€ purpose-built products, long-term investment, human-centred AI.';
@@ -1025,8 +1026,8 @@ function softkom_v3_schema_jsonld() {
 				array(
 					'@type'    => 'ListItem',
 					'position' => 3,
-					'name'     => 'AutoSEO',
-					'url'      => home_url( '/platforms/autoseo/' ),
+					'name'     => 'Softkom Growth Engine',
+					'url'      => home_url( '/platforms/growth-engine/' ),
 				),
 				array(
 					'@type'    => 'ListItem',
@@ -1085,7 +1086,7 @@ function softkom_v3_schema_jsonld() {
 			'name'     => 'Brick Alpha',
 			'item'     => home_url( '/platforms/brick-alpha/' ),
 		);
-	} elseif ( is_page( 'autoseo' ) || is_page( 'platforms/autoseo' ) ) {
+	} elseif ( is_page( 'growth-engine' ) || is_page( 'platforms/growth-engine' ) || is_page( 'autoseo' ) || is_page( 'platforms/autoseo' ) ) {
 		$crumbs[] = array(
 			'@type'    => 'ListItem',
 			'position' => 2,
@@ -1095,8 +1096,8 @@ function softkom_v3_schema_jsonld() {
 		$crumbs[] = array(
 			'@type'    => 'ListItem',
 			'position' => 3,
-			'name'     => 'AutoSEO',
-			'item'     => home_url( '/platforms/autoseo/' ),
+			'name'     => 'Softkom Growth Engine',
+			'item'     => home_url( '/platforms/growth-engine/' ),
 		);
 	} else {
 		$queried = get_queried_object();
@@ -1250,8 +1251,8 @@ function softkom_v3_install_pages() {
         );
 
         $upsert_page(
-            'autoseo',
-            'AutoSEO',
+            'growth-engine',
+            'Softkom Growth Engine',
             '[softkom_product_autoseo_v3]',
             $platforms_id
         );
