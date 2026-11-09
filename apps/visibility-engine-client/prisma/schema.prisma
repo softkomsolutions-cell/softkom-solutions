@@ -301,6 +301,7 @@ model Subscription {
   plan                   String       @default("TRIAL")
   status                 String       @default("TRIALING")
   monthlyPrice           Decimal      @default(0) @db.Decimal(12, 2)
+  currency               String       @default("ZAR")
   trialStartedAt         DateTime?
   trialEndsAt            DateTime?
   currentPeriodEndsAt    DateTime?
