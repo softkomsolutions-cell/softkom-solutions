@@ -3,14 +3,15 @@ export type PlanKey = "TRIAL" | "STARTER" | "GROWTH" | "PRO";
 export const PLANS: Record<PlanKey, {
   name: string;
   monthlyPrice: number;
+  usdMonthlyPrice: number;
   sites: number;
   members: number;
   aiObservationsPerDay: number;
 }> = {
-  TRIAL: { name: "14-day trial", monthlyPrice: 0, sites: 1, members: 2, aiObservationsPerDay: 3 },
-  STARTER: { name: "Starter", monthlyPrice: 1490, sites: 1, members: 3, aiObservationsPerDay: 3 },
-  GROWTH: { name: "Growth", monthlyPrice: 2990, sites: 3, members: 8, aiObservationsPerDay: 6 },
-  PRO: { name: "Pro", monthlyPrice: 5990, sites: 10, members: 20, aiObservationsPerDay: 12 },
+  TRIAL: { name: "14-day trial", monthlyPrice: 0, usdMonthlyPrice: 0, sites: 1, members: 2, aiObservationsPerDay: 3 },
+  STARTER: { name: "Starter", monthlyPrice: 1490, usdMonthlyPrice: 99, sites: 1, members: 3, aiObservationsPerDay: 3 },
+  GROWTH: { name: "Growth", monthlyPrice: 2990, usdMonthlyPrice: 199, sites: 3, members: 8, aiObservationsPerDay: 6 },
+  PRO: { name: "Pro", monthlyPrice: 5990, usdMonthlyPrice: 399, sites: 10, members: 20, aiObservationsPerDay: 12 },
 };
 
 export const planKey = (value?: string | null): PlanKey =>
