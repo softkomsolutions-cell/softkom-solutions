@@ -1,4 +1,5 @@
 import {
+import { assertSiteCapacity } from "./saas";
   Prisma,
   SearchIntent,
   TopicStatus,
@@ -76,6 +77,7 @@ const serial = {
 
 export async function addSite(ctx: Context, raw: unknown) {
   requireManager(ctx.role);
+  await assertSiteCapacity(ctx);
   const input = siteInput.parse(raw);
   return db.$transaction(async (tx) => {
     const site = await tx.site.create({
