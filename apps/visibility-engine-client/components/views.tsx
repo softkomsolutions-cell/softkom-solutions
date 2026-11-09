@@ -219,7 +219,7 @@ export function Dashboard({ data, ctx }: Props) {
               </strong>
             </div>
             <div>
-              <span>GA4 key events</span>
+              <span>GA4 lead events</span>
               <strong>
                 {data.analytics.length
                   ? analytics.conversions.toLocaleString(undefined, {
@@ -246,8 +246,9 @@ export function Dashboard({ data, ctx }: Props) {
             </div>
           </div>
           <p className="fine">
-            Search and GA4 values are observed connector data. Leads and won
-            revenue reflect recorded attribution and are not proof of causation.
+            Search and GA4 values are observed connector data. GA4 lead events
+            count the generate_lead event only. Leads and won revenue reflect
+            recorded attribution and are not proof of causation.
           </p>
           <Link className="inline-link" href="/workspace/leads">
             Explore the attribution trail <ArrowRight size={14} />
@@ -1370,7 +1371,7 @@ export function Reports({ data, ctx, filters }: Props) {
                 {before.clicks} clicks and {before.impressions} impressions for{" "}
                 {coverage(searchPeriods.previousCoverage)}.
                 {data.analytics.length
-                  ? ` GA4: ${gaNow.sessions} sessions and ${gaNow.conversions.toFixed(1)} key events for ${coverage(analyticsPeriods.currentCoverage)}, compared with ${gaBefore.sessions} sessions and ${gaBefore.conversions.toFixed(1)} key events for ${coverage(analyticsPeriods.previousCoverage)}.`
+                  ? ` GA4: ${gaNow.sessions} sessions and ${gaNow.conversions.toFixed(1)} generate_lead events for ${coverage(analyticsPeriods.currentCoverage)}, compared with ${gaBefore.sessions} sessions and ${gaBefore.conversions.toFixed(1)} generate_lead events for ${coverage(analyticsPeriods.previousCoverage)}.`
                   : ""}{" "}
                 Comparisons are capped to equivalent observed day coverage so a
                 partial month is not compared with a full prior month.

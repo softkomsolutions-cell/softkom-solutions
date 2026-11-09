@@ -165,6 +165,26 @@ describe("Google Analytics provider", () => {
           headers: {},
           url,
         };
+      const body = JSON.parse(options.body || "{}");
+      if (body.dimensionFilter)
+        return {
+          status: 200,
+          body: JSON.stringify({
+            rows: [
+              {
+                dimensionValues: [
+                  { value: "20261101" },
+                  { value: "/services?utm_source=google" },
+                  { value: "google" },
+                  { value: "organic" },
+                ],
+                metricValues: [{ value: "2" }],
+              },
+            ],
+          }),
+          headers: {},
+          url,
+        };
       return {
         status: 200,
         body: JSON.stringify({
@@ -180,7 +200,6 @@ describe("Google Analytics provider", () => {
               metricValues: [
                 { value: "12" },
                 { value: "9" },
-                { value: "2" },
                 { value: "1500.50" },
               ],
             },
@@ -218,12 +237,24 @@ describe("Google Analytics provider", () => {
         currency: "ZAR",
       },
     ]);
-    expect(JSON.parse(requests[1].body || "{}").metrics).toEqual([
+    const sessionReport = JSON.parse(requests[1].body || "{}");
+    const leadReport = JSON.parse(requests[2].body || "{}");
+    expect(sessionReport.metrics).toEqual([
       { name: "sessions" },
       { name: "engagedSessions" },
-      { name: "keyEvents" },
       { name: "totalRevenue" },
     ]);
+    expect(leadReport.metrics).toEqual([{ name: "eventCount" }]);
+    expect(leadReport.dimensionFilter).toEqual({
+      filter: {
+        fieldName: "eventName",
+        stringFilter: {
+          matchType: "EXACT",
+          value: "generate_lead",
+          caseSensitive: true,
+        },
+      },
+    });
   });
 
   it("rejects invalid GA4 measurements instead of storing them", async () => {
@@ -241,7 +272,6 @@ describe("Google Analytics provider", () => {
             ],
             metricValues: [
               { value: "-1" },
-              { value: "0" },
               { value: "0" },
               { value: "0" },
             ],
