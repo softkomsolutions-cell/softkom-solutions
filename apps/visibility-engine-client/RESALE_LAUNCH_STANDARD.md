@@ -10,13 +10,13 @@ The Softkom internal deployment and every external customer use the same core ap
 
 ## Commercial packages
 
-| Package | Monthly price | Sites | Members | Automated AI observations | Best fit |
-| --- | ---: | ---: | ---: | ---: | --- |
-| Starter | R1,490 | 1 | 3 | 3/day | Small business with one primary website |
-| Growth | R2,990 | 3 | 8 | 6/day | Growing business with multiple sites/brands or a larger team |
-| Pro | R5,990 | 10 | 20 | 12/day | Multi-brand, multi-site or agency-like operations |
+| Package | South Africa | International | Sites | Members | Automated AI observations | Best fit |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Starter | R1,490/month | US$99/month | 1 | 3 | 3/day | Small business with one primary website |
+| Growth | R2,990/month | US$199/month | 3 | 8 | 6/day | Growing business with multiple sites/brands or a larger team |
+| Pro | R5,990/month | US$399/month | 10 | 20 | 12/day | Multi-brand, multi-site or agency-like operations |
 
-A 14-day trial includes 1 site, 2 members and 3 AI observations per day. No payment details are required for the trial.
+A 14-day trial includes 1 site, 2 members and 3 AI observations per day. No payment details are required for the trial. South African customers are billed in ZAR and international customers can be billed in USD; the subscription record stores the billing currency explicitly.
 
 ### Paid activation
 
@@ -25,7 +25,7 @@ The launch baseline supports two commercial paths:
 1. **Managed invoicing** — Softkom invoices the customer and activates the selected plan from the operator/admin console after payment or agreed commercial approval.
 2. **Connected checkout** — optional BILLING_STARTER_URL, BILLING_GROWTH_URL and BILLING_PRO_URL links can route customers to a configured payment provider. The authenticated billing webhook updates subscription state.
 
-The product must never imply that a payment has succeeded until the subscription record is updated.
+The product must never imply that a payment has succeeded until the subscription record is updated. Paid subscription records must persist both the amount and its currency (`ZAR` or `USD`).
 
 ## Core inclusions
 
