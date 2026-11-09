@@ -3,7 +3,7 @@ import { createAuthClient } from "better-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 const authClient = createAuthClient();
-export function LoginForm() {
+export function LoginForm({ inviteToken = "" }: { inviteToken?: string }) {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -25,7 +25,7 @@ export function LoginForm() {
               "Sign-in failed. Check your details, or wait a minute before trying again.",
             );
           else {
-            router.push("/workspace/dashboard");
+            router.push(inviteToken ? `/invite/${inviteToken}` : "/workspace/dashboard");
             router.refresh();
           }
         } catch {
