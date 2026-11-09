@@ -25,6 +25,7 @@ import { retryPublication } from "@/lib/publishing/worker";
 import { providerError, ProviderError } from "@/lib/connections/http";
 import { idSchema } from "@/lib/security";
 import { CmsType } from "@prisma/client";
+import { trialEndsAt } from "@/lib/plans";
 
 export type ActionState = { error?: string; success?: string };
 export async function mutate(
@@ -196,6 +197,18 @@ export async function completeOnboarding(
                 users: { create: { userId: user.id, role: "OWNER" } },
               },
             });
+        await tx.subscription.upsert({
+          where: { organisationId: org.id },
+          create: {
+            organisationId: org.id,
+            plan: "TRIAL",
+            status: "TRIALING",
+            monthlyPrice: 0,
+            trialStartedAt: new Date(),
+            trialEndsAt: trialEndsAt(),
+          },
+          update: {},
+        });
         await tx.businessProfile.upsert({
           where: { organisationId: org.id },
           create: {
