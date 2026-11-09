@@ -69,7 +69,11 @@ export default async function WorkspaceLayout({
           {children}
         </main>
         <footer>
-          Visibility Engine <span>Thoughtfully managed by Softkom.</span>
+          <span>Visibility Engine</span>
+          <span>
+            <Link href="/privacy">Privacy</Link> · <Link href="/terms">Terms</Link> ·{" "}
+            <a href="mailto:info@softkomsolutions.com">Support</a>
+          </span>
         </footer>
       </div>
     </div>
