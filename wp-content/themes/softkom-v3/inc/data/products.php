@@ -188,6 +188,19 @@ function softkom_v3_product_autoseo() {
 				'Monthly growth summaries',
 			),
 		),
+		'ai_visibility' => array(
+			'title' => 'Measure whether AI assistants actually recommend the brand',
+			'body'  => 'Traditional rank tracking measures a position in a list. AI answers are different: a brand may be recommended, cited inaccurately, displaced by a competitor or omitted entirely. Softkom Growth Engine treats visibility as a frequency-and-quality problem rather than a single snapshot.',
+			'metrics' => array(
+				'Citation frequency across a controlled prompt set',
+				'Brand accuracy and message consistency',
+				'Competitors appearing instead of the client',
+				'Sources and pages being cited by assistants',
+				'Content and structured-data gaps',
+				'Entity consistency and third-party authority gaps',
+				'Baseline versus retest movement over time',
+			),
+		),
 		'integrations' => array(
 			'title' => 'Connected to the systems that show real performance',
 			'body'  => 'Softkom Growth Engine is designed around first-party data and controlled publishing rather than isolated keyword reports.',
