@@ -1,6 +1,6 @@
 <?php
 /**
- * Softkom V3 — AutoSEO product page.
+ * Softkom V3 — Softkom Growth Engine product page.
  *
  * @package Softkom_V3
  */
@@ -22,10 +22,10 @@ $p = softkom_v3_product_autoseo();
       'eyebrow'         => $p['eyebrow'],
       'title'           => $p['title'] . ' — search growth that keeps working after the audit',
       'lead'            => $p['hero_lead'],
-      'primary_label'   => 'Join AutoSEO Early Access',
+      'primary_label'   => 'Join Softkom Growth Engine Early Access',
       'primary_url'     => home_url( '/#contact' ),
       'secondary_label' => 'See How It Works',
-      'secondary_url'   => home_url( '/platforms/autoseo/#solution' ),
+      'secondary_url'   => home_url( '/platforms/growth-engine/#solution' ),
     )
   );
   ?>
@@ -43,14 +43,14 @@ $p = softkom_v3_product_autoseo();
   <section class="section section-muted" id="solution">
     <div class="container sk-product-split sk-reveal">
       <div>
-        <p class="eyebrow">The AutoSEO Approach</p>
+        <p class="eyebrow">The Softkom Growth Engine Approach</p>
         <h2 class="sk-display"><?php echo esc_html( $p['solution']['title'] ); ?></h2>
         <p class="lead"><?php echo esc_html( $p['solution']['body'] ); ?></p>
       </div>
       <div class="sk-card">
         <p class="eyebrow">Operating Principle</p>
         <h3>Find → prioritise → prepare → approve → publish → measure</h3>
-        <p>AutoSEO is designed to keep a human approval point before material website changes while automating the repetitive research and monitoring around them.</p>
+        <p>Softkom Growth Engine is designed to keep a human approval point before material website changes while automating the repetitive research and monitoring around them.</p>
       </div>
     </div>
   </section>
@@ -87,7 +87,7 @@ $p = softkom_v3_product_autoseo();
       <div class="sk-card">
         <p class="eyebrow">Not a content mill</p>
         <h3>Automation should improve a business website, not flood it.</h3>
-        <p>AutoSEO is intentionally built around relevance, evidence, conversion paths and approval gates rather than publishing large volumes of low-value pages.</p>
+        <p>Softkom Growth Engine is intentionally built around relevance, evidence, conversion paths and approval gates rather than publishing large volumes of low-value pages.</p>
       </div>
     </div>
   </section>
@@ -174,7 +174,7 @@ $p = softkom_v3_product_autoseo();
       array(
         'label' => 'Attributed leads',
         'value' => number_format_i18n( count( $leads ), 0 ),
-        'note'  => 'Lead-attribution records currently available to AutoSEO.',
+        'note'  => 'Lead-attribution records currently available to Softkom Growth Engine.',
       ),
     );
 
@@ -320,7 +320,7 @@ $p = softkom_v3_product_autoseo();
     <div class="container">
       <div class="sk-card sk-reveal">
         <p class="eyebrow">Early Access</p>
-        <h2 class="sk-display">AutoSEO is being built into the Softkom growth stack.</h2>
+        <h2 class="sk-display">Softkom Growth Engine is being built into the Softkom growth stack.</h2>
         <p class="lead">The first rollout is aimed at businesses that want stronger search visibility and more qualified website enquiries without managing a separate collection of SEO tools.</p>
         <p><a class="sk-btn sk-btn-primary" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Tell Us About Your Website</a></p>
       </div>
