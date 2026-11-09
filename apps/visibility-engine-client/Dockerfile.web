@@ -12,6 +12,6 @@ RUN npm run db:generate
 
 COPY . .
 
-RUN npm run typecheck && npm run test:unit && npm run lint
+RUN npm run typecheck && npm run test:unit && npm run lint && npm run build
 
 CMD ["npm","run","start"]
