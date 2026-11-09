@@ -32,7 +32,7 @@ export default function Pricing() {
       </section>
       <section className="panel">
         <h2>14-day trial</h2>
-        <p>No payment details required. Trial limits: 1 site, 2 members and 3 AI observations per day.</p>
+        <p>No payment details required. Trial limits: 1 site, 2 members and 3 AI observations per day. Paid plans can be activated through connected checkout links or by Softkom after invoicing.</p>
         <Link className="button" href="/signup">Create trial workspace →</Link>
       </section>
     </main>
