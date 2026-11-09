@@ -25,8 +25,8 @@ import { retryPublication } from "@/lib/publishing/worker";
 import { providerError, ProviderError } from "@/lib/connections/http";
 import { idSchema } from "@/lib/security";
 import { CmsType } from "@prisma/client";
-import { trialEndsAt } from "@/lib/plans";
-import { assertMemberCapacity, invitationHash, invitationToken } from "@/lib/saas";
+import { PLANS, planKey, trialEndsAt } from "@/lib/plans";
+import { assertMemberCapacity, invitationHash, invitationToken, requireActivePlan } from "@/lib/saas";
 import { OrgRole } from "@prisma/client";
 
 export type ActionState = { error?: string; success?: string };
@@ -37,7 +37,9 @@ export async function mutate(
   const ctx = await getContext();
   try {
     const data = Object.fromEntries(form);
-    switch (form.get("operation")) {
+    const operation = String(form.get("operation") || "");
+    if (!["disconnect", "review"].includes(operation)) await requireActivePlan(ctx);
+    switch (operation) {
       case "wordpressConnect":
         await connectWordPress(ctx, data);
         break;
@@ -375,4 +377,54 @@ export async function acceptInvitation(form: FormData) {
     maxAge: 86400,
   });
   redirect("/workspace/dashboard");
+}
+
+
+export async function activatePlan(form: FormData) {
+  const user = await currentUser();
+  const allowed = (process.env.SOFTKOM_ADMIN_EMAILS || "")
+    .split(",")
+    .map((v) => v.trim().toLowerCase())
+    .filter(Boolean);
+  if (!allowed.includes(user.email.toLowerCase())) redirect("/forbidden");
+
+  const organisationId = idSchema.parse(form.get("organisationId"));
+  const plan = z.enum(["TRIAL", "STARTER", "GROWTH", "PRO"]).parse(form.get("plan"));
+  const config = PLANS[plan];
+  const now = new Date();
+  await db.subscription.upsert({
+    where: { organisationId },
+    create: {
+      organisationId,
+      plan,
+      status: plan === "TRIAL" ? "TRIALING" : "ACTIVE",
+      monthlyPrice: config.monthlyPrice,
+      trialStartedAt: plan === "TRIAL" ? now : null,
+      trialEndsAt: plan === "TRIAL" ? trialEndsAt(now) : null,
+      currentPeriodEndsAt:
+        plan === "TRIAL" ? null : new Date(now.getTime() + 31 * 24 * 60 * 60 * 1000),
+      provider: "MANUAL",
+    },
+    update: {
+      plan,
+      status: plan === "TRIAL" ? "TRIALING" : "ACTIVE",
+      monthlyPrice: config.monthlyPrice,
+      trialStartedAt: plan === "TRIAL" ? now : null,
+      trialEndsAt: plan === "TRIAL" ? trialEndsAt(now) : null,
+      currentPeriodEndsAt:
+        plan === "TRIAL" ? null : new Date(now.getTime() + 31 * 24 * 60 * 60 * 1000),
+      provider: "MANUAL",
+      cancelAtPeriodEnd: false,
+    },
+  });
+  await db.auditEvent.create({
+    data: {
+      organisationId,
+      actorId: user.id,
+      action: "subscription.activated",
+      entityId: organisationId,
+      detail: { plan, monthlyPrice: config.monthlyPrice },
+    },
+  });
+  redirect("/admin");
 }
