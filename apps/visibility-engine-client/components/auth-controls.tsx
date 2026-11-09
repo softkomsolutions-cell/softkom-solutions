@@ -126,7 +126,11 @@ export function SignupForm({ inviteToken = "" }: { inviteToken?: string }) {
       </label>
       {error && <p role="alert" className="notice error">{error}</p>}
       <button disabled={pending}>{pending ? "Creating account…" : "Start your 14-day trial →"}</button>
-      <p className="fine">No payment details are required to create a trial workspace.</p>
+      <p className="fine">
+        No payment details are required to create a trial workspace. By creating
+        an account you agree to the <a href="/terms">service terms</a> and
+        acknowledge the <a href="/privacy">privacy notice</a>.
+      </p>
     </form>
   );
 }
