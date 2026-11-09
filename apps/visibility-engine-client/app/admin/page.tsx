@@ -52,6 +52,10 @@ export default async function AdminPage() {
                     <option key={key} value={key}>{PLANS[key].name}</option>
                   ))}
                 </select>
+                <select name="currency" defaultValue={org.plan?.currency || "ZAR"}>
+                  <option value="ZAR">ZAR</option>
+                  <option value="USD">USD</option>
+                </select>
                 <button>Activate plan</button>
               </form>
             </div>
