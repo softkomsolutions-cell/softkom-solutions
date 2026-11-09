@@ -281,7 +281,18 @@ add_action( 'rest_api_init', function() {
     register_rest_route( 'softkom-visibility/v1', '/bridge-health', array(
         'methods'             => 'GET',
         'callback'            => function() {
-            return rest_ensure_response( softkom_visibility_engine_health_check() );
+            $result = softkom_visibility_engine_health_check();
+            $counts = wp_count_posts( 'softkom_lead' );
+            $existing = 0;
+            foreach ( array( 'publish', 'private', 'draft', 'pending' ) as $status ) {
+                if ( isset( $counts->{$status} ) ) {
+                    $existing += (int) $counts->{$status};
+                }
+            }
+            $result['existing_leads'] = $existing;
+            $result['backfill_complete'] = (bool) get_option( 'softkom_visibility_backfill_complete', '' );
+            $result['backfill_offset'] = (int) get_option( 'softkom_visibility_backfill_offset', 0 );
+            return rest_ensure_response( $result );
         },
         'permission_callback' => '__return_true',
     ) );
@@ -339,3 +350,24 @@ function softkom_visibility_engine_backfill_batch() {
     wp_schedule_single_event( time() + MINUTE_IN_SECONDS, 'softkom_visibility_engine_backfill_batch' );
 }
 add_action( 'softkom_visibility_engine_backfill_batch', 'softkom_visibility_engine_backfill_batch' );
+
+
+function softkom_visibility_engine_fast_start_backfill() {
+    if ( get_option( 'softkom_visibility_backfill_complete', '' ) ) {
+        return;
+    }
+    if ( (int) get_option( 'softkom_visibility_backfill_offset', 0 ) !== 0 ) {
+        return;
+    }
+    $counts = wp_count_posts( 'softkom_lead' );
+    $existing = 0;
+    foreach ( array( 'publish', 'private', 'draft', 'pending' ) as $status ) {
+        if ( isset( $counts->{$status} ) ) {
+            $existing += (int) $counts->{$status};
+        }
+    }
+    if ( $existing > 0 && $existing <= 5 ) {
+        softkom_visibility_engine_backfill_batch();
+    }
+}
+add_action( 'init', 'softkom_visibility_engine_fast_start_backfill', 60 );
