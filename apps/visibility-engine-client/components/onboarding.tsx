@@ -34,7 +34,7 @@ export function Onboarding({ businessName }: { businessName: string }) {
         </fieldset>
         <fieldset hidden={step !== 1} disabled={pending}>
           <h2>Where should visibility grow?</h2>
-          <p>Add your website. Publishing access is configured separately.</p>
+          <p>Add your website. You can connect analytics and publishing after setup.</p>
           <label>
             Site name
             <input name="name" required maxLength={300} />
@@ -95,7 +95,7 @@ export function Onboarding({ businessName }: { businessName: string }) {
           </div>
           <div className="connection-row">
             <strong>CMS publishing</strong>
-            <span className="badge">Requires Softkom setup</span>
+            <span className="badge">Connect after setup</span>
           </div>
           <p>
             Search results and publishing success will appear only when
