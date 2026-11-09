@@ -25,7 +25,7 @@ import { retryPublication } from "@/lib/publishing/worker";
 import { providerError, ProviderError } from "@/lib/connections/http";
 import { idSchema } from "@/lib/security";
 import { CmsType } from "@prisma/client";
-import { PLANS, planKey, trialEndsAt } from "@/lib/plans";
+import { PLANS, trialEndsAt } from "@/lib/plans";
 import { assertMemberCapacity, invitationHash, invitationToken, requireActivePlan } from "@/lib/saas";
 import { OrgRole } from "@prisma/client";
 
