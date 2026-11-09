@@ -1,10 +1,25 @@
 "use client";
 import { useState, useActionState } from "react";
 import { completeOnboarding } from "@/app/actions";
+
 export function Onboarding({ businessName }: { businessName: string }) {
   const [step, setStep] = useState(0);
   const [state, action, pending] = useActionState(completeOnboarding, {});
   const steps = ["Organisation", "Website", "Business", "Visibility"];
+
+  const advance = (form: HTMLFormElement) => {
+    const fieldset = form.querySelector<HTMLFieldSetElement>(
+      `fieldset[data-step="${step}"]`,
+    );
+    if (!fieldset) return;
+    const fields = fieldset.querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >("input, textarea, select");
+    if (Array.from(fields).every((field) => field.reportValidity())) {
+      setStep((current) => Math.min(3, current + 1));
+    }
+  };
+
   return (
     <div className="onboarding">
       <ol className="steps">
@@ -18,8 +33,17 @@ export function Onboarding({ businessName }: { businessName: string }) {
           </li>
         ))}
       </ol>
-      <form action={action} className="form" onSubmit={() => setStep(3)}>
-        <fieldset hidden={step !== 0} disabled={pending}>
+      <form
+        action={action}
+        className="form"
+        onSubmit={(event) => {
+          if (step < 3) {
+            event.preventDefault();
+            advance(event.currentTarget);
+          }
+        }}
+      >
+        <fieldset data-step="0" hidden={step !== 0} disabled={pending}>
           <h2>Let’s start with your business.</h2>
           <p>This will be your private organisation workspace.</p>
           <label>
@@ -32,7 +56,7 @@ export function Onboarding({ businessName }: { businessName: string }) {
             />
           </label>
         </fieldset>
-        <fieldset hidden={step !== 1} disabled={pending}>
+        <fieldset data-step="1" hidden={step !== 1} disabled={pending}>
           <h2>Where should visibility grow?</h2>
           <p>Add your website. You can connect analytics and publishing after setup.</p>
           <label>
@@ -58,7 +82,7 @@ export function Onboarding({ businessName }: { businessName: string }) {
             </select>
           </label>
         </fieldset>
-        <fieldset hidden={step !== 2} disabled={pending}>
+        <fieldset data-step="2" hidden={step !== 2} disabled={pending}>
           <h2>What matters commercially?</h2>
           <p>Your offers and customers should shape every recommendation.</p>
           <label>
@@ -83,7 +107,7 @@ export function Onboarding({ businessName }: { businessName: string }) {
             />
           </label>
         </fieldset>
-        <fieldset hidden={step !== 3} disabled={pending}>
+        <fieldset data-step="3" hidden={step !== 3} disabled={pending}>
           <h2>A clear starting point.</h2>
           <p>
             Your site will be saved now. No external service is connected by
@@ -112,31 +136,18 @@ export function Onboarding({ businessName }: { businessName: string }) {
             <button
               type="button"
               className="secondary"
-              onClick={() => setStep(step - 1)}
+              onClick={() => setStep((current) => current - 1)}
               disabled={pending}
             >
               Back
             </button>
           )}
           {step < 3 ? (
-            <button
-              key="continue"
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                const fields = e.currentTarget.form!.querySelectorAll<
-                  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-                >(
-                  `fieldset:nth-of-type(${step + 1}) input, fieldset:nth-of-type(${step + 1}) textarea, fieldset:nth-of-type(${step + 1}) select`,
-                );
-                if (Array.from(fields).every((field) => field.reportValidity()))
-                  setStep(step + 1);
-              }}
-            >
+            <button type="submit" disabled={pending}>
               Continue →
             </button>
           ) : (
-            <button key="complete" type="submit" disabled={pending}>
+            <button type="submit" disabled={pending}>
               {pending ? "Creating workspace…" : "Open your workspace →"}
             </button>
           )}
