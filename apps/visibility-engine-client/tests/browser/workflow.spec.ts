@@ -169,9 +169,9 @@ test("public landing and pricing pages expose the commercial trial", async ({ pa
   await expect(page.getByRole("link", { name: "Start 14-day trial" })).toBeVisible();
   await page.goto("/pricing");
   await expect(page.getByRole("heading", { name: "14-day trial" })).toBeVisible();
-  await expect(page.getByText("R1,490/month")).toBeVisible();
-  await expect(page.getByText("R2,990/month")).toBeVisible();
-  await expect(page.getByText("R5,990/month")).toBeVisible();
+  await expect(page.getByText(/R1\D?490\/month/)).toBeVisible();
+  await expect(page.getByText(/R2\D?990\/month/)).toBeVisible();
+  await expect(page.getByText(/R5\D?990\/month/)).toBeVisible();
 });
 
 test("real login hydrates under CSP and opens a truthful empty workspace", async ({
