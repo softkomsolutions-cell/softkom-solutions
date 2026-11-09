@@ -293,7 +293,7 @@ export async function completeOnboarding(
               create: [
                 { provider: "WORDPRESS", status: "REQUIRES_SETUP" },
                 { provider: "GOOGLE_SEARCH_CONSOLE", status: "REQUIRES_SETUP" },
-                { provider: "GOOGLE_ANALYTICS_4", status: "COMING_SOON" },
+                { provider: "GOOGLE_ANALYTICS_4", status: "REQUIRES_SETUP" },
               ],
             },
           },
