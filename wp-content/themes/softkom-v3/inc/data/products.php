@@ -149,24 +149,24 @@ function softkom_v3_product_brick_alpha() {
 
 
 /**
- * AutoSEO product page content.
+ * Softkom Growth Engine product page content.
  *
  * @return array<string, mixed>
  */
 function softkom_v3_product_autoseo() {
 	return array(
-		'id'        => 'autoseo',
-		'title'     => 'AutoSEO',
+		'id'        => 'growth-engine',
+		'title'     => 'Softkom Growth Engine',
 		'tagline'   => 'Continuous SEO and AI-search improvement for businesses that want their website to keep getting better',
 		'eyebrow'   => 'Softkom Platform · Early Access',
-		'hero_lead' => 'AutoSEO monitors search visibility, finds the highest-value opportunities, prepares safe improvements and helps publish approved changes — with business impact and lead generation at the centre.',
+		'hero_lead' => 'Softkom Growth Engine monitors search visibility, finds the highest-value opportunities, prepares safe improvements and helps publish approved changes — with business impact and lead generation at the centre.',
 		'challenge' => array(
 			'title' => 'SEO work is too often reactive, fragmented and hard to measure',
 			'body'  => "Most businesses check SEO occasionally, commission a report, fix a handful of issues and then move on. Rankings change, competitors publish, content decays and technical problems reappear.\n\nThe result is a website that slowly loses visibility while nobody has a clear view of what matters commercially.",
 		),
 		'solution' => array(
 			'title' => 'A continuous improvement layer for search and conversion',
-			'body'  => 'AutoSEO combines technical monitoring, Search Console intelligence, competitor and content-gap analysis, AI-search visibility and controlled WordPress publishing. It prioritises work by likely business value, not by the size of an SEO checklist.',
+			'body'  => 'Softkom Growth Engine combines technical monitoring, Search Console intelligence, competitor and content-gap analysis, AI-search visibility and controlled WordPress publishing. It prioritises work by likely business value, not by the size of an SEO checklist.',
 		),
 		'modules' => array(
 			array( 'title' => 'Technical SEO monitor', 'body' => 'Track indexing, metadata, canonicals, redirects, broken links, sitemaps, robots directives and other technical issues that affect discoverability.' ),
@@ -190,7 +190,7 @@ function softkom_v3_product_autoseo() {
 		),
 		'integrations' => array(
 			'title' => 'Connected to the systems that show real performance',
-			'body'  => 'AutoSEO is designed around first-party data and controlled publishing rather than isolated keyword reports.',
+			'body'  => 'Softkom Growth Engine is designed around first-party data and controlled publishing rather than isolated keyword reports.',
 			'items' => array( 'Google Search Console', 'GA4', 'WordPress', 'Google Business Profile', 'CRM / lead data', 'AI-search research' ),
 		),
 		'benefits' => array(
