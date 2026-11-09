@@ -1050,6 +1050,27 @@ export function Leads({ data, ctx, filters }: Props) {
           .length,
       }),
     );
+  const stages = ["LEAD", "QUALIFIED", "OPPORTUNITY", "WON", "LOST"].map(
+    (stage) => ({
+      stage,
+      count: data.leads.filter((l) => l.stage === stage).length,
+    }),
+  );
+  const acquisitions = Array.from(
+    new Set(
+      data.leads.map(
+        (l) => `${l.source || "Unknown"} / ${l.medium || "Unknown"}`,
+      ),
+    ),
+  )
+    .map((name) => ({
+      name,
+      count: data.leads.filter(
+        (l) =>
+          `${l.source || "Unknown"} / ${l.medium || "Unknown"}` === name,
+      ).length,
+    }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   return (
     <>
       <FiltersBar data={data} filters={filters} month={false} />
@@ -1089,6 +1110,36 @@ export function Leads({ data, ctx, filters }: Props) {
           value={<Revenue data={data} />}
           note="Recorded won revenue, by currency"
         />
+      </div>
+      <div className="two-col">
+        <section className="panel">
+          <h2>Lead stage pipeline</h2>
+          {stages.map((row) => (
+            <div className="connection-row" key={row.stage}>
+              <span>
+                <Badge value={row.stage} />
+              </span>
+              <strong>{row.count}</strong>
+            </div>
+          ))}
+          <p className="fine">
+            Stages reflect recorded CRM / webhook state. Counts are not
+            forecasts and do not imply revenue until a result is recorded won.
+          </p>
+        </section>
+        <section className="panel">
+          <h2>Leads by acquisition channel</h2>
+          {acquisitions.length ? (
+            acquisitions.map((row) => (
+              <div className="connection-row" key={row.name}>
+                <span>{row.name}</span>
+                <strong>{row.count}</strong>
+              </div>
+            ))
+          ) : (
+            <p className="fine">No recorded attribution.</p>
+          )}
+        </section>
       </div>
       <section className="panel">
         {data.leads.length ? (
