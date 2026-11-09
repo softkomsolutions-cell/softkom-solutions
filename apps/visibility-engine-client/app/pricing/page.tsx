@@ -39,7 +39,7 @@ export default function Pricing() {
               <p className="pricing-tier-description">{detail}</p>
               {checkout[key] ? <a className={`pricing-plan-button ${featured ? "pricing-plan-button-primary" : ""}`} href={checkout[key]}>Choose {plan.name}<span aria-hidden="true">↗</span></a> : <Link className={`pricing-plan-button ${featured ? "pricing-plan-button-primary" : ""}`} href="/signup">Try {plan.name} free<span aria-hidden="true">↗</span></Link>}
               <div className="pricing-tier-rule" />
-              <div className="pricing-included">WHAT'S INCLUDED</div>
+              <div className="pricing-included">WHAT IS INCLUDED</div>
               <ul className="pricing-feature-list">
                 <li><span className="pricing-check">✓</span>{plan.sites} website{plan.sites === 1 ? "" : "s"}</li>
                 <li><span className="pricing-check">✓</span>{plan.members} team members</li>
@@ -67,7 +67,7 @@ export default function Pricing() {
         </div>
       </section>
 
-      <section className="pricing-faq"><div><div className="pricing-overline">GOOD TO KNOW</div><h2>A few things worth knowing.</h2></div><div className="pricing-faq-items"><details><summary>Do I need a credit card to start?</summary><p>No. The 14-day trial does not require payment details.</p></details><details><summary>What happens after the trial?</summary><p>Choose a paid plan to continue using the platform. Your plan determines the number of sites, members and daily AI observations available.</p></details><details><summary>Can I connect Google Analytics and Search Console?</summary><p>Yes. All paid plans include GA4 and Google Search Console connections. You will need permission to access the relevant Google properties.</p></details><details><summary>Need help choosing?</summary><p>Contact <a href="mailto:info@softkomsolutions.com">info@softkomsolutions.com</a> and we’ll help you find the right fit.</p></details></div></section>
+      <section className="pricing-faq"><div><div className="pricing-overline">GOOD TO KNOW</div><h2>A few things worth knowing.</h2></div><div className="pricing-faq-items"><details><summary>Do I need a credit card to start?</summary><p>No. The 14-day trial does not require payment details.</p></details><details><summary>What happens after the trial?</summary><p>Choose a paid plan to continue using the platform. Your plan determines the number of sites, members and daily AI observations available.</p></details><details><summary>Can I connect Google Analytics and Search Console?</summary><p>Yes. All paid plans include GA4 and Google Search Console connections. You will need permission to access the relevant Google properties.</p></details><details><summary>Need help choosing?</summary><p>Contact <a href="mailto:info@softkomsolutions.com">info@softkomsolutions.com</a> and we will help you find the right fit.</p></details></div></section>
 
       <footer className="pricing-footer"><span>© 2026 Softkom Solutions (Pty) Ltd · Visibility Engine</span><div><Link href="/terms">Terms</Link><Link href="/privacy">Privacy</Link><a href="mailto:info@softkomsolutions.com">Contact</a></div></footer>
     </main>
