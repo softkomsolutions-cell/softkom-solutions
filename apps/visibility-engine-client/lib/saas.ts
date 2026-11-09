@@ -27,7 +27,17 @@ export async function assertMemberCapacity(ctx: Context) {
   if (!canManage(ctx.role)) throw new AccessError(403, "A workspace manager must invite members.");
   const subscription = await requireActivePlan(ctx);
   const key = planKey(subscription?.plan);
-  const count = await db.membership.count({ where: { organisationId: ctx.organisationId } });
+  const [members, pendingInvites] = await Promise.all([
+    db.membership.count({ where: { organisationId: ctx.organisationId } }),
+    db.invitation.count({
+      where: {
+        organisationId: ctx.organisationId,
+        acceptedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+    }),
+  ]);
+  const count = members + pendingInvites;
   if (count >= PLANS[key].members)
     throw new AccessError(409, `${PLANS[key].name} supports ${PLANS[key].members} members. Upgrade before inviting another person.`);
 }
