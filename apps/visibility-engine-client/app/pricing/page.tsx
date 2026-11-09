@@ -3,8 +3,8 @@ import { PLANS } from "@/lib/plans";
 
 const tiers = [
   { key: "STARTER" as const, label: "For focused businesses", detail: "Get a clear view of where customers discover your business, and what to improve next.", features: ["Google Search Console + GA4", "AI search visibility observations", "Prioritised opportunities", "Reporting and publishing workflows"] },
-  { key: "GROWTH" as const, label: "For growing teams", detail: "Monitor more websites, collaborate across your team, and turn insights into action.", features: ["Everything in Starter", "Up to 3 connected websites", "8 team members", "6 AI observations per day"] },
-  { key: "PRO" as const, label: "For multi-site operations", detail: "Bring multiple brands and websites into one evidence-led visibility programme.", features: ["Everything in Growth", "Up to 10 connected websites", "20 team members", "12 AI observations per day"] },
+  { key: "GROWTH" as const, label: "For growing teams", detail: "Monitor more websites, collaborate across your team, and turn insights into action.", features: ["Everything in Starter", "Expanded site monitoring", "Team collaboration", "More frequent AI visibility checks"] },
+  { key: "PRO" as const, label: "For multi-site operations", detail: "Bring multiple brands and websites into one evidence-led visibility programme.", features: ["Everything in Growth", "Multi-brand visibility management", "Larger team access", "Higher-frequency monitoring"] },
 ];
 
 export default function Pricing() {
@@ -37,7 +37,7 @@ export default function Pricing() {
               <div className="pricing-tier-top"><div className="pricing-tier-name">{plan.name}</div><div className="pricing-tier-audience">{label}</div></div>
               <div className="pricing-price"><span className="pricing-currency">R</span>{plan.monthlyPrice.toLocaleString("en-ZA")}<span className="pricing-period">/ month</span></div>
               <p className="pricing-tier-description">{detail}</p>
-              {checkout[key] ? <a className={`pricing-plan-button ${featured ? "pricing-plan-button-primary" : ""}`} href={checkout[key]}>Choose {plan.name}<span aria-hidden="true">↗</span></a> : <Link className={`pricing-plan-button ${featured ? "pricing-plan-button-primary" : ""}`} href="/signup">Try {plan.name} free<span aria-hidden="true">↗</span></Link>}
+              {checkout[key] ? <a className={`pricing-plan-button ${featured ? "pricing-plan-button-primary" : ""}`} href={checkout[key]}>Choose {plan.name}<span aria-hidden="true">↗</span></a> : <Link className={`pricing-plan-button ${featured ? "pricing-plan-button-primary" : ""}`} href={`/signup?plan=${key.toLowerCase()}`}>Start 14-day trial<span aria-hidden="true">↗</span></Link>}
               <div className="pricing-tier-rule" />
               <div className="pricing-included">WHAT IS INCLUDED</div>
               <ul className="pricing-feature-list">
