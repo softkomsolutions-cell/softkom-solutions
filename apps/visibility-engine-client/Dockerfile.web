@@ -12,6 +12,6 @@ RUN npm run db:generate
 
 COPY . .
 
-RUN npm run typecheck && npm run test:unit && npm run lint && npm run build
+RUN npm run typecheck && npm run test:unit && npm run lint && BETTER_AUTH_SECRET=build-only-placeholder-secret-not-used-at-runtime npm run build
 
 CMD ["npm","run","start"]
