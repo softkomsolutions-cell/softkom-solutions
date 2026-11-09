@@ -197,7 +197,7 @@ test("real login hydrates under CSP and opens a truthful empty workspace", async
   managerState = await page.context().storageState();
   expect(errors).toEqual([]);
 });
-test("a client completes all four onboarding steps without a fake integration", async ({
+test("a client completes self-service onboarding without a fake integration", async ({
   browser,
 }) => {
   const context = await browser.newContext({ storageState: newState });
@@ -205,10 +205,9 @@ test("a client completes all four onboarding steps without a fake integration", 
   await page.goto("/workspace/dashboard");
   await expect(page).toHaveURL(/\/onboarding$/);
   await page.getByLabel("Business name").fill("New Test Business");
-  await page.getByRole("button", { name: "Continue" }).click();
   await page.getByLabel("Site name", { exact: true }).fill("New business site");
   await page.getByLabel("Website URL").fill("https://new.example.test");
-  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("Content management system").selectOption("OTHER");
   await page
     .getByLabel("Key services or products")
     .fill("Business continuity reviews");
@@ -217,11 +216,8 @@ test("a client completes all four onboarding steps without a fake integration", 
   await page
     .getByLabel("Primary conversion goal")
     .fill("Book a business review");
-  await page.getByRole("button", { name: "Continue" }).click();
-  await expect(
-    page.getByText("Connect after setup", { exact: true }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Open your workspace" }).click();
+  await expect(page.getByText("Connect after setup", { exact: true }).first()).toBeVisible();
+  await page.getByRole("button", { name: "Create workspace & start trial" }).click();
   await expect(page).toHaveURL(/\/workspace\/dashboard$/);
   await expect(
     page.locator(".topbar strong").filter({ hasText: "New Test Business" }),
