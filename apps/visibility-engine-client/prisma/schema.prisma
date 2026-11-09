@@ -20,6 +20,7 @@ model Organisation {
   businessProfile BusinessProfile?
   brandedTerms    String           @default("")
   plan            Subscription?
+  invitations     Invitation[]
 }
 
 model User {
@@ -295,14 +296,36 @@ model AnalyticsMetric {
 }
 
 model Subscription {
+  id                     String       @id @default(cuid())
+  organisationId         String       @unique
+  plan                   String       @default("TRIAL")
+  status                 String       @default("TRIALING")
+  monthlyPrice           Decimal      @default(0) @db.Decimal(12, 2)
+  trialStartedAt         DateTime?
+  trialEndsAt            DateTime?
+  currentPeriodEndsAt    DateTime?
+  provider               String?
+  providerCustomerId     String?
+  providerSubscriptionId String?
+  cancelAtPeriodEnd      Boolean      @default(false)
+  organisation           Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+}
+
+model Invitation {
   id             String       @id @default(cuid())
-  organisationId String       @unique
-  plan           String
-  status         String
-  monthlyPrice   Decimal      @db.Decimal(12, 2)
+  organisationId String
   organisation   Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  email          String
+  role           OrgRole      @default(CLIENT)
+  tokenHash      String       @unique
+  invitedBy      String
+  expiresAt      DateTime
+  acceptedAt     DateTime?
   createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  @@index([organisationId, email])
 }
 
 model Session {
