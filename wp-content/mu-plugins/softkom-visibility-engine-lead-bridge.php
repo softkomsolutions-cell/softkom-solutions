@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// Allows a normal-plugin fallback package to coexist with the MU-plugin deployment.
+if ( function_exists( 'softkom_visibility_engine_push_lead' ) ) {
+    return;
+}
+
 function softkom_visibility_engine_bridge_config() {
     $endpoint = defined( 'SOFTKOM_VISIBILITY_ATTRIBUTION_URL' )
         ? (string) SOFTKOM_VISIBILITY_ATTRIBUTION_URL
