@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { SignupForm } from "@/components/auth-controls";
 
-export default function Signup() {
+export default async function Signup({
+  searchParams,
+}: {
+  searchParams: Promise<{ invite?: string }>;
+}) {
+  const { invite = "" } = await searchParams;
   return (
     <main className="auth-shell">
       <section className="auth-story">
@@ -19,11 +24,11 @@ export default function Signup() {
         <span className="fine">14-day trial · no payment details required.</span>
       </section>
       <section className="auth-card">
-        <span className="badge">START YOUR TRIAL</span>
-        <h2>Create your workspace.</h2>
-        <p>You can connect your services after the four-step setup.</p>
-        <SignupForm />
-        <p className="fine">Already have an account? <Link href="/login">Sign in</Link>.</p>
+        <span className="badge">{invite ? "JOIN WORKSPACE" : "START YOUR TRIAL"}</span>
+        <h2>{invite ? "Create your account." : "Create your workspace."}</h2>
+        <p>{invite ? "Use the invited email address. You will join the workspace after signup." : "You can connect your services after the four-step setup."}</p>
+        <SignupForm inviteToken={invite} />
+        <p className="fine">Already have an account? <Link href={invite ? `/login?invite=${encodeURIComponent(invite)}` : "/login"}>Sign in</Link>.</p>
       </section>
     </main>
   );
