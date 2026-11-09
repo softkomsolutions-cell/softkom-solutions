@@ -9,6 +9,8 @@ COPY prisma ./prisma
 RUN npm run db:generate
 
 COPY . .
+ENV BETTER_AUTH_URL=http://localhost:3000
+ENV BETTER_AUTH_SECRET=validator-build-only-secret-not-used-for-staging-users
 RUN npm run build
 
 ENV NODE_ENV=test
