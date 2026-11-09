@@ -18,7 +18,7 @@ export const auth = betterAuth({
   database: prismaAdapter(db, { provider: "postgresql" }),
   emailAndPassword: {
     enabled: true,
-    disableSignUp: true,
+    disableSignUp: false,
     minPasswordLength: 12,
   },
   session: {
@@ -31,7 +31,10 @@ export const auth = betterAuth({
     storage: "database",
     window: 60,
     max: 30,
-    customRules: { "/sign-in/email": { window: 60, max: 5 } },
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 300, max: 3 },
+    },
   },
   advanced: { useSecureCookies: process.env.NODE_ENV === "production" },
 });
