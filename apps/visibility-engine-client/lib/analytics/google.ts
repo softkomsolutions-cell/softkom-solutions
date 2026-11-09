@@ -255,8 +255,23 @@ export class GoogleSearchProvider {
   ): Promise<Ga4Observation[]> {
     if (!/^properties\/\d+$/.test(property))
       throw new ProviderError("property", "Google Analytics property is invalid.");
+
     const observations: Ga4Observation[] = [];
     const limit = 100000;
+    const observationKey = (
+      date: Date,
+      landingPage: string,
+      source: string,
+      medium: string,
+    ) =>
+      JSON.stringify([
+        date.toISOString().slice(0, 10),
+        landingPage,
+        source,
+        medium,
+      ]);
+
+    let mainComplete = false;
     for (let offset = 0; offset < 500000; offset += limit) {
       const result = json<{
         rowCount?: number;
@@ -291,7 +306,6 @@ export class GoogleSearchProvider {
               metrics: [
                 { name: "sessions" },
                 { name: "engagedSessions" },
-                { name: "keyEvents" },
                 { name: "totalRevenue" },
               ],
               limit,
@@ -301,27 +315,31 @@ export class GoogleSearchProvider {
           },
         ),
       );
+
       const currency = result.metadata?.currencyCode || "";
       if (!/^[A-Z]{3}$/.test(currency))
         throw new ProviderError(
           "metrics",
           "Google Analytics did not return a valid report currency.",
         );
+
       const page = result.rows || [];
       for (const row of page) {
         const dims = row.dimensionValues || [];
         const metrics = row.metricValues || [];
-        if (dims.length !== 4 || metrics.length !== 4)
+        if (dims.length !== 4 || metrics.length !== 3)
           throw new ProviderError(
             "metrics",
             "Google Analytics returned an unexpected report shape.",
           );
+
         const rawDate = dims[0]?.value || "";
         if (!/^\d{8}$/.test(rawDate))
           throw new ProviderError(
             "metrics",
             "Google Analytics returned an invalid date.",
           );
+
         const date = new Date(
           `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}T00:00:00Z`,
         );
@@ -330,18 +348,16 @@ export class GoogleSearchProvider {
             "metrics",
             "Google Analytics returned data outside the requested range.",
           );
+
         const sessions = Number(metrics[0]?.value || 0);
         const engagedSessions = Number(metrics[1]?.value || 0);
-        const conversions = Number(metrics[2]?.value || 0);
-        const totalRevenue = Number(metrics[3]?.value || 0);
+        const totalRevenue = Number(metrics[2]?.value || 0);
         if (
           !Number.isSafeInteger(sessions) ||
           !Number.isSafeInteger(engagedSessions) ||
           sessions < 0 ||
           engagedSessions < 0 ||
           engagedSessions > sessions ||
-          !Number.isFinite(conversions) ||
-          conversions < 0 ||
           !Number.isFinite(totalRevenue) ||
           totalRevenue < 0
         )
@@ -349,6 +365,7 @@ export class GoogleSearchProvider {
             "metrics",
             "Google Analytics returned invalid measurements.",
           );
+
         observations.push({
           date,
           landingPage: dims[1]?.value || "(not set)",
@@ -356,18 +373,22 @@ export class GoogleSearchProvider {
           medium: dims[3]?.value || "(none)",
           sessions,
           engagedSessions,
-          conversions,
+          conversions: 0,
           totalRevenue,
           currency,
         });
       }
+
       const rowCount = Number(result.rowCount ?? page.length);
       if (!Number.isSafeInteger(rowCount) || rowCount < page.length)
         throw new ProviderError(
           "metrics",
           "Google Analytics returned an invalid row count.",
         );
-      if (offset + page.length >= rowCount) return observations;
+      if (offset + page.length >= rowCount) {
+        mainComplete = true;
+        break;
+      }
       if (page.length === 0)
         throw new ProviderError(
           "partial",
@@ -375,11 +396,136 @@ export class GoogleSearchProvider {
           true,
         );
     }
-    throw new ProviderError(
-      "partial",
-      "Google Analytics sync exceeded the supported row limit. Use a shorter range.",
-    );
+    if (!mainComplete)
+      throw new ProviderError(
+        "partial",
+        "Google Analytics sync exceeded the supported row limit. Use a shorter range.",
+      );
+
+    const leadEvents = new Map<string, number>();
+    let leadComplete = false;
+    for (let offset = 0; offset < 500000; offset += limit) {
+      const result = json<{
+        rowCount?: number;
+        rows?: {
+          dimensionValues?: { value?: string }[];
+          metricValues?: { value?: string }[];
+        }[];
+      }>(
+        await this.transport(
+          `https://analyticsdata.googleapis.com/v1beta/${property}:runReport`,
+          {
+            method: "POST",
+            origin: "https://analyticsdata.googleapis.com",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              dateRanges: [
+                {
+                  startDate: from.toISOString().slice(0, 10),
+                  endDate: to.toISOString().slice(0, 10),
+                },
+              ],
+              dimensions: [
+                { name: "date" },
+                { name: "landingPagePlusQueryString" },
+                { name: "sessionSource" },
+                { name: "sessionMedium" },
+              ],
+              metrics: [{ name: "eventCount" }],
+              dimensionFilter: {
+                filter: {
+                  fieldName: "eventName",
+                  stringFilter: {
+                    matchType: "EXACT",
+                    value: "generate_lead",
+                    caseSensitive: true,
+                  },
+                },
+              },
+              limit,
+              offset,
+              keepEmptyRows: false,
+            }),
+          },
+        ),
+      );
+
+      const page = result.rows || [];
+      for (const row of page) {
+        const dims = row.dimensionValues || [];
+        const metrics = row.metricValues || [];
+        if (dims.length !== 4 || metrics.length !== 1)
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned an unexpected lead-event report shape.",
+          );
+
+        const rawDate = dims[0]?.value || "";
+        if (!/^\d{8}$/.test(rawDate))
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned an invalid lead-event date.",
+          );
+        const date = new Date(
+          `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}T00:00:00Z`,
+        );
+        if (!Number.isFinite(date.getTime()) || date < from || date > to)
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned lead-event data outside the requested range.",
+          );
+
+        const count = Number(metrics[0]?.value || 0);
+        if (!Number.isSafeInteger(count) || count < 0)
+          throw new ProviderError(
+            "metrics",
+            "Google Analytics returned invalid lead-event measurements.",
+          );
+
+        const key = observationKey(
+          date,
+          dims[1]?.value || "(not set)",
+          dims[2]?.value || "(direct)",
+          dims[3]?.value || "(none)",
+        );
+        leadEvents.set(key, (leadEvents.get(key) || 0) + count);
+      }
+
+      const rowCount = Number(result.rowCount ?? page.length);
+      if (!Number.isSafeInteger(rowCount) || rowCount < page.length)
+        throw new ProviderError(
+          "metrics",
+          "Google Analytics returned an invalid lead-event row count.",
+        );
+      if (offset + page.length >= rowCount) {
+        leadComplete = true;
+        break;
+      }
+      if (page.length === 0)
+        throw new ProviderError(
+          "partial",
+          "Google Analytics returned an incomplete lead-event report. Retry the sync.",
+          true,
+        );
+    }
+    if (!leadComplete)
+      throw new ProviderError(
+        "partial",
+        "Google Analytics lead-event sync exceeded the supported row limit. Use a shorter range.",
+      );
+
+    return observations.map((row) => ({
+      ...row,
+      conversions:
+        leadEvents.get(
+          observationKey(row.date, row.landingPage, row.source, row.medium),
+        ) || 0,
+    }));
   }
+
   async revoke(tokens: GoogleTokens) {
     const result = await this.transport(
       "https://oauth2.googleapis.com/revoke",
