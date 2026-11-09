@@ -1,8 +1,6 @@
 <?php
 /**
- * Softkom V3 shared header — sticky, transparent → solid, slide-over mobile.
- *
- * Product-led nav: platforms first, simple labels, no consultancy dilution.
+ * Softkom V3 shared header — one-page commercial navigation.
  *
  * @package Softkom_V3
  */
@@ -11,46 +9,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/*
- * The shared header can render on error/admin-adjacent paths before the
- * canonical data loader has registered CTA helpers. Load the CTA registry
- * defensively to prevent a fatal error on hosted staging.
- */
-if ( ! function_exists( 'softkom_v3_cta_url' ) || ! function_exists( 'softkom_v3_cta_label' ) ) {
-	$softkom_cta_file = get_stylesheet_directory() . '/inc/data/cta.php';
-	if ( is_readable( $softkom_cta_file ) ) {
-		require_once $softkom_cta_file;
-	}
-}
-
-$home_url = home_url( '/' );
-$header_cta_url = function_exists( 'softkom_v3_cta_url' )
-	? softkom_v3_cta_url( 'book-strategy-call' )
-	: home_url( '/contact/#discovery' );
-$header_cta_label = function_exists( 'softkom_v3_cta_label' )
-	? softkom_v3_cta_label( 'book-strategy-call' )
-	: 'Book a Discovery Call';
+$home_url        = home_url( '/' );
+$header_cta_url  = $home_url . '#contact';
+$header_cta_label = 'Tell Us What Is Not Working';
 ?>
 <a class="sk-skip-link" href="#sk-main">Skip to content</a>
 <header class="sk-header sk-header--transparent">
   <div class="container sk-header-inner">
-    <?php if ( has_custom_logo() ) : ?>
-      <div class="sk-brand">
-        <?php the_custom_logo(); ?>
-      </div>
-    <?php else : ?>
-      <a class="sk-brand sk-brand-text" href="<?php echo esc_url( $home_url ); ?>">
-        <?php bloginfo( 'name' ); ?>
-      </a>
-    <?php endif; ?>
+    <a class="sk-brand sk-brand-lockup" href="<?php echo esc_url( $home_url ); ?>" aria-label="Softkom Solutions home">
+      <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/softkom-logo-light.png' ); ?>" alt="Softkom Solutions">
+    </a>
 
     <nav id="sk-primary-nav" class="sk-nav sk-nav--desktop" aria-label="Primary">
-      <a href="/platforms/">Platforms</a>
-      <a href="/platforms/marketplaceos/">MarketplaceOS</a>
-      <a href="/platforms/brick-alpha/">Brick Alpha</a>
-      <a href="/company/">Company</a>
+      <a href="<?php echo esc_url( $home_url . '#problems-we-solve' ); ?>">How We Help</a>
+      <a href="<?php echo esc_url( $home_url . '#proof' ); ?>">Case Studies</a>
+      <a href="<?php echo esc_url( $home_url . '#how-we-work' ); ?>">How We Work</a>
       <a href="/insights/">Insights</a>
-      <a href="/contact/">Contact</a>
+      <a href="<?php echo esc_url( $home_url . '#contact' ); ?>">Contact</a>
     </nav>
 
     <div class="sk-header-actions">
@@ -73,15 +48,13 @@ $header_cta_label = function_exists( 'softkom_v3_cta_label' )
   </div>
   <nav class="sk-nav-drawer-links" aria-label="Mobile primary">
     <a href="<?php echo esc_url( $home_url ); ?>">Home</a>
-    <a href="/platforms/">Platforms</a>
-    <a href="/platforms/marketplaceos/">MarketplaceOS</a>
-    <a href="/platforms/brick-alpha/">Brick Alpha</a>
-    <a href="/company/">Company</a>
+    <a href="<?php echo esc_url( $home_url . '#problems-we-solve' ); ?>">How We Help</a>
+    <a href="<?php echo esc_url( $home_url . '#proof' ); ?>">Case Studies</a>
+    <a href="<?php echo esc_url( $home_url . '#how-we-work' ); ?>">How We Work</a>
     <a href="/insights/">Insights</a>
-    <a href="/contact/">Contact</a>
+    <a href="<?php echo esc_url( $home_url . '#contact' ); ?>">Contact</a>
   </nav>
   <div class="sk-nav-drawer-cta">
     <a class="sk-btn sk-btn-primary" href="<?php echo esc_url( $header_cta_url ); ?>"><?php echo esc_html( $header_cta_label ); ?></a>
   </div>
 </aside>
-

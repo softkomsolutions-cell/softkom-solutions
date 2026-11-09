@@ -1,8 +1,8 @@
 <?php
 /**
- * Softkom V3 homepage — service-led commercial positioning.
+ * Softkom V3 homepage — one-page commercial funnel.
  *
- * Sequence: hero → buyer problems → solutions → assessment → proof → delivery → trust → platforms → CTA.
+ * Sequence: hero → operational problems → solutions → case studies → fit → process → contact.
  *
  * @package Softkom_V3
  */
@@ -11,197 +11,184 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! function_exists( 'softkom_v3_cta_url' ) || ! function_exists( 'softkom_v3_cta_label' ) ) {
-	$softkom_cta_file = get_stylesheet_directory() . '/inc/data/cta.php';
-	if ( is_readable( $softkom_cta_file ) ) {
-		require_once $softkom_cta_file;
-	}
-}
-
-$start_discovery_label = function_exists( 'softkom_v3_cta_label' )
-	? softkom_v3_cta_label( 'start-discovery' )
-	: 'Book a Strategy Call';
-$start_discovery_url = function_exists( 'softkom_v3_cta_url' )
-	? softkom_v3_cta_url( 'start-discovery' )
-	: home_url( '/contact/#discovery' );
+$start_discovery_url = home_url( '/#contact' );
 ?>
 <div class="sk-site sk-home sk-home--product">
   <?php softkom_v3_component_e( 'header' ); ?>
 
   <main id="sk-main">
-  <?php
-  softkom_v3_component_e(
-    'masthead',
-    array(
-      'variant'         => 'split',
-      'eyebrow'         => 'Business Systems · Automation · Integration',
-      'title'           => 'Build the systems your business needs to scale.',
-      'lead'            => 'Softkom helps growing companies replace manual work, connect disconnected systems and gain better operational control with custom business systems, AI automation and practical integrations.',
-      'primary_label'   => 'Book a Strategy Call',
-      'primary_url'     => $start_discovery_url,
-      'secondary_label' => 'Take the 3-Minute Assessment',
-      'secondary_url'   => home_url( '/assessment/' ),
-      'media'           => function_exists( 'softkom_v3_graphic_platforms_hero' ) ? softkom_v3_graphic_platforms_hero() : '',
-    )
-  );
-  ?>
+    <?php
+    softkom_v3_component_e(
+      'masthead',
+      array(
+        'variant'         => 'split',
+        'eyebrow'         => 'Softkom Solutions · Johannesburg',
+        'title'           => 'We make the work easier to run.',
+        'lead'            => 'Softkom helps growing businesses improve the processes behind day-to-day operations. We find where work slows down, gets repeated, falls between systems or depends too heavily on manual effort — then we fix it with the simplest practical solution.',
+        'primary_label'   => 'Tell Us What Is Not Working',
+        'primary_url'     => $start_discovery_url,
+        'secondary_label' => 'See Client Work',
+        'secondary_url'   => home_url( '/#proof' ),
+      )
+    );
+    ?>
 
-  <section class="section" id="problems-we-solve">
-    <div class="container">
-      <div class="sk-reveal">
-        <p class="eyebrow">What We Solve</p>
-        <h2 class="sk-display">When the business has outgrown spreadsheets, workarounds and disconnected software</h2>
-        <p class="lead sk-lead-narrow">Softkom focuses on the operational gaps that create delay, rework and poor visibility as a company grows.</p>
+    <section class="section" id="problems-we-solve">
+      <div class="container">
+        <div class="sk-editorial-split">
+          <div class="sk-reveal">
+            <p class="eyebrow">Business Process &amp; Operations Improvement</p>
+            <h2 class="sk-display">The software may be fine. The way the work moves through the business often is not.</h2>
+          </div>
+          <div class="sk-reveal">
+            <p class="lead">Teams end up waiting, chasing, re-entering information, checking the same things twice, managing approvals manually or working around systems that do not quite fit.</p>
+            <p><strong>The aim is not to add more software. It is to remove friction from the operation.</strong></p>
+          </div>
+        </div>
+
+        <div class="sk-friction-list">
+          <blockquote>“We keep following up on the same things.”</blockquote>
+          <blockquote>“The information exists, but not where we need it.”</blockquote>
+          <blockquote>“Management only sees the problem after the fact.”</blockquote>
+          <blockquote>“The business has grown, but the process has not.”</blockquote>
+        </div>
       </div>
-      <div class="sk-grid sk-grid--3">
-        <?php
-        $problems = array(
-          array( 'Manual processes', 'Replace repetitive spreadsheet, email and WhatsApp workflows with controlled business systems.' ),
-          array( 'Disconnected systems', 'Connect CRM, accounting, ecommerce, inventory and operational tools so information moves once.' ),
-          array( 'Poor operational visibility', 'Create dashboards, alerts and reporting that show what is happening without manual consolidation.' ),
-          array( 'Processes that no longer scale', 'Turn fragile hand-offs, approvals and exception handling into trackable workflows.' ),
-          array( 'Off-the-shelf software gaps', 'Build the missing layer around the software you already use instead of forcing a costly full replacement.' ),
-          array( 'AI without a business case', 'Identify and implement AI where it reduces real workload, improves service or increases control.' ),
-        );
-        foreach ( $problems as $problem ) :
-          ?>
-          <article class="sk-card sk-reveal">
-            <h3><?php echo esc_html( $problem[0] ); ?></h3>
-            <p><?php echo esc_html( $problem[1] ); ?></p>
+    </section>
+
+    <section class="section section-muted" id="solutions">
+      <div class="container">
+        <div class="sk-reveal">
+          <p class="eyebrow">What we actually do</p>
+          <h2 class="sk-display">We work out what needs to change, then we implement it.</h2>
+        </div>
+
+        <div class="sk-service-ledger">
+          <article class="sk-service-ledger-item sk-reveal">
+            <span>01</span>
+            <div>
+              <h3>Improve the process</h3>
+              <p>Remove unnecessary steps, simplify hand-offs and clarify how work should move through the business before adding technology.</p>
+            </div>
           </article>
-        <?php endforeach; ?>
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-muted" id="solutions">
-    <div class="container">
-      <div class="sk-reveal">
-        <p class="eyebrow">Solutions</p>
-        <h2 class="sk-display">What you can hire Softkom to deliver</h2>
-        <p class="lead sk-lead-narrow">Focused, project-based delivery for companies that need better systems, automation, integrations and digital operations.</p>
-      </div>
-      <div class="sk-grid sk-grid--3">
-        <?php
-        $solutions = array(
-          array( 'Custom Business Systems', 'Purpose-built operational software for workflows, approvals, portals, reporting and internal control.' ),
-          array( 'AI & Automation', 'Automate repetitive work, customer interactions, document handling and decision support where the ROI is clear.' ),
-          array( 'Systems Integration', 'Connect the platforms your business already relies on and eliminate duplicate capture and brittle manual hand-offs.' ),
-          array( 'Operational Workflow Automation', 'Digitise recurring processes across operations, sales, service, stock, approvals and reporting.' ),
-          array( 'Compliance & Cybersecurity', 'Practical POPIA-aware controls, security, backup and compliance infrastructure for growing businesses.' ),
-          array( 'E-commerce & Digital Platforms', 'Build and improve commercial platforms where catalogue, ordering, workflows and integrations matter.' ),
-        );
-        foreach ( $solutions as $solution ) :
-          ?>
-          <article class="sk-card sk-reveal">
-            <h3><?php echo esc_html( $solution[0] ); ?></h3>
-            <p><?php echo esc_html( $solution[1] ); ?></p>
+          <article class="sk-service-ledger-item sk-reveal">
+            <span>02</span>
+            <div>
+              <h3>Connect the systems you already use</h3>
+              <p>Move information between the tools your team already relies on so the same data does not have to be captured, checked or reconciled repeatedly.</p>
+            </div>
           </article>
-        <?php endforeach; ?>
-      </div>
-      <p><a class="sk-btn sk-btn-secondary" href="<?php echo esc_url( home_url( '/services/' ) ); ?>">Explore Solutions</a></p>
-    </div>
-  </section>
-
-  <section class="section" id="assessment">
-    <div class="container">
-      <div class="sk-card sk-reveal">
-        <p class="eyebrow">Not Sure Where to Start?</p>
-        <h2 class="sk-display">Find your best systems or automation opportunity in about 3 minutes</h2>
-        <p class="lead">Use the Business Systems Assessment to identify manual-process risk, spreadsheet dependence, integration gaps, reporting weaknesses and practical automation opportunities.</p>
-        <p>
-          <a class="sk-btn sk-btn-primary" href="<?php echo esc_url( home_url( '/assessment/' ) ); ?>">Take the Free Assessment</a>
-          <a class="sk-btn sk-btn-secondary" href="<?php echo esc_url( $start_discovery_url ); ?>">Book a Strategy Call</a>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-muted" id="proof">
-    <div class="container">
-      <div class="sk-reveal">
-        <p class="eyebrow">Delivery Experience</p>
-        <h2 class="sk-display">Built around real operational requirements</h2>
-        <p class="lead sk-lead-narrow">Softkom combines client delivery with its own product engineering. The examples below show the kinds of systems, workflows and integrations the team works with.</p>
-      </div>
-      <div class="sk-grid sk-grid--3">
-        <article class="sk-card sk-reveal">
-          <h3>Retail ordering platform</h3>
-          <p>Multi-portal commerce and operational platform work spanning customer journeys, catalogue, authentication, ordering workflows and backend integration.</p>
-        </article>
-        <article class="sk-card sk-reveal">
-          <h3>TSA</h3>
-          <p>Corporate and infrastructure digital platform work covering product architecture, project presentation, manufacturing capability and industry-facing lead generation.</p>
-        </article>
-        <article class="sk-card sk-reveal">
-          <h3>MarketplaceOS Engineering</h3>
-          <p>Multi-channel operational software spanning catalogue control, pricing intelligence, inventory, fulfilment, integrations and management visibility.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="how-we-work">
-    <div class="container">
-      <div class="sk-reveal">
-        <p class="eyebrow">How We Work</p>
-        <h2 class="sk-display">A clear path from operational problem to working system</h2>
-      </div>
-      <div class="sk-build-steps">
-        <?php
-        $steps = array(
-          array( 'Discover', 'Understand the operational problem, users, commercial priority and business case.' ),
-          array( 'Design', 'Map workflows, integrations, data ownership, risks and the smallest useful delivery scope.' ),
-          array( 'Build', 'Deliver in controlled stages with visible milestones, testing and decision points.' ),
-          array( 'Launch', 'Deploy, validate, train and hand over with the operational team involved.' ),
-          array( 'Support', 'Maintain, improve and automate further as the business grows.' ),
-        );
-        foreach ( $steps as $i => $step ) :
-          ?>
-          <article class="sk-build-step sk-reveal">
-            <span class="sk-build-num"><?php echo esc_html( str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
-            <h3><?php echo esc_html( $step[0] ); ?></h3>
-            <p><?php echo esc_html( $step[1] ); ?></p>
+          <article class="sk-service-ledger-item sk-reveal">
+            <span>03</span>
+            <div>
+              <h3>Automate the repetitive parts</h3>
+              <p>Automate routine checks, notifications, document handling, approvals and follow-up where doing so saves real effort and reduces errors.</p>
+            </div>
           </article>
-        <?php endforeach; ?>
+          <article class="sk-service-ledger-item sk-reveal">
+            <span>04</span>
+            <div>
+              <h3>Build the missing piece</h3>
+              <p>When an important workflow, portal, integration or management view is genuinely missing, build only what the operation needs.</p>
+            </div>
+          </article>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <?php
-  softkom_v3_section_e(
-    'trust',
-    array(
-      'muted' => true,
-      'id'    => 'trust',
-      'title' => 'Built for Business-Critical Work',
-      'body'  => 'Practical engineering, security-minded delivery and senior involvement throughout the engagement.',
-    )
-  );
-  ?>
+    <section class="section" id="proof">
+      <div class="container">
+        <div class="sk-reveal">
+          <p class="eyebrow">Case Studies</p>
+          <h2 class="sk-display">A few client projects</h2>
+        </div>
 
-  <?php
-  softkom_v3_section_e(
-    'platform-showcase',
-    array(
-      'id'    => 'platforms',
-      'title' => 'Platforms We Are Building',
-      'body'  => 'MarketplaceOS, Product Studio and Brick Alpha demonstrate the same engineering capabilities Softkom applies to custom client systems.',
-    )
-  );
-  ?>
+        <div class="sk-home-case-list">
+          <article class="sk-reveal">
+            <p class="eyebrow">Retail ordering platform</p>
+            <h3>From customer ordering through to operational processing</h3>
+            <p>Multi-portal platform work spanning customer journeys, catalogue, authentication, payments, staff operations and supplier processing.</p>
+            <a href="<?php echo esc_url( home_url( '/case-studies/' ) ); ?>">View case studies</a>
+          </article>
 
-  <?php
-  softkom_v3_component_e(
-    'cta-band',
-    array(
-      'title'         => 'Have an operational problem that software should solve?',
-      'body'          => 'Tell us what is slowing the business down. Softkom will help determine whether the right next step is integration, automation, a custom system or no build at all.',
-      'primary_cta'   => 'start-discovery',
-      'secondary_cta' => 'explore-solutions',
-    )
-  );
-  ?>
+          <article class="sk-reveal">
+            <p class="eyebrow">Traffic Signals &amp; Accessories</p>
+            <h3>A clearer commercial platform for an established infrastructure business</h3>
+            <p>Reworked the digital presence around products, manufacturing capability, services, projects and stronger lead-generation paths.</p>
+            <a href="<?php echo esc_url( home_url( '/case-studies/' ) ); ?>">View client work</a>
+          </article>
+
+          <article class="sk-reveal">
+            <p class="eyebrow">MarketplaceOS</p>
+            <h3>Operational software across catalogue, pricing and inventory workflows</h3>
+            <p>Multi-product engineering spanning listing workflows, repricing, inventory intelligence, integrations and management visibility.</p>
+            <a href="<?php echo esc_url( home_url( '/platforms/marketplaceos/' ) ); ?>">View MarketplaceOS</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="engagement-fit">
+      <div class="container">
+        <div class="sk-editorial-split">
+          <div class="sk-reveal">
+            <p class="eyebrow">Working with Softkom</p>
+            <h2 class="sk-display">No theatre. No transformation programme for the sake of it.</h2>
+          </div>
+          <div class="sk-reveal">
+            <p>Show us how the work happens today. Tell us what takes too long, where things keep getting stuck, or what the team has to keep checking, chasing or doing by hand.</p>
+            <p>We look at the process first. If the right answer is a small integration, a workflow change or a focused automation, that is what we recommend. If a custom system is genuinely needed, we build it.</p>
+            <p>For larger custom systems, projects typically start around R75k. Smaller process, integration and improvement work is scoped around the actual problem rather than forced into that number.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how-we-work">
+      <div class="container">
+        <div class="sk-reveal">
+          <p class="eyebrow">How We Work</p>
+          <h2 class="sk-display">You should always know what is happening and what comes next</h2>
+        </div>
+        <div class="sk-build-steps">
+          <?php
+          $steps = array(
+            array( 'Understand', 'We learn how the work happens today, where the friction is and what a useful improvement would look like.' ),
+            array( 'Scope', 'We define the smallest practical change that can solve the problem properly.' ),
+            array( 'Build', 'You see the work as it develops, not only at the end.' ),
+            array( 'Launch', 'We validate the solution with the people who will actually use it.' ),
+            array( 'Support', 'We stay available to improve the process as the business changes.' ),
+          );
+          foreach ( $steps as $i => $step ) :
+            ?>
+            <article class="sk-build-step sk-reveal">
+              <span class="sk-build-num"><?php echo esc_html( str_pad( (string) ( $i + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
+              <h3><?php echo esc_html( $step[0] ); ?></h3>
+              <p><?php echo esc_html( $step[1] ); ?></p>
+            </article>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="contact">
+      <div class="container">
+        <div class="sk-editorial-split sk-home-contact">
+          <div class="sk-reveal">
+            <p class="eyebrow">Start a conversation</p>
+            <h2 class="sk-display">Tell us which part of the business is taking more effort than it should.</h2>
+            <p class="lead">A few sentences is enough. You do not need to know whether the answer is process improvement, integration, automation or a custom system.</p>
+            <p><a href="mailto:info@softkomsolutions.com">info@softkomsolutions.com</a><br><a href="tel:+27749933805">+27 74 993 3805</a><br>Johannesburg, South Africa</p>
+          </div>
+
+          <div class="sk-card sk-form sk-reveal">
+            <p class="eyebrow">Your enquiry</p>
+            <h3>What is not working as well as it should?</h3>
+            <p>Tell us what is happening today and what you would like to improve.</p>
+            <?php echo do_shortcode( '[sureforms id="2722" show_title="false"]' ); ?>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <?php softkom_v3_component_e( 'footer' ); ?>
