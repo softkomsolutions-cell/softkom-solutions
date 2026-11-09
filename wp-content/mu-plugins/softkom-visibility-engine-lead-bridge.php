@@ -228,3 +228,146 @@ add_action(
     10,
     1
 );
+
+
+function softkom_visibility_engine_health_check() {
+    $cached = get_transient( 'softkom_visibility_engine_health' );
+    if ( is_array( $cached ) ) {
+        return $cached;
+    }
+
+    $config = softkom_visibility_engine_bridge_config();
+    if ( ! $config['endpoint'] || ! $config['site_id'] || ! $config['secret'] ) {
+        return array( 'connected' => false, 'status' => 'not_configured' );
+    }
+
+    $probe = array(
+        'siteId'     => $config['site_id'],
+        'landingUrl' => home_url( '/assessment/' ),
+        'funnel'     => 'credential-probe',
+        'leadId'     => 'credential-probe',
+        'stage'      => 'INVALID_STAGE',
+        'revenue'    => 0,
+        'currency'   => 'ZAR',
+    );
+
+    $response = wp_remote_post( $config['endpoint'], array(
+        'timeout'     => 8,
+        'redirection' => 0,
+        'headers'     => array(
+            'Authorization' => 'Bearer ' . $config['secret'],
+            'Content-Type'  => 'application/json',
+        ),
+        'body'        => wp_json_encode( $probe ),
+        'data_format' => 'body',
+    ) );
+
+    if ( is_wp_error( $response ) ) {
+        $result = array( 'connected' => false, 'status' => 'transport_error' );
+    } else {
+        $code = (int) wp_remote_retrieve_response_code( $response );
+        $result = array(
+            'connected' => 400 === $code,
+            'status'    => 400 === $code ? 'connected' : ( 401 === $code ? 'unauthorised' : 'unexpected_response' ),
+            'http'      => $code,
+        );
+    }
+
+    set_transient( 'softkom_visibility_engine_health', $result, MINUTE_IN_SECONDS );
+    return $result;
+}
+
+add_action( 'rest_api_init', function() {
+    register_rest_route( 'softkom-visibility/v1', '/bridge-health', array(
+        'methods'             => 'GET',
+        'callback'            => function() {
+            $result = softkom_visibility_engine_health_check();
+            $counts = wp_count_posts( 'softkom_lead' );
+            $existing = 0;
+            foreach ( array( 'publish', 'private', 'draft', 'pending' ) as $status ) {
+                if ( isset( $counts->{$status} ) ) {
+                    $existing += (int) $counts->{$status};
+                }
+            }
+            $result['existing_leads'] = $existing;
+            $result['backfill_complete'] = (bool) get_option( 'softkom_visibility_backfill_complete', '' );
+            $result['backfill_offset'] = (int) get_option( 'softkom_visibility_backfill_offset', 0 );
+            return rest_ensure_response( $result );
+        },
+        'permission_callback' => '__return_true',
+    ) );
+} );
+
+function softkom_visibility_engine_schedule_backfill() {
+    if ( get_option( 'softkom_visibility_backfill_complete', '' ) ) {
+        return;
+    }
+    if ( ! wp_next_scheduled( 'softkom_visibility_engine_backfill_batch' ) ) {
+        wp_schedule_single_event( time() + 5, 'softkom_visibility_engine_backfill_batch' );
+    }
+}
+add_action( 'init', 'softkom_visibility_engine_schedule_backfill', 50 );
+
+function softkom_visibility_engine_backfill_batch() {
+    if ( get_option( 'softkom_visibility_backfill_complete', '' ) ) {
+        return;
+    }
+
+    $offset = max( 0, (int) get_option( 'softkom_visibility_backfill_offset', 0 ) );
+    $batch_size = 5;
+    $ids = get_posts( array(
+        'post_type'              => 'softkom_lead',
+        'post_status'            => array( 'publish', 'private', 'draft', 'pending' ),
+        'posts_per_page'         => $batch_size,
+        'offset'                 => $offset,
+        'orderby'                => 'ID',
+        'order'                  => 'ASC',
+        'fields'                 => 'ids',
+        'no_found_rows'          => true,
+        'suppress_filters'       => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
+    ) );
+
+    if ( empty( $ids ) ) {
+        update_option( 'softkom_visibility_backfill_complete', current_time( 'mysql', true ), false );
+        delete_option( 'softkom_visibility_backfill_offset' );
+        return;
+    }
+
+    foreach ( $ids as $lead_id ) {
+        softkom_visibility_engine_push_lead( (int) $lead_id );
+    }
+
+    update_option( 'softkom_visibility_backfill_offset', $offset + count( $ids ), false );
+
+    if ( count( $ids ) < $batch_size ) {
+        update_option( 'softkom_visibility_backfill_complete', current_time( 'mysql', true ), false );
+        delete_option( 'softkom_visibility_backfill_offset' );
+        return;
+    }
+
+    wp_schedule_single_event( time() + MINUTE_IN_SECONDS, 'softkom_visibility_engine_backfill_batch' );
+}
+add_action( 'softkom_visibility_engine_backfill_batch', 'softkom_visibility_engine_backfill_batch' );
+
+
+function softkom_visibility_engine_fast_start_backfill() {
+    if ( get_option( 'softkom_visibility_backfill_complete', '' ) ) {
+        return;
+    }
+    if ( (int) get_option( 'softkom_visibility_backfill_offset', 0 ) !== 0 ) {
+        return;
+    }
+    $counts = wp_count_posts( 'softkom_lead' );
+    $existing = 0;
+    foreach ( array( 'publish', 'private', 'draft', 'pending' ) as $status ) {
+        if ( isset( $counts->{$status} ) ) {
+            $existing += (int) $counts->{$status};
+        }
+    }
+    if ( $existing > 0 && $existing <= 5 ) {
+        softkom_visibility_engine_backfill_batch();
+    }
+}
+add_action( 'init', 'softkom_visibility_engine_fast_start_backfill', 60 );
