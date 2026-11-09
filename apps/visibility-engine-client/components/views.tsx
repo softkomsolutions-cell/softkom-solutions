@@ -8,6 +8,7 @@ import { canManage } from "@/lib/security";
 import { searchTotals, type WorkspaceData, type Filters } from "@/lib/queries";
 import { ActionForm } from "./action-form";
 import { comparablePeriods } from "@/lib/reporting/comparison";
+import { PLANS, planKey } from "@/lib/plans";
 import {
   Area,
   Badge,
@@ -1536,8 +1537,38 @@ export function Reports({ data, ctx, filters }: Props) {
   );
 }
 export function Settings({ data, ctx }: Props) {
+  const currentPlan = planKey(data.subscription?.plan);
+  const plan = PLANS[currentPlan];
+  const trialDays =
+    data.subscription?.trialEndsAt
+      ? Math.max(0, Math.ceil((data.subscription.trialEndsAt.getTime() - Date.now()) / 86400000))
+      : null;
   return (
     <>
+      <section className="panel">
+        <p className="eyebrow">PLAN & ACCESS</p>
+        <h2>{plan.name}</h2>
+        <p>
+          {data.subscription?.status === "TRIALING" && trialDays !== null
+            ? `${trialDays} day${trialDays === 1 ? "" : "s"} remaining in your trial.`
+            : `Subscription status: ${data.subscription?.status || "Legacy managed workspace"}.`}
+        </p>
+        <div className="connection-row">
+          <span>Sites</span>
+          <strong>{data.sites.length} / {plan.sites}</strong>
+        </div>
+        <div className="connection-row">
+          <span>Members</span>
+          <strong>{data.members.length} / {plan.members}</strong>
+        </div>
+        <div className="connection-row">
+          <span>AI observations / day</span>
+          <strong>{plan.aiObservationsPerDay}</strong>
+        </div>
+        <Link className="button secondary" href="/pricing">
+          View plans <ArrowUpRight size={15} />
+        </Link>
+      </section>
       <section className="panel">
         <p className="eyebrow">ORGANISATION</p>
         <h2>{ctx.organisation.name}</h2>
@@ -1562,10 +1593,7 @@ export function Settings({ data, ctx }: Props) {
       </section>
       <section className="panel">
         <h2>Workspace members</h2>
-        <p className="fine">
-          Membership changes and password resets are managed through Softkom’s
-          server-side provisioning process.
-        </p>
+        <p className="fine">Invite colleagues or clients without operator provisioning.</p>
         {data.members.map((m) => (
           <div className="connection-row" key={m.id}>
             <span>
@@ -1575,6 +1603,27 @@ export function Settings({ data, ctx }: Props) {
             <Badge value={m.role} />
           </div>
         ))}
+        {data.invitations.map((invite) => (
+          <div className="connection-row" key={invite.id}>
+            <span>
+              <strong>{invite.email}</strong>
+              <small>Invitation pending until {date(invite.expiresAt)}</small>
+            </span>
+            <Badge value={invite.role} />
+          </div>
+        ))}
+        {canManage(ctx.role) && (
+          <ActionForm operation="invite">
+            <div className="form-grid">
+              <Field label="Email" name="email" type="email" required />
+              <Select label="Role" name="role">
+                <option value="CLIENT">Client / reviewer</option>
+                <option value="ADMIN">Admin</option>
+              </Select>
+            </div>
+            <button> Create secure invitation → </button>
+          </ActionForm>
+        )}
       </section>
       <section className="panel">
         <h2>Recent audit trail</h2>
