@@ -1,11 +1,11 @@
 import {
-import { assertSiteCapacity } from "./saas";
   Prisma,
   SearchIntent,
   TopicStatus,
   CmsType,
   LeadStage,
 } from "@prisma/client";
+import { assertSiteCapacity } from "./saas";
 import { z } from "zod";
 import { db } from "./db";
 import { scopedContent, scopedSite } from "./scope";
