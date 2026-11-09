@@ -10,7 +10,7 @@ const createdUsers: string[] = [];
 const createdOrgs: string[] = [];
 let managerEmail: string,
   clientEmail: string,
-  newEmail: string,
+  signupEmail: string,
   foreignEmail: string;
 let orgId: string, foreignContentId: string, contentId: string;
 let managerState: Awaited<ReturnType<BrowserContext["storageState"]>>;
@@ -92,11 +92,9 @@ test.beforeAll(async ({ playwright }) => {
   }
   managerEmail = await user("Test manager", org.id, "OWNER");
   clientEmail = await user("Test client", org.id);
-  newEmail = await user("New client");
   foreignEmail = await user("Other client", other.id, "OWNER");
   for (const [email, save] of [
     [clientEmail, (s: typeof managerState) => (clientState = s)],
-    [newEmail, (s: typeof managerState) => (newState = s)],
     [foreignEmail, (s: typeof managerState) => (foreignState = s)],
   ] as const) {
     const request = await playwright.request.newContext({
@@ -145,23 +143,37 @@ test.afterAll(async () => {
   await db.user.deleteMany({ where: { id: { in: createdUsers } } });
   await db.$disconnect();
 });
-test("unauthenticated routes redirect, signup is disabled, cross-origin sign-in is rejected", async ({
+test("unauthenticated routes redirect, public signup creates a session, cross-origin sign-in is rejected", async ({
   page,
   request,
 }) => {
   await page.goto("/workspace/dashboard");
   await expect(page).toHaveURL(/\/login$/);
+  signupEmail = `signup-${randomUUID()}@example.test`;
   const signup = await request.post("/api/auth/sign-up/email", {
-    data: { name: "Intruder", email: "uninvited@example.test", password },
+    data: { name: "Self-service customer", email: signupEmail, password },
     headers: { Origin: process.env.BETTER_AUTH_URL! },
   });
-  expect(signup.ok()).toBe(false);
+  expect(signup.ok(), await signup.text()).toBe(true);
+  const signupUser = await db.user.findUniqueOrThrow({ where: { email: signupEmail } });
+  createdUsers.push(signupUser.id);
+  newState = await request.storageState();
   const csrf = await request.post("/api/auth/sign-in/email", {
     data: { email: managerEmail, password },
     headers: { Origin: "https://attacker.example" },
   });
   expect(csrf.status()).toBe(403);
 });
+test("public landing and pricing pages expose the commercial trial", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "Start 14-day trial" })).toBeVisible();
+  await page.goto("/pricing");
+  await expect(page.getByRole("heading", { name: "14-day trial" })).toBeVisible();
+  await expect(page.getByText("R1,490/month")).toBeVisible();
+  await expect(page.getByText("R2,990/month")).toBeVisible();
+  await expect(page.getByText("R5,990/month")).toBeVisible();
+});
+
 test("real login hydrates under CSP and opens a truthful empty workspace", async ({
   page,
 }) => {
@@ -214,6 +226,34 @@ test("a client completes all four onboarding steps without a fake integration", 
   await expect(
     page.locator(".topbar strong").filter({ hasText: "New Test Business" }),
   ).toBeVisible();
+
+  const membership = await db.membership.findFirstOrThrow({
+    where: { user: { email: signupEmail } },
+  });
+  const subscription = await db.subscription.findUniqueOrThrow({
+    where: { organisationId: membership.organisationId },
+  });
+  expect(subscription.plan).toBe("TRIAL");
+  expect(subscription.status).toBe("TRIALING");
+  expect(subscription.trialEndsAt?.getTime()).toBeGreaterThan(Date.now());
+
+  await page.goto("/workspace/settings");
+  await expect(page.getByRole("heading", { name: "14-day trial" })).toBeVisible();
+  await expect(page.getByText("1 / 1", { exact: true })).toBeVisible();
+  await expect(page.getByText("1 / 2", { exact: true })).toBeVisible();
+
+  await page.getByLabel("Email").fill("invited-reviewer@example.test");
+  await page.getByLabel("Role").selectOption("CLIENT");
+  await page.getByRole("button", { name: "Create secure invitation" }).click();
+  await expect.poll(async () =>
+    db.invitation.count({
+      where: {
+        organisationId: membership.organisationId,
+        email: "invited-reviewer@example.test",
+        acceptedAt: null,
+      },
+    }),
+  ).toBe(1);
   await context.close();
 });
 test("manager records a reasoned opportunity and proposes real content", async ({
