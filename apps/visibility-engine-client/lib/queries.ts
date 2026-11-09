@@ -58,6 +58,7 @@ export async function workspaceData(
     audits,
     members,
     profile,
+    subscription,
   ] = await Promise.all([
     db.site.findMany({
       where: site,
@@ -135,6 +136,9 @@ export async function workspaceData(
     db.businessProfile.findUnique({
       where: { organisationId: ctx.organisationId },
     }),
+    db.subscription.findUnique({
+      where: { organisationId: ctx.organisationId },
+    }),
   ]);
   return {
     sites,
@@ -165,6 +169,7 @@ export async function workspaceData(
     audits,
     members,
     profile,
+    subscription,
     range,
   };
 }
