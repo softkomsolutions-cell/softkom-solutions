@@ -18,6 +18,7 @@ const payloadSchema = z.object({
   organisationId: z.string().min(1).max(128),
   plan: z.enum(["STARTER", "GROWTH", "PRO"]),
   status: z.enum(["ACTIVE", "PAST_DUE", "CANCELLED"]),
+  currency: z.enum(["ZAR", "USD"]).default("ZAR"),
   provider: z.string().min(1).max(80),
   providerCustomerId: z.string().max(300).optional(),
   providerSubscriptionId: z.string().max(300).optional(),
@@ -37,13 +38,15 @@ export async function POST(request: Request) {
   if (!organisation) return NextResponse.json({ error: "Organisation not found" }, { status: 404 });
 
   const plan = PLANS[input.plan];
+  const monthlyPrice = input.currency === "USD" ? plan.usdMonthlyPrice : plan.monthlyPrice;
   await db.subscription.upsert({
     where: { organisationId: input.organisationId },
     create: {
       organisationId: input.organisationId,
       plan: input.plan,
       status: input.status,
-      monthlyPrice: plan.monthlyPrice,
+      monthlyPrice,
+      currency: input.currency,
       provider: input.provider,
       providerCustomerId: input.providerCustomerId,
       providerSubscriptionId: input.providerSubscriptionId,
@@ -53,7 +56,8 @@ export async function POST(request: Request) {
     update: {
       plan: input.plan,
       status: input.status,
-      monthlyPrice: plan.monthlyPrice,
+      monthlyPrice,
+      currency: input.currency,
       provider: input.provider,
       providerCustomerId: input.providerCustomerId,
       providerSubscriptionId: input.providerSubscriptionId,
@@ -71,6 +75,8 @@ export async function POST(request: Request) {
         plan: input.plan,
         status: input.status,
         provider: input.provider,
+        currency: input.currency,
+        monthlyPrice,
       },
     },
   });
