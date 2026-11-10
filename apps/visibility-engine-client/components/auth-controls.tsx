@@ -70,7 +70,7 @@ export function LoginForm({ inviteToken = "" }: { inviteToken?: string }) {
   );
 }
 
-export function SignupForm({ inviteToken = "" }: { inviteToken?: string }) {
+export function SignupForm({ inviteToken = "", selectedPlan = "" }: { inviteToken?: string; selectedPlan?: string }) {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -98,7 +98,7 @@ export function SignupForm({ inviteToken = "" }: { inviteToken?: string }) {
           if (result.error) {
             setError("Account could not be created. Use another email or check the password requirements.");
           } else {
-            router.push(inviteToken ? `/invite/${inviteToken}` : "/onboarding");
+            router.push(inviteToken ? `/invite/${inviteToken}` : selectedPlan ? `/onboarding?plan=${encodeURIComponent(selectedPlan)}` : "/onboarding");
             router.refresh();
           }
         } catch {
