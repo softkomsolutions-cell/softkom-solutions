@@ -753,6 +753,56 @@
                     leadSection.hidden = true;
                     resultsSection.hidden = false;
 
+                    /*
+                     * Record a successful stored assessment as the standard
+                     * GA4 generate_lead event. No contact details, answers or
+                     * scores are sent to analytics.
+                     */
+                    try {
+                        if (!window.softkomGenerateLeadTracked) {
+                            const eventParameters = {
+                                form_name:
+                                    'Business Systems & AI Readiness Assessment'
+                            };
+
+                            if (
+                                typeof window.__gtagTracker === 'function'
+                            ) {
+                                window.__gtagTracker(
+                                    'event',
+                                    'generate_lead',
+                                    eventParameters
+                                );
+                                window.softkomGenerateLeadTracked = true;
+                            } else if (
+                                typeof window.gtag === 'function'
+                            ) {
+                                window.gtag(
+                                    'event',
+                                    'generate_lead',
+                                    eventParameters
+                                );
+                                window.softkomGenerateLeadTracked = true;
+                            } else if (
+                                Array.isArray(window.dataLayer)
+                            ) {
+                                window.dataLayer.push(
+                                    Object.assign(
+                                        {
+                                            event: 'generate_lead'
+                                        },
+                                        eventParameters
+                                    )
+                                );
+                                window.softkomGenerateLeadTracked = true;
+                            }
+                        }
+                    } catch (error) {
+                        /*
+                         * Analytics must never block assessment results.
+                         */
+                    }
+
                     resultsSection.scrollIntoView({
                         behavior: 'smooth',
                         block: 'start'
