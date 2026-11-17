@@ -14,7 +14,7 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "db:generate": "prisma generate",
     "provision": "tsx scripts/provision.ts",
-    "test:unit": "vitest run tests/security.test.ts tests/providers.test.ts",
+    "test:unit": "vitest run tests/security.test.ts tests/providers.test.ts tests/payfast.test.ts",
     "test:integration": "vitest run tests/*.integration.test.ts",
     "worker": "tsx scripts/worker.ts",
     "test:services": "tsx scripts/test-services.ts"
