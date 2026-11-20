@@ -36,6 +36,8 @@ jobs:
         run: php tests/run-static-acquisition-qa.php
       - name: Run funnel command centre QA
         run: php tests/run-funnel-command-centre-qa.php
+      - name: Run WPForms enquiry pipeline QA
+        run: php tests/run-wpforms-enquiry-qa.php
 
   live-http-qa:
     name: Live website QA
