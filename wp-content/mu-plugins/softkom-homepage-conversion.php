@@ -2,8 +2,7 @@
 /**
  * Softkom homepage conversion repair.
  *
- * Turns the legacy Elementor consultation form into a persisted Softkom lead,
- * emails the sales inboxes, and exposes the AJAX endpoint used by the homepage.
+ * Routes website enquiries to the Softkom lead pipeline.
  *
  * @package Softkom
  */
@@ -200,3 +199,93 @@ function softkom_homepage_conversion_submit() {
 }
 add_action( 'wp_ajax_softkom_homepage_lead', 'softkom_homepage_conversion_submit' );
 add_action( 'wp_ajax_nopriv_softkom_homepage_lead', 'softkom_homepage_conversion_submit' );
+
+/**
+ * Save the shared homepage and contact WPForms enquiry before confirmation.
+ */
+function softkom_wpforms_capture_enquiry( $fields, $entry, $form_data ) {
+	$form_id = (int) $form_data['id'];
+	if ( ! empty( $form_data['spam_reason'] ) || ! empty( wpforms()->process->errors[ $form_id ] ) ) {
+		return;
+	}
+
+	$name    = sanitize_text_field( $fields[0]['value'] ?? '' );
+	$email   = sanitize_email( $fields[1]['value'] ?? '' );
+	$message = sanitize_textarea_field( $fields[2]['value'] ?? '' );
+
+	if ( '' === $name || ! is_email( $email ) || '' === $message ) {
+		wpforms()->process->errors[ $form_id ]['header'] = 'Please enter your name, email address and message.';
+		return;
+	}
+
+	$page_id = absint( $entry['post_id'] ?? 0 );
+	$source  = 'website-enquiry';
+	if ( $page_id && (int) get_option( 'page_on_front' ) === $page_id ) {
+		$source = 'homepage-enquiry';
+	} elseif ( $page_id && 'contact' === get_post_field( 'post_name', $page_id ) ) {
+		$source = 'contact-enquiry';
+	}
+
+	$meta = array(
+		'_softkom_first_name'           => $name,
+		'_softkom_email'                => $email,
+		'_softkom_home_project_details' => $message,
+		'_softkom_source'               => $source,
+		'_softkom_traffic_source'       => 'direct',
+		'_softkom_lead_temperature'     => 'WARM',
+		'_softkom_pipeline_stage'       => 'New',
+		'_softkom_next_follow_up'       => current_time( 'Y-m-d' ),
+		'_softkom_created_at_gmt'       => current_time( 'mysql', true ),
+	);
+
+	softkom_homepage_conversion_register_lead_type();
+	$lead_id = wp_insert_post(
+		wp_slash(
+			array(
+				'post_type'   => 'softkom_lead',
+				'post_status' => 'private',
+				'post_title'  => sprintf( 'Website enquiry - %s', $name ),
+				'meta_input'  => $meta,
+			)
+		),
+		true
+	);
+
+	if ( $lead_id && ! is_wp_error( $lead_id ) ) {
+		foreach ( $meta as $key => $value ) {
+			if ( $value !== get_post_meta( $lead_id, $key, true ) ) {
+				wp_delete_post( $lead_id, true );
+				$lead_id = 0;
+				break;
+			}
+		}
+	}
+
+	if ( ! $lead_id || is_wp_error( $lead_id ) ) {
+		wpforms()->process->errors[ $form_id ]['header'] = 'We could not save your enquiry. Please try again or email info@softkomsolutions.com.';
+		return;
+	}
+
+	if ( function_exists( 'softkom_attribution_persist_lead' ) ) {
+		softkom_attribution_persist_lead( $lead_id );
+	}
+}
+add_action( 'wpforms_process_2501', 'softkom_wpforms_capture_enquiry', PHP_INT_MAX, 3 );
+
+function softkom_enquiry_add_details_meta_box( $post ) {
+	$message = get_post_meta( $post->ID, '_softkom_home_project_details', true );
+	if ( '' === $message ) {
+		return;
+	}
+
+	add_meta_box( 'softkom-enquiry-details', 'Website enquiry', 'softkom_enquiry_render_details', 'softkom_lead' );
+}
+add_action( 'add_meta_boxes_softkom_lead', 'softkom_enquiry_add_details_meta_box' );
+
+function softkom_enquiry_render_details( $post ) {
+	$email   = get_post_meta( $post->ID, '_softkom_email', true );
+	$message = get_post_meta( $post->ID, '_softkom_home_project_details', true );
+
+	echo '<p><strong>Email</strong> ' . esc_html( $email ) . '</p>';
+	echo '<p>' . nl2br( esc_html( $message ) ) . '</p>';
+}

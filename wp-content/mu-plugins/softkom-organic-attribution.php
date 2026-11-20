@@ -16,7 +16,9 @@ function softkom_attribution_cookie_name(){return 'softkom_acq';}
 function softkom_attribution_encode($data){return rtrim(strtr(base64_encode(wp_json_encode($data)),'+/','-_'),'=');}
 function softkom_attribution_decode($value){$value=preg_replace('/[^A-Za-z0-9_-]/','',(string)$value);if(!$value)return array();$pad=strlen($value)%4;if($pad)$value.=str_repeat('=',4-$pad);$raw=base64_decode(strtr($value,'-_','+/'),true);$data=$raw?json_decode($raw,true):array();return is_array($data)?$data:array();}
 function softkom_attribution_capture(){
- if(is_admin()||wp_doing_ajax())return;$path=trim((string)wp_parse_url(wp_unslash($_SERVER['REQUEST_URI']??''),PHP_URL_PATH),'/');if(!in_array($path,softkom_attribution_acquisition_slugs(),true))return;
+ if ( is_admin() || wp_doing_ajax() ) { return; }
+ $path = trim( (string) wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ), PHP_URL_PATH ), '/' );
+ if ( ! is_front_page() && ! is_page( 'contact' ) && ! in_array( $path, softkom_attribution_acquisition_slugs(), true ) ) { return; }
  $data=softkom_attribution_detect();$existing=!empty($_COOKIE[softkom_attribution_cookie_name()])?softkom_attribution_decode(wp_unslash($_COOKIE[softkom_attribution_cookie_name()])):array();
  if(is_array($existing)&&!empty($existing['source'])&&'direct'!==$existing['source'])return;
  $value=softkom_attribution_encode($data);$domain=defined('COOKIE_DOMAIN')?(string)COOKIE_DOMAIN:'';$cookie_path=(defined('COOKIEPATH')&&COOKIEPATH)?COOKIEPATH:'/';setcookie(softkom_attribution_cookie_name(),$value,array('expires'=>time()+DAY_IN_SECONDS*90,'path'=>$cookie_path,'domain'=>$domain,'secure'=>is_ssl(),'httponly'=>true,'samesite'=>'Lax'));$_COOKIE[softkom_attribution_cookie_name()]=$value;
