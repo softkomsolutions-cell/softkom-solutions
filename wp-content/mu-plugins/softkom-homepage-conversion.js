@@ -146,10 +146,25 @@
                 .catch(function () {
                     if (submit) {
                         submit.disabled = false;
-                        submit.textContent = 'REQUEST CONSULTATION';
+                        submit.textContent = 'TRY AGAIN';
                     }
-                    window.location.href = 'mailto:info@softkomsolutions.com?subject=' +
-                        encodeURIComponent('Softkom homepage consultation request');
+
+                    // Keep all entered details on screen so the visitor can retry.
+                    // Never silently redirect to a blank email and lose the enquiry.
+                    var error = form.querySelector('[data-softkom-submit-error]');
+                    if (!error) {
+                        error = document.createElement('p');
+                        error.setAttribute('data-softkom-submit-error', 'true');
+                        error.setAttribute('role', 'alert');
+                        error.style.color = '#b42318';
+                        error.style.marginTop = '12px';
+                        if (submit && submit.parentNode) {
+                            submit.parentNode.appendChild(error);
+                        } else {
+                            form.appendChild(error);
+                        }
+                    }
+                    error.textContent = 'We could not submit your enquiry. Your details are still here. Please try again, or email info@softkomsolutions.com.';
                 });
         }, true);
     });
