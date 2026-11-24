@@ -21,3 +21,24 @@ function softkom_growth_assets(){if(!softkom_growth_is_page())return;wp_enqueue_
 function softkom_growth_footer(){if(!softkom_growth_is_page())return;echo '<div class="skg-compact-footer"><div class="skg-footer-inner"><div><strong>Softkom Solutions</strong><span>Business Systems · AI Automation · Digital Infrastructure</span></div><nav><a href="'.esc_url(home_url('/services/')).'">Solutions</a><a href="'.esc_url(home_url('/assessment/')).'">Free Assessment</a><a href="'.esc_url(home_url('/contact/')).'">Contact</a></nav><small>© '.esc_html(wp_date('Y')).' Softkom Solutions</small></div></div>'; }add_action('wp_footer','softkom_growth_footer',1);
 function softkom_growth_header_cta_js(){if(!softkom_growth_is_page())return;?><script>document.addEventListener('DOMContentLoaded',function(){var links=document.querySelectorAll('header a');links.forEach(function(a){var t=(a.textContent||'').trim().toLowerCase();if(t==='get a quote'||t==='request a quote'){a.textContent='Free Assessment';a.href='<?php echo esc_js(home_url('/assessment/')); ?>';}});});</script><?php }add_action('wp_footer','softkom_growth_header_cta_js',50);
 function softkom_growth_schema(){if(!softkom_growth_is_page())return;$slug=get_post_field('post_name',get_queried_object_id());$p=softkom_growth_pages_definition()[$slug];$q=array();foreach($p['faq'] as $x){$q[]=array('@type'=>'Question','name'=>$x[0],'acceptedAnswer'=>array('@type'=>'Answer','text'=>$x[1]));}$s=array('@context'=>'https://schema.org','@graph'=>array(array('@type'=>'Service','name'=>$p['title'],'provider'=>array('@id'=>home_url('/#organization')),'areaServed'=>array('@type'=>'Country','name'=>'South Africa'),'url'=>get_permalink()),array('@type'=>'FAQPage','mainEntity'=>$q)));echo '<script type="application/ld+json">'.wp_json_encode($s,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE).'</script>';}add_action('wp_head','softkom_growth_schema',35);
+
+
+/** Shared acquisition layout guard, loaded after theme styles. */
+add_action('wp_head', function () {
+ if (!(softkom_growth_is_page() || (function_exists('softkom_growth_expansion_is_page') && softkom_growth_expansion_is_page()) || (function_exists('softkom_traffic_sprint_is_page') && softkom_traffic_sprint_is_page()))) return;
+ echo '<style id="softkom-acquisition-layout-guard">
+ body:is(.softkom-growth-modern,.softkom-growth-expansion,.softkom-traffic-sprint) #content :is(.ast-container,.site-content-inner,.content-area,.site-main,article,.entry-content,.wp-block-post-content){width:100%!important;max-width:none!important;min-width:0!important;margin:0!important;padding:0!important;float:none!important;border:0!important}
+ body:is(.softkom-growth-modern,.softkom-growth-expansion,.softkom-traffic-sprint) #content .ast-container{display:block!important}
+ body:is(.softkom-growth-modern,.softkom-growth-expansion,.softkom-traffic-sprint) :is(#secondary,.sidebar-main,.widget-area,.entry-header,.page-header){display:none!important}
+ :is(.softkom-growth-page,.skx-page,.sks-page){width:100%!important;max-width:none!important;box-sizing:border-box}
+ :is(.skg-inner,.skx-inner,.sks-inner){width:min(1180px,calc(100% - 48px))!important;max-width:1180px!important;margin-inline:auto!important;box-sizing:border-box}
+ :is(.skg-card,.skx-card,.skg-band,.skx-band,.sks-band){background:#0f172a!important;color:#e2e8f0!important}
+ :is(.skg-card,.skx-card,.skg-band,.skx-band,.sks-band) :is(h2,h3,h4,strong,p,span,li){color:#f1f5f9!important}
+ :is(.skg-solution,.skx-solution){background:#1e293b!important;color:#f1f5f9!important;min-width:0}
+ :is(.skg-grid,.skx-grid){grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)!important;align-items:start}
+ :is(.skg-light,.skg-faq-section,.skx-main,.skx-faq,.sks-main,.sks-white){padding-block:64px!important}
+ :is(.skg-hero,.skx-hero,.sks-hero){padding-block:72px!important}
+ :is(.skg-band,.skx-band,.sks-band) a{white-space:normal}
+ @media(max-width:800px){:is(.skg-inner,.skx-inner,.sks-inner){width:calc(100% - 32px)!important}:is(.skg-grid,.skx-grid,.skg-solutions,.sks-grid,.sks-problems,.sks-sa){grid-template-columns:minmax(0,1fr)!important}:is(.skg-hero,.skx-hero,.sks-hero,.skg-light,.skg-faq-section,.skx-main,.skx-faq,.sks-main,.sks-white){padding-block:40px!important}:is(.softkom-growth-page,.skx-page,.sks-page) h1{font-size:clamp(32px,7vw,48px)!important}:is(.skg-card,.skx-card,.skg-problems,.skx-problems){padding:22px!important}}
+ </style>';
+}, 999);
