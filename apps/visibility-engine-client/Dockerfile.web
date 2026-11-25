@@ -1,0 +1,18 @@
+FROM node:24.22.1-bookworm-slim
+
+WORKDIR /app
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+
+COPY package*.json ./
+RUN npm ci
+
+COPY prisma ./prisma
+RUN npm run db:generate
+
+COPY . .
+
+ARG BETTER_AUTH_BUILD_URL=http://localhost:3000
+RUN npm run typecheck && npm run test:unit && npm run lint && BETTER_AUTH_URL=$BETTER_AUTH_BUILD_URL BETTER_AUTH_SECRET=build-only-placeholder-secret-not-used-at-runtime npm run build
+
+CMD ["npm","run","start"]
