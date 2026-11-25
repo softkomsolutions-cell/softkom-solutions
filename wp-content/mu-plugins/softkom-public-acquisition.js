@@ -97,7 +97,7 @@
             link.textContent = 'Sending Request…';
 
             postConversion('softkom_strategy_request').then(function (data) {
-                link.removeAttribute('href');
+                window.location.assign("https://calendly.com/softkomsolutions/30mins");
                 link.setAttribute('role', 'status');
                 link.setAttribute('aria-busy', 'false');
                 link.setAttribute('data-request-complete', '1');
