@@ -9,7 +9,7 @@ add_action('init', function () {
  'label'=>'Partner Applications','public'=>false,'show_ui'=>true,
  'show_in_rest'=>false,'supports'=>['title'],
  'capability_type'=>'post','map_meta_cap'=>true,
- 'capabilities'=>['edit_posts'=>'manage_options','edit_others_posts'=>'manage_options','publish_posts'=>'manage_options','read_private_posts'=>'manage_options','delete_posts'=>'manage_options','edit_post'=>'manage_options','read_post'=>'manage_options','delete_post'=>'manage_options']
+ 'capabilities'=>array_fill_keys(['edit_posts','edit_others_posts','publish_posts','read_private_posts','delete_posts','edit_post','read_post','delete_post','create_posts','edit_private_posts','edit_published_posts','delete_private_posts','delete_published_posts','delete_others_posts'],'manage_options')
  ]);
 });
 add_shortcode('softkom_partner_application', function () {
@@ -161,7 +161,7 @@ add_action('add_meta_boxes_softkom_delivery',function(){
  },'softkom_delivery');
 });
 add_filter('wp_insert_post_data',function($data){
- if($data['post_type']==='softkom_delivery'&&in_array($data['post_status'],['publish','future'],true)) $data['post_status']='private';
+ if(in_array($data['post_type'],['softkom_delivery','softkom_partner'],true)&&in_array($data['post_status'],['publish','future'],true)) $data['post_status']='private';
  return $data;
 });
 add_action('save_post_softkom_delivery',function($id){
@@ -227,16 +227,28 @@ add_action('save_post_softkom_delivery',function($id){
  add_post_meta($id,'sk_fin_history',['previous'=>$old,'current'=>$v,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
 });
 
-add_shortcode('softkom_partner_dashboard',function(){
+function softkom_partner_private_dashboard(){
  if(!is_user_logged_in()) return '<p><a href="'.esc_url(wp_login_url(get_permalink())).'">Sign in to view your partner projects</a></p>';
  $uid=get_current_user_id();
  $partners=get_posts(['post_type'=>'softkom_partner','post_status'=>'private','numberposts'=>2,'meta_query'=>[['key'=>'sk_portal_user','value'=>$uid],['key'=>'review_status','value'=>'approved']]]);
- if(count($partners)!==1) return '<p>No active partner access. Contact Softkom Solutions.</p>';
+ if(count($partners)!==1 || get_post_meta($partners[0]->ID,'vetting_verified',true)!=='1' || strcasecmp(wp_get_current_user()->user_email,(string)get_post_meta($partners[0]->ID,'email',true))!==0 || array_values(wp_get_current_user()->roles)!==['subscriber']) return '<p>No active partner access. Contact Softkom Solutions.</p>';
  $projects=get_posts(['post_type'=>'softkom_delivery','post_status'=>'private','numberposts'=>100,'meta_key'=>'sk_partner_id','meta_value'=>$partners[0]->ID]);
  $html='<h2>Your allocated projects</h2><p>Showing up to 100 recent projects.</p><ul>';
  foreach($projects as $project) $html.='<li>Project #'.esc_html($project->ID).' — '.esc_html(get_post_meta($project->ID,'sk_delivery_status',true)).' — Due '.esc_html(get_post_meta($project->ID,'sk_due_date',true)).'</li>';
  return $html.'</ul>';
-});
+}
+add_shortcode('softkom_partner_dashboard',function(){return '<a href="'.esc_url(admin_url('admin-post.php?action=softkom_partner_view')).'">Open partner dashboard</a>';});
+function softkom_partner_view(){
+ if(!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE',true);
+ nocache_headers();
+ header('Cache-Control: private, no-store, max-age=0',true);
+ header('X-Robots-Tag: noindex, nofollow',true);
+ header('Content-Type: text/html; charset=UTF-8',true);
+ if(!is_user_logged_in()) status_header(401);
+ echo '<!doctype html><html lang="en"><meta charset="utf-8"><title>Partner dashboard</title><main>'.softkom_partner_private_dashboard().'</main></html>';exit;
+}
+add_action('admin_post_softkom_partner_view','softkom_partner_view');
+add_action('admin_post_nopriv_softkom_partner_view','softkom_partner_view');
 add_action('add_meta_boxes_softkom_partner',function(){
  add_meta_box('sk_portal_access','Partner portal access',function($post){
  if(!current_user_can('manage_options')) return;
