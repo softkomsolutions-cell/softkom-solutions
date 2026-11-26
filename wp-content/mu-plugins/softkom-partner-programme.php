@@ -226,3 +226,32 @@ add_action('save_post_softkom_delivery',function($id){
  foreach($v as $key=>$value) update_post_meta($id,'sk_fin_'.$key,$value);
  add_post_meta($id,'sk_fin_history',['previous'=>$old,'current'=>$v,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
 });
+
+add_shortcode('softkom_partner_dashboard',function(){
+ if(!is_user_logged_in()) return '<p><a href="'.esc_url(wp_login_url(get_permalink())).'">Sign in to view your partner projects</a></p>';
+ $uid=get_current_user_id();
+ $partners=get_posts(['post_type'=>'softkom_partner','post_status'=>'private','numberposts'=>2,'meta_query'=>[['key'=>'sk_portal_user','value'=>$uid],['key'=>'review_status','value'=>'approved']]]);
+ if(count($partners)!==1) return '<p>No active partner access. Contact Softkom Solutions.</p>';
+ $projects=get_posts(['post_type'=>'softkom_delivery','post_status'=>'private','numberposts'=>100,'meta_key'=>'sk_partner_id','meta_value'=>$partners[0]->ID]);
+ $html='<h2>Your allocated projects</h2><p>Showing up to 100 recent projects.</p><ul>';
+ foreach($projects as $project) $html.='<li>Project #'.esc_html($project->ID).' — '.esc_html(get_post_meta($project->ID,'sk_delivery_status',true)).' — Due '.esc_html(get_post_meta($project->ID,'sk_due_date',true)).'</li>';
+ return $html.'</ul>';
+});
+add_action('add_meta_boxes_softkom_partner',function(){
+ add_meta_box('sk_portal_access','Partner portal access',function($post){
+ if(!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_portal_'.$post->ID,'sk_portal_nonce');
+ echo '<p><label>Verified WordPress subscriber user ID (0 revokes access) <input type="number" min="0" name="sk_portal_user" value="'.esc_attr(get_post_meta($post->ID,'sk_portal_user',true)).'"></label></p>';
+ },'softkom_partner');
+});
+add_action('save_post_softkom_partner',function($id){
+ if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+ if(!isset($_POST['sk_portal_nonce'],$_POST['sk_portal_user'])||!is_string($_POST['sk_portal_nonce'])||!is_string($_POST['sk_portal_user'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_portal_nonce'])),'sk_portal_'.$id)) return;
+ $uid=absint($_POST['sk_portal_user']);
+ if(!$uid){delete_post_meta($id,'sk_portal_user');return;}
+ $user=get_userdata($uid);
+ if(!$user||$user->roles!==['subscriber']||get_post_meta($id,'review_status',true)!=='approved') return;
+ $other=get_posts(['post_type'=>'softkom_partner','post_status'=>'any','numberposts'=>1,'post__not_in'=>[$id],'meta_key'=>'sk_portal_user','meta_value'=>$uid]);
+ if($other) return;
+ update_post_meta($id,'sk_portal_user',$uid);
+});
