@@ -189,3 +189,40 @@ add_action('save_post_softkom_delivery',function($id){
  update_post_meta($id,'sk_partner_id',$partner);update_post_meta($id,'sk_delivery_status',$status);update_post_meta($id,'sk_qa',$qa?'1':'0');
  add_post_meta($id,'sk_delivery_history',['previous'=>$old,'partner'=>$partner,'status'=>$status,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
 });
+
+add_action('add_meta_boxes_softkom_delivery',function(){
+ add_meta_box('sk_finance','Financial reconciliation (ZAR cents, excluding VAT)',function($post){
+ if(!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_finance_'.$post->ID,'sk_finance_nonce');
+ $fields=['receipts'=>'Reconciled customer receipts','refunds'=>'Customer refunds','delivery_cost'=>'Total incurred delivery cost','commission'=>'Verified commission liability','supplier_paid'=>'Supplier payments','commission_paid'=>'Commission payments','reference'=>'Accounting reconciliation reference'];
+ $v=[];
+ foreach($fields as $key=>$label){
+ $v[$key]=get_post_meta($post->ID,'sk_fin_'.$key,true);
+ echo '<p><label>'.esc_html($label).' <input name="sk_fin['.esc_attr($key).']" value="'.esc_attr($v[$key]).'"></label></p>';
+ }
+ if($v['reference']!==''){
+ $net=(int)$v['receipts']-(int)$v['refunds'];
+ $contribution=$net-(int)$v['delivery_cost']-(int)$v['commission'];
+ echo '<p>Recorded contribution: R '.esc_html(number_format($contribution/100,2)).' before overheads and taxes.</p>';
+ echo '<p>Outstanding supplier liability: R '.esc_html(number_format(((int)$v['delivery_cost']-(int)$v['supplier_paid'])/100,2)).'</p>';
+ echo '<p>Outstanding commission: R '.esc_html(number_format(((int)$v['commission']-(int)$v['commission_paid'])/100,2)).'</p>';
+ }
+ echo '<p>Manual reconciliation snapshot only; does not initiate payments or replace accounting records.</p>';
+ },'softkom_delivery');
+});
+add_action('save_post_softkom_delivery',function($id){
+ if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+ if(!isset($_POST['sk_finance_nonce'])||!is_string($_POST['sk_finance_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_finance_nonce'])),'sk_finance_'.$id)) return;
+ if(!isset($_POST['sk_fin'])||!is_array($_POST['sk_fin'])) return;
+ $raw=wp_unslash($_POST['sk_fin']);$v=[];$old=[];
+ foreach(['receipts','refunds','delivery_cost','commission','supplier_paid','commission_paid'] as $key){
+ if(!isset($raw[$key])||!is_string($raw[$key])||!preg_match('/^[0-9]{1,9}$/D',$raw[$key])) return;
+ $v[$key]=(int)$raw[$key];
+ }
+ if(!isset($raw['reference'])||!is_string($raw['reference'])) return;
+ $v['reference']=sanitize_text_field($raw['reference']);
+ if(!$v['reference']||$v['refunds']>$v['receipts']||$v['supplier_paid']>$v['delivery_cost']||$v['commission_paid']>$v['commission']) return;
+ foreach($v as $key=>$value) $old[$key]=get_post_meta($id,'sk_fin_'.$key,true);
+ foreach($v as $key=>$value) update_post_meta($id,'sk_fin_'.$key,$value);
+ add_post_meta($id,'sk_fin_history',['previous'=>$old,'current'=>$v,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+});
