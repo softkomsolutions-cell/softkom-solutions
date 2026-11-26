@@ -79,3 +79,31 @@ add_action('save_post_softkom_partner',function($id,$post){
  update_post_meta($id,'vetting_verified',$verified?'1':'0');
  if ($old!==$status) add_post_meta($id,'review_history',['from'=>$old,'to'=>$status,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
 },10,2);
+
+add_action('add_meta_boxes_softkom_partner',function(){
+ add_meta_box('sk_partner_services','Service and commercial terms',function($post){
+ if (!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_partner_terms_'.$post->ID,'sk_partner_terms_nonce');
+ $fields=['service_name'=>'Service / package','service_scope'=>'Scope and exclusions','wholesale_cents'=>'Wholesale price in ZAR cents, excluding VAT','retail_cents'=>'Proposed retail price in ZAR cents, excluding VAT','billing_period'=>'Billing period (project or monthly)','terms_reference'=>'Signed agreement reference'];
+ foreach($fields as $key=>$label) {
+ echo '<p><label>'.esc_html($label).'<br><input style="width:100%" name="sk_terms['.esc_attr($key).']" value="'.esc_attr(get_post_meta($post->ID,'sk_'.$key,true)).'"></label></p>';
+ }
+ $cost=(int)get_post_meta($post->ID,'sk_wholesale_cents',true);
+ $price=(int)get_post_meta($post->ID,'sk_retail_cents',true);
+ if($price>0) echo '<p>Indicative gross margin: '.esc_html(number_format(100*($price-$cost)/$price,1)).'% (before commissions and overheads).</p>';
+ },'softkom_partner');
+});
+add_action('save_post_softkom_partner',function($id){
+ if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+ if(!isset($_POST['sk_partner_terms_nonce'])||!is_string($_POST['sk_partner_terms_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_partner_terms_nonce'])),'sk_partner_terms_'.$id)) return;
+ if(!isset($_POST['sk_terms'])||!is_array($_POST['sk_terms'])) return;
+ $input=wp_unslash($_POST['sk_terms']); $clean=[];
+ foreach(['service_name','service_scope','wholesale_cents','retail_cents','billing_period','terms_reference'] as $key){
+ if(!isset($input[$key])||!is_string($input[$key])) return;
+ $value=trim($input[$key]);
+ if(in_array($key,['wholesale_cents','retail_cents'],true)&&$value!==''&&!preg_match('/^[0-9]{1,9}$/D',$value)) return;
+ if($key==='billing_period'&&!in_array($value,['','project','monthly'],true)) return;
+ $clean[$key]=sanitize_text_field($value);
+ }
+ foreach($clean as $key=>$value) update_post_meta($id,'sk_'.$key,$value);
+});
