@@ -136,3 +136,56 @@ add_action('save_post_softkom_partner',function($id){
  add_post_meta($id,'sk_commission_history',['old'=>$old,'new'=>$new,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
  }
 });
+
+add_action('init',function(){
+ register_post_type('softkom_delivery',[
+ 'label'=>'Partner Projects','public'=>false,'show_ui'=>true,'show_in_rest'=>false,'supports'=>['title'],
+ 'map_meta_cap'=>true,'capabilities'=>array_fill_keys(['edit_posts','edit_others_posts','publish_posts','read_private_posts','delete_posts','edit_post','read_post','delete_post','create_posts','edit_private_posts','edit_published_posts','delete_private_posts','delete_published_posts','delete_others_posts'],'manage_options')
+ ]);
+});
+add_action('add_meta_boxes_softkom_delivery',function(){
+ add_meta_box('sk_delivery_details','Project allocation',function($post){
+ if(!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_delivery_'.$post->ID,'sk_delivery_nonce');
+ $assigned=(int)get_post_meta($post->ID,'sk_partner_id',true);
+ $partners=get_posts(['post_type'=>'softkom_partner','post_status'=>'private','numberposts'=>-1,'meta_query'=>[['key'=>'review_status','value'=>'approved'],['key'=>'partner_kind','value'=>'delivery']]]);
+ echo '<p><label>Approved delivery partner <select name="sk_partner_id"><option value="0">Unassigned</option>';
+ foreach($partners as $partner) echo '<option value="'.esc_attr($partner->ID).'" '.selected($assigned,$partner->ID,false).'>'.esc_html($partner->post_title).'</option>';
+ echo '</select></label></p>';
+ if($assigned&&!in_array($assigned,array_map(function($p){return $p->ID;},$partners),true)) echo '<p>Previously assigned partner is no longer eligible. Reassign before proceeding.</p>';
+ foreach(['client_reference'=>'Internal client reference','scope'=>'Agreed scope','due_date'=>'Delivery deadline (YYYY-MM-DD)'] as $key=>$label) echo '<p><label>'.esc_html($label).'<br><input style="width:100%" name="sk_delivery['.esc_attr($key).']" value="'.esc_attr(get_post_meta($post->ID,'sk_'.$key,true)).'"></label></p>';
+ echo '<p><label>Status <select name="sk_delivery_status">';
+ foreach(['draft','allocated','in_progress','quality_review','accepted','cancelled'] as $status) echo '<option value="'.esc_attr($status).'" '.selected(get_post_meta($post->ID,'sk_delivery_status',true),$status,false).'>'.esc_html($status).'</option>';
+ echo '</select></label></p>';
+ echo '<p><label><input type="checkbox" name="sk_qa" value="1" '.checked(get_post_meta($post->ID,'sk_qa',true),'1',false).'> Quality review and client acceptance documented</label></p>';
+ },'softkom_delivery');
+});
+add_filter('wp_insert_post_data',function($data){
+ if($data['post_type']==='softkom_delivery'&&in_array($data['post_status'],['publish','future'],true)) $data['post_status']='private';
+ return $data;
+});
+add_action('save_post_softkom_delivery',function($id){
+ if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+ if(!isset($_POST['sk_delivery_nonce'])||!is_string($_POST['sk_delivery_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_delivery_nonce'])),'sk_delivery_'.$id)) return;
+ if(!isset($_POST['sk_partner_id'],$_POST['sk_delivery_status'],$_POST['sk_delivery'])||!is_string($_POST['sk_partner_id'])||!is_string($_POST['sk_delivery_status'])||!is_array($_POST['sk_delivery'])) return;
+ $partner=absint($_POST['sk_partner_id']); $status=sanitize_key(wp_unslash($_POST['sk_delivery_status']));
+ if(!in_array($status,['draft','allocated','in_progress','quality_review','accepted','cancelled'],true)) return;
+ if($partner&&(get_post_type($partner)!=='softkom_partner'||get_post_status($partner)!=='private'||get_post_meta($partner,'review_status',true)!=='approved'||get_post_meta($partner,'partner_kind',true)!=='delivery')) return;
+ if(!$partner&&!in_array($status,['draft','cancelled'],true)) return;
+ $qa=isset($_POST['sk_qa'])&&$_POST['sk_qa']==='1';
+ if($status==='accepted'&&!$qa) return;
+ $fields=wp_unslash($_POST['sk_delivery']);$clean=[];
+ foreach(['client_reference','scope','due_date'] as $key){
+ if(!isset($fields[$key])||!is_string($fields[$key])) return;
+ $clean[$key]=sanitize_text_field($fields[$key]);
+ }
+ if($clean['due_date']!==''){
+ $d=DateTimeImmutable::createFromFormat('!Y-m-d',$clean['due_date']);
+ if(!$d||$d->format('Y-m-d')!==$clean['due_date']) return;
+ }
+ if(!in_array($status,['draft','cancelled'],true)&&(!$clean['client_reference']||!$clean['scope']||!$clean['due_date'])) return;
+ $old=[get_post_meta($id,'sk_partner_id',true),get_post_meta($id,'sk_delivery_status',true)];
+ foreach($clean as $key=>$value) update_post_meta($id,'sk_'.$key,$value);
+ update_post_meta($id,'sk_partner_id',$partner);update_post_meta($id,'sk_delivery_status',$status);update_post_meta($id,'sk_qa',$qa?'1':'0');
+ add_post_meta($id,'sk_delivery_history',['previous'=>$old,'partner'=>$partner,'status'=>$status,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+});
