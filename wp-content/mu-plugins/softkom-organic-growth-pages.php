@@ -42,3 +42,13 @@ add_action('wp_head', function () {
  @media(max-width:800px){:is(.skg-inner,.skx-inner,.sks-inner){width:calc(100% - 32px)!important}:is(.skg-grid,.skx-grid,.skg-solutions,.sks-grid,.sks-problems,.sks-sa){grid-template-columns:minmax(0,1fr)!important}:is(.skg-hero,.skx-hero,.sks-hero,.skg-light,.skg-faq-section,.skx-main,.skx-faq,.sks-main,.sks-white){padding-block:40px!important}:is(.softkom-growth-page,.skx-page,.sks-page) h1{font-size:clamp(32px,7vw,48px)!important}:is(.skg-card,.skx-card,.skg-problems,.skx-problems){padding:22px!important}}
  </style>';
 }, 999);
+
+/** Search-intent titles and contextual service navigation. */
+function softkom_growth_search_title($title){if(!softkom_growth_is_page())return $title; $p=softkom_growth_pages_definition()[get_post_field('post_name',get_queried_object_id())];return $p['title'].' | Softkom Solutions';}
+add_filter('pre_get_document_title','softkom_growth_search_title',30);
+add_filter('wpseo_title','softkom_growth_search_title',30);
+add_filter('rank_math/frontend/title','softkom_growth_search_title',30);
+function softkom_growth_search_description($description){if(!softkom_growth_is_page())return $description;return 'Reduce manual work and improve business workflows with '.strtolower(softkom_growth_pages_definition()[get_post_field('post_name',get_queried_object_id())]['title']).'. Book a free assessment with Softkom.';}
+add_filter('wpseo_metadesc','softkom_growth_search_description',30);
+add_filter('rank_math/frontend/description','softkom_growth_search_description',30);
+add_filter('the_content',function($content){if(!softkom_growth_is_page()||!in_the_loop()||!is_main_query())return $content;$slug=get_post_field('post_name',get_queried_object_id());$links='';foreach(softkom_growth_pages_definition() as $key=>$page){if($key===$slug)continue;$links.='<li><a href="'.esc_url(home_url('/'.$key.'/')).'">'.esc_html($page['title']).'</a></li>'; }return $content.'<section class="skg-light"><div class="skg-inner"><h2>Explore related business solutions</h2><ul>'.$links.'</ul><p><a href="https://calendly.com/softkomsolutions/30mins">Book a 30-minute business consultation</a></p></div></section>';},30);
