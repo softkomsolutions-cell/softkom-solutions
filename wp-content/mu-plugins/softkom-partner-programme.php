@@ -52,3 +52,30 @@ add_action('add_meta_boxes_softkom_partner',function(){
  foreach (['contact','email','partner_kind','experience','consent_at','review_status'] as $key) echo '<p><strong>'.esc_html($key).':</strong> '.nl2br(esc_html(get_post_meta($post->ID,$key,true))).'</p>';
  },'softkom_partner');
 });
+
+add_action('add_meta_boxes_softkom_partner',function(){
+ add_meta_box('sk_partner_review','Partner review',function($post){
+ if (!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_partner_review_'.$post->ID,'sk_partner_review_nonce');
+ $status=get_post_meta($post->ID,'review_status',true) ?: 'pending';
+ echo '<p><label>Decision <select name="sk_partner_status">';
+ foreach (['pending','vetting','approved','rejected','suspended'] as $option) echo '<option value="'.esc_attr($option).'" '.selected($status,$option,false).'>'.esc_html(ucfirst($option)).'</option>';
+ echo '</select></label></p>';
+ echo '<p><label>Internal vetting notes<textarea name="sk_partner_notes" rows="5" style="width:100%">'.esc_textarea(get_post_meta($post->ID,'review_notes',true)).'</textarea></label></p>';
+ echo '<p><label><input type="checkbox" name="sk_partner_verified" value="1" '.checked(get_post_meta($post->ID,'vetting_verified',true),'1',false).'> References, commercial terms and privacy obligations checked</label></p>';
+ },'softkom_partner','normal','high');
+});
+add_action('save_post_softkom_partner',function($id,$post){
+ if (wp_is_post_revision($id) || wp_is_post_autosave($id) || !current_user_can('manage_options') || !current_user_can('edit_post',$id)) return;
+ if (!isset($_POST['sk_partner_review_nonce']) || !is_string($_POST['sk_partner_review_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_partner_review_nonce'])),'sk_partner_review_'.$id)) return;
+ $status=isset($_POST['sk_partner_status']) && is_string($_POST['sk_partner_status']) ? sanitize_key(wp_unslash($_POST['sk_partner_status'])) : '';
+ if (!in_array($status,['pending','vetting','approved','rejected','suspended'],true)) return;
+ $verified=isset($_POST['sk_partner_verified']) && $_POST['sk_partner_verified']==='1';
+ if ($status==='approved' && !$verified) $status='vetting';
+ $notes=isset($_POST['sk_partner_notes']) && is_string($_POST['sk_partner_notes']) ? sanitize_textarea_field(wp_unslash($_POST['sk_partner_notes'])) : '';
+ $old=get_post_meta($id,'review_status',true);
+ update_post_meta($id,'review_status',$status);
+ update_post_meta($id,'review_notes',$notes);
+ update_post_meta($id,'vetting_verified',$verified?'1':'0');
+ if ($old!==$status) add_post_meta($id,'review_history',['from'=>$old,'to'=>$status,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+},10,2);
