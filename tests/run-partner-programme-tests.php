@@ -134,7 +134,19 @@ if ( ! class_exists( 'WP_Error' ) ) {
 
 // WordPress user and authentication stubs
 
-if ( ! function_exists( 'is_user_logged_in' ) ) {
+if ( ! function_exists( 'get_privacy_policy_url' ) ) {
+	function get_privacy_policy_url() {
+		// Return the privacy policy URL from the option, or false if not set
+		$pid = get_option( 'wp_page_for_privacy_policy', 0 );
+		if ( $pid && $pid > 0 ) {
+			$post = get_post( $pid );
+			if ( $post && is_object( $post ) ) {
+				return get_permalink( $post->ID );
+			}
+		}
+		return false;
+	}
+}
 	function is_user_logged_in() {
 		global $test_partner_user;
 		return ! is_null( $test_partner_user );
