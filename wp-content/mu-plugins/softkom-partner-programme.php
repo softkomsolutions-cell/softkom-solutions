@@ -426,3 +426,36 @@ add_action('add_meta_boxes_softkom_delivery',function(){
  echo '<p>Review against the signed agreement and historical rate before updating the verified liability. This estimate does not accrue or pay commission and does not cover separate referral beneficiaries.</p>';
  },'softkom_delivery');
 });
+
+add_action('add_meta_boxes_softkom_delivery',function(){
+ add_meta_box('sk_referral_ledger','Referral and sales commission agreement',function($post){
+ if(!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_referral_'.$post->ID,'sk_referral_nonce');
+ $v=get_post_meta($post->ID,'sk_referral_snapshot',true);if(!is_array($v)) $v=[];
+ foreach(['partner'=>'Approved referral or sales partner ID','rate'=>'Agreed percentage','agreement'=>'Signed agreement reference'] as $key=>$label){
+ echo '<p><label>'.esc_html($label).' <input name="sk_referral['.esc_attr($key).']" value="'.esc_attr($v[$key]??'').'"></label></p>';
+ }
+ echo '<p><label>Basis <select name="sk_referral[basis]">';
+ foreach(['collected_net','realized_margin'] as $basis) echo '<option value="'.esc_attr($basis).'" '.selected($v['basis']??'',$basis,false).'>'.esc_html($basis).'</option>';
+ echo '</select></label></p><p>Record a separate beneficiary only after verifying the signed agreement. Leave blank if none. Changes are audited.</p>';
+ if($v&&get_post_meta($post->ID,'sk_fin_reference',true)){
+ $estimate=softkom_commission_estimate($v['basis'],$v['rate'],get_post_meta($post->ID,'sk_fin_receipts',true),get_post_meta($post->ID,'sk_fin_refunds',true),get_post_meta($post->ID,'sk_fin_delivery_cost',true));
+ if($estimate!==null) echo '<p>Referral estimate: R '.esc_html(number_format($estimate/100,2)).'. Included in total verified commission only after accounting review; not an additional automatic liability.</p>';
+ }
+ },'softkom_delivery');
+});
+add_action('save_post_softkom_delivery',function($id){
+ if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+ if(!isset($_POST['sk_referral_nonce'],$_POST['sk_referral'])||!is_string($_POST['sk_referral_nonce'])||!is_array($_POST['sk_referral'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_referral_nonce'])),'sk_referral_'.$id)) return;
+ $raw=wp_unslash($_POST['sk_referral']);foreach(['partner','rate','agreement','basis'] as $key) if(!isset($raw[$key])||!is_string($raw[$key])) return;
+ if(!preg_match('/^[1-9][0-9]{0,9}$/D',$raw['partner'])) return;
+ $partner=(int)$raw['partner'];
+ if(get_post_type($partner)!=='softkom_partner'||get_post_status($partner)!=='private'||get_post_meta($partner,'review_status',true)!=='approved'||get_post_meta($partner,'vetting_verified',true)!=='1'||!in_array(get_post_meta($partner,'partner_kind',true),['referral','sales','strategic'],true)) return;
+ if(!in_array($raw['basis'],['collected_net','realized_margin'],true)||softkom_commission_estimate($raw['basis'],$raw['rate'],0,0,0)===null) return;
+ $agreement=sanitize_text_field($raw['agreement']);if(!$agreement||strlen($agreement)>200) return;
+ $new=['partner'=>$partner,'rate'=>$raw['rate'],'basis'=>$raw['basis'],'agreement'=>$agreement];
+ $old=get_post_meta($id,'sk_referral_snapshot',true);if($old===$new) return;
+ if((int)get_post_meta($id,'sk_fin_commission_paid',true)>0) return;
+ update_post_meta($id,'sk_referral_snapshot',$new);
+ add_post_meta($id,'sk_referral_history',['previous'=>$old,'current'=>$new,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+});
