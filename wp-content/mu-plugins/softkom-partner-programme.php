@@ -326,3 +326,53 @@ function softkom_partner_report(){
  foreach($totals as $key=>$v) echo '<li>'.esc_html(ucfirst(str_replace('_',' ',$key))).': '.($reconciled?'R '.esc_html(number_format($v/100,2)):'Not recorded').'</li>';
  echo '</ul><p>Excludes VAT, overheads and taxes. No payments are initiated.</p></div>';
 }
+
+add_action('add_meta_boxes_softkom_delivery',function(){
+ add_meta_box('sk_customer_access','Customer portal access',function($post){
+ if(!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_customer_'.$post->ID,'sk_customer_nonce');
+ echo '<p>Verify customer identity and project ownership before assigning access. Zero revokes access.</p><label>Customer subscriber ID <input type="number" min="0" name="sk_customer_user" value="'.esc_attr(get_post_meta($post->ID,'sk_customer_user',true)).'"></label>';
+ },'softkom_delivery');
+});
+add_action('save_post_softkom_delivery',function($id){
+ if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+ if(!isset($_POST['sk_customer_nonce'],$_POST['sk_customer_user'])||!is_string($_POST['sk_customer_nonce'])||!is_string($_POST['sk_customer_user'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_customer_nonce'])),'sk_customer_'.$id)) return;
+ $raw=wp_unslash($_POST['sk_customer_user']);if(!preg_match('/^[0-9]{1,10}$/D',$raw)) return;
+ $uid=(int)$raw;
+ if(!$uid){delete_post_meta($id,'sk_customer_user');delete_post_meta($id,'sk_customer_email');return;}
+ $user=get_userdata($uid);if(!$user||array_values($user->roles)!==['subscriber']||!is_email($user->user_email)) return;
+ update_post_meta($id,'sk_customer_email',$user->user_email);
+ update_post_meta($id,'sk_customer_user',$uid);
+ add_post_meta($id,'sk_customer_access_history',['user'=>$uid,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+});
+add_shortcode('softkom_customer_dashboard',function(){
+ return '<a href="'.esc_url(admin_url('admin-post.php?action=softkom_customer_view')).'">Open customer dashboard</a>';
+});
+function softkom_customer_view(){
+ if(!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE',true);
+ nocache_headers();header('Cache-Control: private, no-store, max-age=0',true);
+ header('X-Robots-Tag: noindex, nofollow',true);header('Content-Type: text/html; charset=UTF-8',true);
+ if(($_SERVER['REQUEST_METHOD']??'')!=='GET'){status_header(405);exit;}
+ $html='';
+ if(!is_user_logged_in()){
+ status_header(401);$html='<p><a href="'.esc_url(wp_login_url(admin_url('admin-post.php?action=softkom_customer_view'))).'">Sign in</a></p>';
+ }else{
+ $user=wp_get_current_user();$uid=$user->ID;
+ if(array_values($user->roles)!==['subscriber']){status_header(403);$html='<p>No customer access.</p>';}
+ else{
+ $projects=get_posts(['post_type'=>'softkom_delivery','post_status'=>'private','numberposts'=>100,'meta_key'=>'sk_customer_user','meta_value'=>$uid]);
+ $labels=['allocated'=>'Scheduled','in_progress'=>'In progress','quality_review'=>'Quality review','accepted'=>'Completed','cancelled'=>'Cancelled'];
+ $html='<p>Showing up to 100 recent projects.</p><ul>';
+ foreach($projects as $project){
+ $id=$project->ID;
+ if(get_post_status($id)!=='private'||(int)get_post_meta($id,'sk_customer_user',true)!==(int)$uid||strcasecmp($user->user_email,(string)get_post_meta($id,'sk_customer_email',true))!==0) continue;
+ $status=get_post_meta($id,'sk_delivery_status',true);if(!isset($labels[$status])) continue;
+ $html.='<li>Project #'.esc_html((string)$id).' — '.esc_html($labels[$status]).'</li>';
+ }
+ $html.='</ul>';
+ }
+ }
+ echo '<!doctype html><html lang="en"><meta charset="utf-8"><title>Customer dashboard</title><main><h1>Your projects</h1>'.$html.'</main></html>';exit;
+}
+add_action('admin_post_softkom_customer_view','softkom_customer_view');
+add_action('admin_post_nopriv_softkom_customer_view','softkom_customer_view');
