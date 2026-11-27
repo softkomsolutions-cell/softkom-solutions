@@ -1,0 +1,16 @@
+name: Partner programme PHP lint
+on:
+  pull_request:
+    paths:
+      - 'wp-content/mu-plugins/softkom-partner-programme.php'
+      - '.github/workflows/partner-programme-lint.yml'
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax check
+        run: php -l wp-content/mu-plugins/softkom-partner-programme.php
