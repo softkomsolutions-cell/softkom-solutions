@@ -2,7 +2,8 @@
 set -euo pipefail
 umask 077
 cd "$(git rev-parse --show-toplevel)"
-root=$(mktemp -d)
+mkdir -p "$HOME/softkom-logs"
+root=$(mktemp -d "$HOME/softkom-logs/isolated.XXXXXX")
 trap 'rm -rf "$root"' EXIT
 mkdir -p "$root/home/public_html/wp-content/themes/softkom-v3" "$root/home/softkom-backups" "$root/home/softkom-logs" "$root/bin" "$root/repo/scripts" "$root/repo/wp-content/themes/softkom-v3"
 cp scripts/production-release-{check,apply}.sh "$root/repo/scripts/"
@@ -11,6 +12,7 @@ git init -q
 p=wp-content/themes/softkom-v3/release-test.php
 printf '<?php // new version\n' > "$p"
 printf '<?php // original version\n' > "$root/home/public_html/$p"
+printf "/error_log\n" > .gitignore
 git add .
 git -c user.name=Test -c user.email=test@example.invalid commit -qm fixture
 a=$(sha256sum "$root/home/public_html/$p" | cut -d ' ' -f1)
