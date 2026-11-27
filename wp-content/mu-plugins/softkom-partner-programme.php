@@ -400,3 +400,29 @@ add_action('save_post_softkom_delivery',function($id){
  if($lead) update_post_meta($id,'sk_crm_lead_id',$lead);else delete_post_meta($id,'sk_crm_lead_id');
  add_post_meta($id,'sk_crm_link_history',['from'=>$old,'to'=>$lead,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
 });
+
+function softkom_commission_estimate($basis,$rate,$receipts,$refunds,$cost){
+ if(!in_array($basis,['none','collected_net','realized_margin'],true)||!is_scalar($rate)||!preg_match('/^[0-9]{1,3}(\.[0-9]{1,2})?$/D',(string)$rate)||(float)$rate>100) return null;
+ foreach([$receipts,$refunds,$cost] as $v) if(!is_scalar($v)||!preg_match('/^[0-9]{1,9}$/D',(string)$v)) return null;
+ if((int)$refunds>(int)$receipts) return null;
+ $net=(int)$receipts-(int)$refunds;
+ $base=$basis==='none'?0:($basis==='collected_net'?$net:max(0,$net-(int)$cost));
+ return (int)round($base*(int)round((float)$rate*100)/10000);
+}
+add_action('add_meta_boxes_softkom_delivery',function(){
+ add_meta_box('sk_commission_review','Commission reconciliation review',function($post){
+ if(!current_user_can('manage_options')) return;
+ $id=$post->ID;$partner=(int)get_post_meta($id,'sk_partner_id',true);
+ if(!$partner||get_post_type($partner)!=='softkom_partner'||get_post_status($partner)!=='private'||get_post_meta($partner,'review_status',true)!=='approved'||!get_post_meta($id,'sk_fin_reference',true)){
+ echo '<p>Not ready: approved partner and reconciled accounting reference required.</p>';return;
+ }
+ $basis=get_post_meta($partner,'sk_commission_basis',true);$rate=get_post_meta($partner,'sk_commission_rate',true);
+ $estimate=softkom_commission_estimate($basis,$rate,get_post_meta($id,'sk_fin_receipts',true),get_post_meta($id,'sk_fin_refunds',true),get_post_meta($id,'sk_fin_delivery_cost',true));
+ if($estimate===null){echo '<p>Incomplete or invalid policy or financial data.</p>';return;}
+ $recorded=get_post_meta($id,'sk_fin_commission',true);
+ if(!preg_match('/^[0-9]{1,9}$/D',(string)$recorded)){echo '<p>Recorded liability missing.</p>';return;}
+ echo '<p>Current assigned delivery partner policy: '.esc_html($basis).' at '.esc_html($rate).'%.</p>';
+ foreach(['Calculated estimate'=>$estimate,'Recorded liability'=>(int)$recorded,'Difference'=>$estimate-(int)$recorded] as $label=>$amount) echo '<p>'.esc_html($label).': R '.esc_html(number_format($amount/100,2)).'</p>';
+ echo '<p>Review against the signed agreement and historical rate before updating the verified liability. This estimate does not accrue or pay commission and does not cover separate referral beneficiaries.</p>';
+ },'softkom_delivery');
+});
