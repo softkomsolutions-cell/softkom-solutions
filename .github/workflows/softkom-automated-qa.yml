@@ -36,6 +36,8 @@ jobs:
         run: php tests/run-static-acquisition-qa.php
       - name: Run funnel command centre QA
         run: php tests/run-funnel-command-centre-qa.php
+      - name: Run partner programme QA
+        run: php tests/run-partner-programme-tests.php
 
   live-http-qa:
     name: Live website QA
