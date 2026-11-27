@@ -13,8 +13,16 @@ add_action('init', function () {
  ]);
 });
 function softkom_partner_privacy_ready(){
- $id=(int)get_option('wp_page_for_privacy_policy');
- return $id>0 && get_post_status($id)==='publish' && (bool)get_privacy_policy_url();
+  $id=(int)get_option('wp_page_for_privacy_policy');
+  return $id>0 && get_post_status($id)==='publish' && (bool)get_privacy_policy_url();
+}
+function softkom_partner_backup_snapshot(){
+  // Return the most recent backup snapshot for the current partner application, or false
+  $emails=isset($_GET['email'])?sanitize_email(wp_unslash($_GET['email'])): '';
+  $key='sk_partner_backup_'.hash_hmac('sha256',strtolower($emails),wp_salt('nonce'));
+  $snapshot=get_transient($key);
+  if($snapshot){$data=maybe_unserialize($snapshot);if($data&&is_array($data))return $data;}
+  return false;
 }
 function softkom_partner_form_html(){
  if(!softkom_partner_privacy_ready()) return '<p>Applications temporarily unavailable. Please contact Softkom Solutions.</p>';
@@ -93,8 +101,17 @@ function softkom_partner_apply() {
  if (is_wp_error($id) || !$id) wp_die('Unable to save application.', '', ['response'=>500]);
  set_transient($key,1,HOUR_IN_SECONDS);
  if($ipkey) set_transient($ipkey,1+(int)get_transient($ipkey),HOUR_IN_SECONDS);
- wp_mail(get_option('admin_email'),'New Softkom partner application','A new application is available in the WordPress administration area.');
- wp_safe_redirect(add_query_arg('partner_received','1',admin_url('admin-post.php?action=softkom_partner_form')),303); exit;
+wp_mail(get_option('admin_email'),'New Softkom partner application','A new application is available in the WordPress administration area.');
+  // Record backup snapshot before redirect
+  $backup_snapshot=array(
+	'partner_id'=>$id,
+	'partner_title'=>$company,
+	'application_time'=>current_time('mysql',true),
+	' applicant_email'=>$email,
+	'ip_address'=>isset($_SERVER['REMOTE_ADDR'])&&is_string($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR':''
+  );
+  set_transient('sk_partner_backup_'.hash_hmac('sha256',strtolower($email),wp_salt('nonce')),wp_json_encode($backup_snapshot),HOUR_IN_SECONDS);
+  wp_safe_redirect(add_query_arg('partner_received','1',admin_url('admin-post.php?action=softkom_partner_form')),303); exit;
 }
 add_action('admin_post_softkom_partner_apply','softkom_partner_apply');
 add_action('admin_post_nopriv_softkom_partner_apply','softkom_partner_apply');
