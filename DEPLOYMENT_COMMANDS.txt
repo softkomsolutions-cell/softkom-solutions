@@ -1,0 +1,176 @@
+=== TRUEHOST STAGING DEPLOYMENT COMMANDS ===
+
+⚠️ NOTES FOR TRUEHOST SHARED CPANEL HOSTING:
+- Command-line `mysqldump` and `tar` may not be available on all Truehost plans
+- Use cPanel File Manager or cPanel Backup wizards as primary methods
+- SSH access is plan-dependent; use web-based cPanel tools as fallback
+- Backup files MUST be stored OUTSIDE public_html to prevent web access
+- Restrict file permissions (chmod 600 or 640) on all backup files
+
+1. FULL DATABASE BACKUP
+   cPanel WEB METHOD (recommended for Truehost):
+    a. Log into cPanel -> Files -> Backup -> Download a Full Website Backup
+    b. Select "Home Directory" as the backup location
+    c. Click "Generate Backup" and download the .tar.gz file to local machine
+    d. Extract locally; contains database (MySQL dump) + public_html filesystem
+
+   SSH/COMMAND-LINE METHOD (if plan supports):
+    Command: mysqldump -u YOUR_USERNAME -p YOUR_DATABASE_NAME > staging_db_backup_$(date +%Y%m%d_%H%M%S).sql
+    Example: mysqldump -u softkom_user -p softkom_wpdb > staging_db_backup_20261127_200000.sql
+    Store backup OUTSIDE public_html: ~/staging_db_backup_20261127_200000.sql
+    File permissions: chmod 600 staging_db_backup_*.sql
+
+2. FULL FILESYSTEM BACKUP (public_html)
+   cPanel WEB METHOD (recommended):
+    a. Log into cPanel -> Files -> File Manager -> public_html
+    b. Select ALL files (checkbox at top-left, may need to click "Settings" to show hidden files like .htaccess, .well-known)
+    c. Click "Compress" at top-right -> .tar.gz -> Compress File(s)
+    d. Download the staging_files_backup_YYYYMMDD_HHMMSS.tar.gz to local machine
+    e. OR: Click "Move" to move the compressed file to a non-web directory (recommended)
+
+   SSH/COMMAND-LINE METHOD (if plan supports):
+    Command: cd public_html; tar -czf staging_files_backup_$(date +%Y%m%d_%H%M%S).tar.gz --exclude=cache --exclude=*.gz .
+    Example: cd public_html; tar -czf staging_files_backup_20261127_200000.tar.gz --exclude=cache --exclude=*.gz .
+    Store backup OUTSIDE public_html: ~/staging_files_backup_20261127_200000.tar.gz
+    File permissions: chmod 600 staging_files_backup_*.tar.gz
+
+3. DEPLOY MU-PLUGINS (via cPanel File Manager)
+   Steps (ALL Truehost plans):
+   a. Log into cPanel -> File Manager -> public_html/wp-content/mu-plugins/
+      - If mu-plugins folder doesn't exist: + File Folder -> name "mu-plugins" -> Create New Folder
+      - Ensure hidden files are visible: "Settings" -> check "Show Hidden Files (dotfiles)"
+   b. Upload softkom-partner-programme.php:
+      - Click "Upload" button -> Select file from local machine -> Overwrite if prompted
+      - OR: Drag-and-drop the file into the File Manager window
+   c. Verify: The file appears in the list with size and modification date
+
+   SSH/SCP METHOD (if plan supports SSH):
+    Command: cp wp-content/mu-plugins/softkom-partner-programme.php /path/to/staging/wp-content/mu-plugins/
+    OR: scp softkom-partner-programme.php user@domain:public_html/wp-content/mu-plugins/
+
+4. VERIFY WORDPRESS ADMIN ACCESS
+   URL: https://softkomsolutions.com/staging/wp-admin
+   Credentials: Your WordPress admin username/password
+   Verify: Dashboard loads, "Softkom Partner Programme" plugin listed in Plugins page
+   If login fails: Use cPanel -> WordPress Manager -> Installs -> Reset admin password
+
+5. ACTIVATE PARTNER PROGRAMME PLUGIN
+   Steps:
+   a. In WordPress Admin -> Plugins page
+   b. Find "Softkom Partner Programme" in the unactivated list
+   c. Click "Activate"
+   d. Confirm no plugin error messages appear
+   e. If activation fails: Check PHP version (requires 8.0+); verify no syntax errors in mu-plugin
+
+6. TEST PARTNER RECRUITMENT PAGE
+   URLs to test:
+   a. https://softkomsolutions.com/staging/ (homepage)
+   b. https://softkomsolutions.com/staging/?s=partner (search results)
+   c. Page with [softkom_partner_application] shortcode
+   Verify:
+   - Form renders without PHP errors
+   - Privacy policy gate: "Applications temporarily unavailable" if no privacy policy page set
+   - Valid application submission: Creates private partner post, sends admin notification email
+   - Missing consent: Application rejected, error message displayed
+   - Honeypot filled (website_check field): Application rejected
+   - Repeated submission (same email within 1 hour): Rate-limited, please wait message
+
+7. RUN FUNCTIONAL PHP SYNTAX CHECK
+   cPanel Dashboard -> Terminal (if available) OR local check:
+   Command: php -l wp-content/mu-plugins/softkom-partner-programme.php
+   Expected: No output = syntax OK
+   If PHP not available on cPanel Terminal: Skip; rely on code review verification
+
+   Manual test scenarios (no PHP required):
+   a. Visit partner application form - should show UI correctly
+   b. Submit valid data (company, contact, email, kind, experience, consent=1) - should succeed
+   c. Submit missing consent (consent=0 or empty) - should show error
+   d. Submit honeypot-filled (website_check=http://spam.com) - should show error
+   e. Admin approval: Set review_status=approved, vetting_verified=1 via post meta edit
+   f. Dashboard access: Only subscriber users with email matching partner's registered email can access
+
+7. VERIFY FINANCIAL RECONCILIATION
+   Steps:
+   a. Create a delivery project linked to the approved partner (sk_partner_id)
+   b. Add financial records via post meta:
+      - sk_fin_receipts: integer (ZAR cents, excluding VAT)
+      - sk_fin_refunds: integer (ZAR cents)
+      - sk_fin_delivery_cost: integer (ZAR cents, excluding VAT)
+      - sk_fin_commission: integer (ZAR cents, excluding VAT)
+      - sk_fin_supplier_paid: integer (ZAR cents, excluding VAT)
+      - sk_fin_commission_paid: integer (ZAR cents, excluding VAT)
+      - sk_fin_reference: string (alphanumeric, e.g., "RECON-2026-001")
+   c. Verify commercial summary shows correct totals (access via WP Admin -> Partner Report)
+   d. Verify outstanding balances calculate correctly:
+      - supplier_outstanding = sk_fin_delivery_cost - sk_fin_supplier_paid
+      - commission_outstanding = sk_fin_commission - sk_fin_commission_paid
+
+8. VERIFY COMMISSION LEDGER (Individual Beneficiary)
+   Steps:
+   a. On a delivery project, set up referral commission agreement:
+      - sk_referral_snapshot: {"partner": partner_post_ID, "rate": "15.00", "basis": "collected_net", "agreement": "Signed referral agreement Q4 2026"}
+      - sk_referral_payment_ref: unique transaction reference (e.g., "REF-a1b2c3d4e5f6")
+      - sk_referral_payment_date: current timestamp (e.g., "2026-11-27 20:00:00")
+      - sk_referral_agreed_liability_rate: "15.00"
+   b. Verify each field stores correctly via WP Admin -> Post Meta editor (or phpMyAdmin)
+   c. Test duplicate payment prevention:
+      - Attempt to update sk_referral_snapshot after sk_fin_commission_paid > 0
+      - Should be blocked; no changes saved
+   c. Verify audit history:
+      - sk_referral_audit should contain array of change entries
+      - Each entry: previous, current, reviewer ID, timestamp, payment_ref, payment_date, commission_paid, commission_recorded
+
+8. ROLLBACK PROCEDURE (if tests fail)
+   Steps (ALL Truehost plans):
+   a. RESTORE DATABASE:
+      - cPanel -> Files -> Backup -> Manage Backups -> Download Full Website Backup
+      - OR: Use phpMyAdmin -> Import .sql file
+      - Command (if SSH): mysql -u YOUR_USERNAME YOUR_DATABASE_NAME < ~/staging_db_backup_*.sql
+   b. RESTORE FILES:
+      - cPanel -> Files -> Backup -> Manage Backups -> Download Full Website Backup
+      - OR: Extract staging_files_backup_*.tar.gz into public_html/ (overwrite existing)
+      - OR: Use cPanel File Manager "Move" to restore files from backup archive
+   c. DISABLE PARTNER PROGRAMME (temporary):
+      mv wp-content/mu-plugins wp-content/mu-plugins.disabled
+   d. VERIFY SITE REVERSION:
+      - Visit https://softkomsolutions.com/staging/
+      - Confirm site operates as before deployment
+   e. INVESTIGATE FAILURES:
+      - Review WordPress error log (cPanel -> Metrics -> Error Log)
+      - Fix code issues, re-apply, repeat deployment
+
+9. VERIFY COMPLETE WORKFLOW (End-to-End)
+   a. CUSTOMER ACQUISITION:
+      - Prospect completes assessment → Lead created (softkom_lead post) → Quotation generated
+      - Track: _softkom_first_name, _softkom_last_name, _softkom_email, _softkom_company
+   b. PARTNER RECRUITMENT:
+      - Partner completes application form → Admin reviews → review_status=approved + vetting_verified=1
+      - sk_portal_user assigned to verified subscriber user ID
+      - Partner gains access to private dashboard
+   c. OUTSOURCED DELIVERY:
+      - Project allocated to partner (sk_partner_id) → Status: draft → allocated → in_progress → quality_review → accepted → cancelled
+      - Partner sees own projects only in dashboard (sk_partner_id filter)
+      - Status changes tracked in sk_delivery_history
+   d. CRM INTEGRATION:
+      - Optional: Link CRM lead ID via sk_crm_lead_id meta field
+      - Pipeline stage visible: _softkom_pipeline_stage meta
+      - Does NOT change sales stages or create new leads
+   d. FINANCIAL RECONCILIATION:
+      - Record receipts → record refunds (must ≤ receipts) → record delivery_cost → record commission → record supplier_paid → record commission_paid
+      - Outstanding balances auto-calculated and displayed in commercial summary
+      - Reconciliation reference (sk_fin_reference) must be set for project to count in totals
+   e. RECURRING REVENUE:
+      - _softkom_estimated_mrr tracked per project
+      - Recurring service catalog visible in admin
+      - MRR calculations: retail_price × billing_period_frequency
+
+=== NOTES ===
+- WordPress transients (sk_partner_*, sk_referral_*) are CACHE MARKERS, not backups
+- Full backup requires: cPanel Backup wizard OR phpMyAdmin export + File Manager compress
+- Rollback requires: database restore + file restore (both must be done)
+- NEVER store backup files inside public_html (web-accessible directory)
+- Always set file permissions: chmod 600 on .sql and .tar.gz backup files
+- PHP 8.0+ required for all partner programme functions
+- Never copy production customer data into GitHub or version control
+- All meta updates include audit history for traceability
+- If cPanel Terminal is unavailable, all deployment can be accomplished via File Manager alone
