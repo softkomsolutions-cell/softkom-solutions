@@ -1,4 +1,5 @@
 ---
 deployment:
   tasks:
-    - /bin/bash -c 'set -eu; umask 077; mkdir -p "$HOME/softkom-logs"; printf "cPanel deployment smoke check passed: %s\n" "$(date -u)" >> "$HOME/softkom-logs/cpanel-deploy-smoke.log"'
+    - >-
+      /bin/bash -c 'set -eu; umask 077; mkdir -p "$HOME/softkom-logs"; date -u >> "$HOME/softkom-logs/cpanel-deploy-smoke.log"'
