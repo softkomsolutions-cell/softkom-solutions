@@ -376,3 +376,27 @@ function softkom_customer_view(){
 }
 add_action('admin_post_softkom_customer_view','softkom_customer_view');
 add_action('admin_post_nopriv_softkom_customer_view','softkom_customer_view');
+
+add_action('add_meta_boxes_softkom_delivery',function(){
+ add_meta_box('sk_crm_link','Sales CRM connection',function($post){
+ if(!current_user_can('manage_options')) return;
+ wp_nonce_field('sk_crm_'.$post->ID,'sk_crm_nonce');
+ $id=(int)get_post_meta($post->ID,'sk_crm_lead_id',true);
+ echo '<p><label>Existing private CRM lead ID (0 unlinks) <input type="number" min="0" name="sk_crm_lead_id" value="'.esc_attr((string)$id).'"></label></p>';
+ if($id&&get_post_type($id)==='softkom_lead'&&get_post_status($id)==='private'&&current_user_can('edit_post',$id)){
+ echo '<p><a href="'.esc_url(get_edit_post_link($id)).'">Open linked CRM lead</a></p>';
+ echo '<p>Pipeline stage: '.esc_html((string)get_post_meta($id,'_softkom_pipeline_stage',true)).'</p>';
+ }
+ echo '<p>Verify that this is the correct paying customer before linking. This does not change sales stages or create new leads.</p>';
+ },'softkom_delivery');
+});
+add_action('save_post_softkom_delivery',function($id){
+ if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+ if(!isset($_POST['sk_crm_nonce'],$_POST['sk_crm_lead_id'])||!is_string($_POST['sk_crm_nonce'])||!is_string($_POST['sk_crm_lead_id'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_crm_nonce'])),'sk_crm_'.$id)) return;
+ $raw=wp_unslash($_POST['sk_crm_lead_id']);if(!preg_match('/^[0-9]{1,10}$/D',$raw)) return;
+ $lead=(int)$raw;
+ if($lead&&(get_post_type($lead)!=='softkom_lead'||get_post_status($lead)!=='private'||!current_user_can('edit_post',$lead))) return;
+ $old=(int)get_post_meta($id,'sk_crm_lead_id',true);if($old===$lead) return;
+ if($lead) update_post_meta($id,'sk_crm_lead_id',$lead);else delete_post_meta($id,'sk_crm_lead_id');
+ add_post_meta($id,'sk_crm_link_history',['from'=>$old,'to'=>$lead,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+});
