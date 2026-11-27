@@ -291,3 +291,38 @@ add_action('save_post_softkom_partner',function($id){
  if($other) return;
  update_post_meta($id,'sk_portal_user',$uid);
 });
+
+add_action('admin_menu',function(){
+ add_submenu_page('edit.php?post_type=softkom_partner','Commercial summary','Commercial summary','manage_options','softkom-commercial-summary','softkom_partner_report');
+});
+function softkom_partner_report(){
+ if(!current_user_can('manage_options')) wp_die('Forbidden','',['response'=>403]);
+ $counts=array_fill_keys(['pending','vetting','approved','rejected','suspended'],0);
+ $projects=0;$reconciled=0;$totals=array_fill_keys(['receipts','refunds','delivery_cost','commission','supplier_paid','commission_paid'],0);
+ foreach(['softkom_partner','softkom_delivery'] as $type){
+ $page=1;
+ do{
+ $q=new WP_Query(['post_type'=>$type,'post_status'=>'private','posts_per_page'=>100,'paged'=>$page,'orderby'=>'ID','order'=>'ASC','fields'=>'ids']);
+ foreach($q->posts as $id){
+ if($type==='softkom_partner'){
+ $s=get_post_meta($id,'review_status',true);if(isset($counts[$s])) $counts[$s]++;
+ }else{
+ $projects++;
+ if(!get_post_meta($id,'sk_fin_reference',true)) continue;
+ $values=[];foreach($totals as $key=>$unused){$v=get_post_meta($id,'sk_fin_'.$key,true);if(!is_scalar($v)||!preg_match('/^[0-9]{1,9}$/D',(string)$v)) continue 2;$values[$key]=(int)$v;}
+ if($values['refunds']>$values['receipts']||$values['supplier_paid']>$values['delivery_cost']||$values['commission_paid']>$values['commission']) continue;
+ $reconciled++;foreach($values as $key=>$v) $totals[$key]+=$v;
+ }
+ }
+ $page++;
+ }while($page<=$q->max_num_pages);
+ }
+ echo '<div class="wrap"><h1>Commercial summary</h1><p>Private records only. Financial totals cover manually reconciled projects, not the entire sales pipeline.</p><ul>';
+ foreach($counts as $key=>$n) echo '<li>'.esc_html(ucfirst($key)).': '.esc_html((string)$n).'</li>';
+ echo '</ul><p>Projects: '.esc_html((string)$projects).' | Reconciled: '.esc_html((string)$reconciled).'</p><ul>';
+ $totals['retained_contribution']=$totals['receipts']-$totals['refunds']-$totals['delivery_cost']-$totals['commission'];
+ $totals['supplier_outstanding']=$totals['delivery_cost']-$totals['supplier_paid'];
+ $totals['commission_outstanding']=$totals['commission']-$totals['commission_paid'];
+ foreach($totals as $key=>$v) echo '<li>'.esc_html(ucfirst(str_replace('_',' ',$key))).': '.($reconciled?'R '.esc_html(number_format($v/100,2)):'Not recorded').'</li>';
+ echo '</ul><p>Excludes VAT, overheads and taxes. No payments are initiated.</p></div>';
+}
