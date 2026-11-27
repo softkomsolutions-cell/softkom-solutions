@@ -38,7 +38,10 @@ changed=1
 mv -f "$tmp" "$live/$path"
 [ "$(sha256sum "$live/$path" | cut -d ' ' -f1)" = "$target" ]
 for url in https://softkomsolutions.com/ https://softkomsolutions.com/assessment/; do
-  curl -fsSL --max-time 45 -o /dev/null "$url"
+  if ! command curl -fsSL --max-time 45 -o /dev/null "$url"; then
+    echo "Health check failed: $url" >&2
+    exit 1
+  fi
 done
 changed=0
 echo "Released: $path; recovery copy: $backup"
