@@ -37,8 +37,9 @@ chmod --reference="$live/$path" "$tmp"
 changed=1
 mv -f "$tmp" "$live/$path"
 [ "$(sha256sum "$live/$path" | cut -d ' ' -f1)" = "$target" ]
+health_curl="${SOFTKOM_HEALTH_CURL:-/usr/bin/curl}"
 for url in https://softkomsolutions.com/ https://softkomsolutions.com/assessment/; do
-  if ! command curl -fsSL --max-time 45 -o /dev/null "$url"; then
+  if ! "$health_curl" -fsSL --max-time 45 -o /dev/null "$url"; then
     echo "Health check failed: $url" >&2
     exit 1
   fi
