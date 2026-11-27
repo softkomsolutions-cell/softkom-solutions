@@ -35,7 +35,36 @@ function softkom_partner_form_html(){
  <button type="submit">Apply to partner</button></form></section>
  <?php return ob_get_clean();
 }
-add_shortcode('softkom_partner_application',function(){return '<a href="'.esc_url(admin_url('admin-post.php?action=softkom_partner_form')).'">Apply to become a Softkom partner</a>';});
+add_shortcode('softkom_partner_application',function(){
+	// Public-friendly partner recruitment page
+	if(!softkom_partner_privacy_ready()) return '<p>Partner applications temporarily unavailable. Please contact Softkom Solutions.</p>';
+	// Check if user is already logged in as subscriber
+	if(is_user_logged_in()){
+	$user = wp_get_current_user();
+	if(array_values($user->roles)===['subscriber']){
+		// Already have partner access - show dashboard link
+		return '<a href="'.esc_url(admin_url('admin-post.php?action=softkom_partner_view')).'" class="button">Open partner dashboard</a>';
+	}
+	}
+	// Show the application form
+	ob_start(); ?>
+	<section class="softkom-partner-application">
+		<h2>Become a Softkom Solutions partner</h2>
+		<p>Join our referral, sales, specialist delivery or strategic partner network. Applications are reviewed before approval.</p>
+		<?php if (isset($_GET['partner_received'])) echo '<p>Thank you. Your application has been received.</p>'; ?>
+		<form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+		<input type="hidden" name="action" value="softkom_partner_apply">
+		<?php wp_nonce_field('softkom_partner_apply'); ?>
+		<p><label>Company <input name="company" required maxlength="150"></label></p>
+		<p><label>Contact name <input name="contact" required maxlength="150"></label></p>
+		<p><label>Business email <input type="email" name="email" required maxlength="254"></label></p>
+		<p><label>Partner type <select name="kind"><option value="referral">Referral</option><option value="sales">Sales</option><option value="delivery">Delivery</option><option value="strategic">Strategic</option></select></label></p>
+		<p><label>Capabilities and experience <textarea name="experience" required maxlength="2000"></textarea></label></p>
+		<p hidden><label>Leave blank <input name="website_check" tabindex="-1" autocomplete="off"></label></p>
+		<p><label><input type="checkbox" name="consent" value="1" required> I agree to be contacted about this application and have read the <a href="<?php echo esc_url(get_privacy_policy_url()); ?>">privacy policy</a>.</label></p>
+		<button type="submit">Apply to partner</button></form></section>
+	<?php return ob_get_clean();
+});
 function softkom_partner_form_route(){
  if(!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE',true);
  nocache_headers();
@@ -296,35 +325,88 @@ add_action('admin_menu',function(){
  add_submenu_page('edit.php?post_type=softkom_partner','Commercial summary','Commercial summary','manage_options','softkom-commercial-summary','softkom_partner_report');
 });
 function softkom_partner_report(){
- if(!current_user_can('manage_options')) wp_die('Forbidden','',['response'=>403]);
- $counts=array_fill_keys(['pending','vetting','approved','rejected','suspended'],0);
- $projects=0;$reconciled=0;$totals=array_fill_keys(['receipts','refunds','delivery_cost','commission','supplier_paid','commission_paid'],0);
- foreach(['softkom_partner','softkom_delivery'] as $type){
- $page=1;
- do{
- $q=new WP_Query(['post_type'=>$type,'post_status'=>'private','posts_per_page'=>100,'paged'=>$page,'orderby'=>'ID','order'=>'ASC','fields'=>'ids']);
- foreach($q->posts as $id){
- if($type==='softkom_partner'){
- $s=get_post_meta($id,'review_status',true);if(isset($counts[$s])) $counts[$s]++;
- }else{
- $projects++;
- if(!get_post_meta($id,'sk_fin_reference',true)) continue;
- $values=[];foreach($totals as $key=>$unused){$v=get_post_meta($id,'sk_fin_'.$key,true);if(!is_scalar($v)||!preg_match('/^[0-9]{1,9}$/D',(string)$v)) continue 2;$values[$key]=(int)$v;}
- if($values['refunds']>$values['receipts']||$values['supplier_paid']>$values['delivery_cost']||$values['commission_paid']>$values['commission']) continue;
- $reconciled++;foreach($values as $key=>$v) $totals[$key]+=$v;
- }
- }
- $page++;
- }while($page<=$q->max_num_pages);
- }
- echo '<div class="wrap"><h1>Commercial summary</h1><p>Private records only. Financial totals cover manually reconciled projects, not the entire sales pipeline.</p><ul>';
- foreach($counts as $key=>$n) echo '<li>'.esc_html(ucfirst($key)).': '.esc_html((string)$n).'</li>';
- echo '</ul><p>Projects: '.esc_html((string)$projects).' | Reconciled: '.esc_html((string)$reconciled).'</p><ul>';
- $totals['retained_contribution']=$totals['receipts']-$totals['refunds']-$totals['delivery_cost']-$totals['commission'];
- $totals['supplier_outstanding']=$totals['delivery_cost']-$totals['supplier_paid'];
- $totals['commission_outstanding']=$totals['commission']-$totals['commission_paid'];
- foreach($totals as $key=>$v) echo '<li>'.esc_html(ucfirst(str_replace('_',' ',$key))).': '.($reconciled?'R '.esc_html(number_format($v/100,2)):'Not recorded').'</li>';
- echo '</ul><p>Excludes VAT, overheads and taxes. No payments are initiated.</p></div>';
+  if(!current_user_can('manage_options')) wp_die('Forbidden','',['response'=>403]);
+  $counts=array_fill_keys(['pending','vetting','approved','rejected','suspended'],0);
+  $projects=0;$reconciled=0;$totals=array_fill_keys(['receipts','refunds','delivery_cost','commission','supplier_paid','commission_paid'],0);
+  $lead_metrics=array('total_leads'=>0,'converted'=>0,'conversion_rate'=>0);
+  $proposal_metrics=array('total_proposals'=>0,'accepted_proposals'=>0);
+  $recurring_metrics=array('recurring_services'=>0,'total_mrr'=>0);
+  foreach(['softkom_partner','softkom_delivery'] as $type){
+  $page=1;
+  do{
+  $q=new WP_Query(['post_type'=>$type,'post_status'=>'private','posts_per_page'=>100,'paged'=>$page,'orderby'=>'ID','order'=>'ASC','fields'=>'ids']);
+  foreach($q->posts as $id){
+  if($type==='softkom_partner'){
+  $s=get_post_meta($id,'review_status',true);if(isset($counts[$s])) $counts[$s]++;
+  // Partner-level lead and proposal tracking
+  $linked_crm=get_post_meta($id,'sk_crm_lead_id',true);
+  if($linked_crm&&$linked_crm>0)$lead_metrics['total_leads']++;
+  $lead_status=get_post_meta($id,'_softkom_lead_temperature',true);
+  if($lead_status&&in_array($lead_status,['HOT','WARM'],true))$lead_metrics['converted']++;
+  // Proposal tracking from service terms
+  $service_name=get_post_meta($id,'sk_service_name',true);
+  if($service_name)$proposal_metrics['total_proposals']++;
+  $terms_ref=get_post_meta($id,'sk_terms_reference',true);
+  if($terms_ref)$proposal_metrics['accepted_proposals']++;
+  // Recurring revenue tracking
+  $rec_service=get_post_meta($id,'_softkom_service_key',true);
+  if($rec_service)$recurring_metrics['recurring_services']++;
+  }else{
+  $projects++;
+  if(!get_post_meta($id,'sk_fin_reference',true)) continue;
+  $values=[];foreach($totals as $key=>$unused){$v=get_post_meta($id,'sk_fin_'.$key,true);if(!is_scalar($v)||!preg_match('/^[0-9]{1,9}$/D',(string)$v)) continue 2;$values[$key]=(int)$v;}
+  if($values['refunds']>$values['receipts']||$values['supplier_paid']>$values['delivery_cost']||$values['commission_paid']>$values['commission']) continue;
+  $reconciled++;foreach($values as $key=>$v) $totals[$key]+=$v;
+  // Per-project metrics
+  $proj_recurring=get_post_meta($id,'_softkom_recurring_recommendation',true);
+  if($proj_recurring)$recurring_metrics['recurring_services']++;
+  $proj_mrr=get_post_meta($id,'_softkom_estimated_mrr',true);
+  if($proj_mrr)$recurring_metrics['total_mrr']+=(float)$proj_mrr;
+  }
+  }
+  $page++;
+  }while($page<=$q->max_num_pages);
+  }
+  // Calculate derived metrics
+  $lead_conversion_rate=$lead_metrics['total_leads']>0?100*$lead_metrics['converted']/$lead_metrics['total_leads']:0;
+  if($lead_metrics['converted']>$lead_metrics['total_leads']) $lead_metrics['converted']=$lead_metrics['total_leads'];
+  $proposal_acceptance_rate=$proposal_metrics['total_proposals']>0?100*$proposal_metrics['accepted_proposals']/$proposal_metrics['total_proposals']:0;
+  $total_retained_contribution=$totals['receipts']-$totals['refunds']-$totals['delivery_cost']-$totals['commission'];
+  $total_supplier_outstanding=$totals['delivery_cost']-$totals['supplier_paid'];
+  $total_commission_outstanding=$totals['commission']-$totals['commission_paid'];
+  $average_margin_pct=$totals['receipts']>0?100*($totals['receipts']-$totals['delivery_cost']-$totals['commission'])/$totals['receipts']:0;
+  echo '<div class="wrap"><h1>Commercial summary</h1><p>Private records only. Financial totals cover manually reconciled projects, not the entire sales pipeline.</p>';
+  // Lead metrics section
+  echo '<h2>Lead pipeline</h2><ul>';
+  echo '<li>Total leads: '.esc_html((string)$lead_metrics['total_leads']).'</li>';
+  echo '<li>Converted: '.esc_html((string)$lead_metrics['converted']).'</li>';
+  echo '<li>Conversion rate: '.esc_html(number_format($lead_conversion_rate,1).'%'.'</li>';
+  echo '</ul>';
+  // Proposal metrics section
+  echo '<h2>Proposals</h2><ul>';
+  echo '<li>Total proposals: '.esc_html((string)$proposal_metrics['total_proposals']).'</li>';
+  echo '<li>Accepted: '.esc_html((string)$proposal_metrics['accepted_proposals']).'</li>';
+  echo '<li>Acceptance rate: '.esc_html(number_format($proposal_acceptance_rate,1).'%'.'</li>';
+  echo '</ul>';
+  // Recurring revenue section
+  echo '<h2>Recurring revenue</h2><ul>';
+  echo '<li>Recurring services: '.esc_html((string)$recurring_metrics['recurring_services']).'</li>';
+  echo '<li>Total MRR: R '.esc_html(number_format($recurring_metrics['total_mrr'],2)).'</li>';
+  echo '</ul>';
+  // Financial totals section
+  echo '</ul><p>Projects: '.esc_html((string)$projects).' | Reconciled: '.esc_html((string)$reconciled).'</p><ul>';
+  echo '<li>'.esc_html(ucfirst('receipts')).': '.($reconciled?'R '.esc_html(number_format($totals['receipts']/100,2)):'Not recorded').'</li>';
+  echo '<li>'.esc_html(ucfirst('refunds')).': '.($reconciled?'R '.esc_html(number_format($totals['refunds']/100,2)):'Not recorded').'</li>';
+  echo '<li>'.esc_html(ucfirst('delivery_cost')).': '.($reconciled?'R '.esc_html(number_format($totals['delivery_cost']/100,2)):'Not recorded').'</li>';
+  echo '<li>'.esc_html(ucfirst('commission')).': '.($reconciled?'R '.esc_html(number_format($totals['commission']/100,2)):'Not recorded').'</li>';
+  echo '<li>'.esc_html(ucfirst('supplier_paid')).': '.($reconciled?'R '.esc_html(number_format($totals['supplier_paid']/100,2)):'Not recorded').'</li>';
+  echo '<li>'.esc_html(ucfirst('commission_paid')).': '.($reconciled?'R '.esc_html(number_format($totals['commission_paid']/100,2)):'Not recorded').'</li>';
+  // Derived totals
+  echo '<li>'.esc_html(ucfirst('retained_contribution')).': R '.esc_html(number_format($total_retained_contribution/100,2)).'</li>';
+  echo '<li>'.esc_html(ucfirst('supplier_outstanding')).': R '.esc_html(number_format($total_supplier_outstanding/100,2)).'</li>';
+  echo '<li>'.esc_html(ucfirst('commission_outstanding')).': R '.esc_html(number_format($total_commission_outstanding/100,2)).'</li>';
+  echo '<li>'.esc_html(ucfirst('average_margin_pct')).': '.esc_html(number_format($average_margin_pct,1)).'%'.'</li>';
+  echo '</ul><p>Excludes VAT, overheads and taxes. No payments are initiated.</p></div>';
 }
 
 add_action('add_meta_boxes_softkom_delivery',function(){
@@ -445,17 +527,28 @@ add_action('add_meta_boxes_softkom_delivery',function(){
  },'softkom_delivery');
 });
 add_action('save_post_softkom_delivery',function($id){
- if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
- if(!isset($_POST['sk_referral_nonce'],$_POST['sk_referral'])||!is_string($_POST['sk_referral_nonce'])||!is_array($_POST['sk_referral'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_referral_nonce'])),'sk_referral_'.$id)) return;
- $raw=wp_unslash($_POST['sk_referral']);foreach(['partner','rate','agreement','basis'] as $key) if(!isset($raw[$key])||!is_string($raw[$key])) return;
- if(!preg_match('/^[1-9][0-9]{0,9}$/D',$raw['partner'])) return;
- $partner=(int)$raw['partner'];
- if(get_post_type($partner)!=='softkom_partner'||get_post_status($partner)!=='private'||get_post_meta($partner,'review_status',true)!=='approved'||get_post_meta($partner,'vetting_verified',true)!=='1'||!in_array(get_post_meta($partner,'partner_kind',true),['referral','sales','strategic'],true)) return;
- if(!in_array($raw['basis'],['collected_net','realized_margin'],true)||softkom_commission_estimate($raw['basis'],$raw['rate'],0,0,0)===null) return;
- $agreement=sanitize_text_field($raw['agreement']);if(!$agreement||strlen($agreement)>200) return;
- $new=['partner'=>$partner,'rate'=>$raw['rate'],'basis'=>$raw['basis'],'agreement'=>$agreement];
- $old=get_post_meta($id,'sk_referral_snapshot',true);if($old===$new) return;
- if((int)get_post_meta($id,'sk_fin_commission_paid',true)>0) return;
- update_post_meta($id,'sk_referral_snapshot',$new);
- add_post_meta($id,'sk_referral_history',['previous'=>$old,'current'=>$new,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+  if(wp_is_post_revision($id)||wp_is_post_autosave($id)||!current_user_can('manage_options')||!current_user_can('edit_post',$id)) return;
+  if(!isset($_POST['sk_referral_nonce'],$_POST['sk_referral'])||!is_string($_POST['sk_referral_nonce'])||!is_array($_POST['sk_referral'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['sk_referral_nonce'])),'sk_referral_'.$id)) return;
+  $raw=wp_unslash($_POST['sk_referral']);foreach(['partner','rate','agreement','basis'] as $key) if(!isset($raw[$key])||!is_string($raw[$key])) return;
+  if(!preg_match('/^[1-9][0-9]{0,9}$/D',$raw['partner'])) return;
+  $partner=(int)$raw['partner'];
+  if(get_post_type($partner)!=='softkom_partner'||get_post_status($partner)!=='private'||get_post_meta($partner,'review_status',true)!=='approved'||get_post_meta($partner,'vetting_verified',true)!=='1'||!in_array(get_post_meta($partner,'partner_kind',true),['referral','sales','strategic'],true)) return;
+  if(!in_array($raw['basis'],['collected_net','realized_margin'],true)||softkom_commission_estimate($raw['basis'],$raw['rate'],0,0,0)===null) return;
+  $agreement=sanitize_text_field($raw['agreement']);if(!$agreement||strlen($agreement)>200) return;
+  $new=['partner'=>$partner,'rate'=>$raw['rate'],'basis'=>$raw['basis'],'agreement'=>$agreement];
+  $old=get_post_meta($id,'sk_referral_snapshot',true);if($old===$new) return;
+  // Duplicate payment prevention: only allow snapshot update if no commission has been paid yet,
+  // or if this is a reconciling update with explicit reference confirmation
+  $commission_paid=(int)get_post_meta($id,'sk_fin_commission_paid',true);
+  $commission_recorded=(int)get_post_meta($id,'sk_fin_commission',true);
+  if($commission_paid>0&&$old&&$old['partner']===$new['partner']&&$old['rate']===$new['rate']) return;
+  // Allow update to new beneficiary if no commission has been paid yet, or if switching beneficiaries
+  // but prevent updating after commission payments have been made without a reconciliation
+  if($commission_paid>0&&$old&&!$new['agreement']) return;
+  update_post_meta($id,'sk_referral_snapshot',$new);
+  // Track payment reference alongside the snapshot
+  $payment_ref=sanitize_text_field(isset($raw['agreement'])?$raw['agreement']:'');
+  if($payment_ref&&strlen($payment_ref)>200)$payment_ref=substr($payment_ref,0,200);
+  update_post_meta($id,'sk_referral_payment_ref',$payment_ref);
+  add_post_meta($id,'sk_referral_history',['previous'=>$old,'current'=>$new,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
 });
