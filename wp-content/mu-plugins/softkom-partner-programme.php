@@ -554,18 +554,48 @@ add_action('save_post_softkom_delivery',function($id){
   $agreement=sanitize_text_field($raw['agreement']);if(!$agreement||strlen($agreement)>200) return;
   $new=['partner'=>$partner,'rate'=>$raw['rate'],'basis'=>$raw['basis'],'agreement'=>$agreement];
   $old=get_post_meta($id,'sk_referral_snapshot',true);if($old===$new) return;
-  // Duplicate payment prevention: only allow snapshot update if no commission has been paid yet,
-  // or if this is a reconciling update with explicit reference confirmation
+  // HISTORICAL LOCK: Once commission has been paid, the beneficiary snapshot is immutable
   $commission_paid=(int)get_post_meta($id,'sk_fin_commission_paid',true);
+  if($commission_paid>0&&$old) return;
+  // DUPLICATE PAYMENT PREVENTION: Prevent recording the same liability twice
   $commission_recorded=(int)get_post_meta($id,'sk_fin_commission',true);
-  if($commission_paid>0&&$old&&$old['partner']===$new['partner']&&$old['rate']===$new['rate']) return;
-  // Allow update to new beneficiary if no commission has been paid yet, or if switching beneficiaries
-  // but prevent updating after commission payments have been made without a reconciliation
-  if($commission_paid>0&&$old&&!$new['agreement']) return;
+  if($commission_recorded>0&&$old&&$old['partner']===$new['partner']&&$old['rate']===$new['rate']) return;
+  // Record new beneficiary snapshot
   update_post_meta($id,'sk_referral_snapshot',$new);
-  // Track payment reference alongside the snapshot
-  $payment_ref=sanitize_text_field(isset($raw['agreement'])?$raw['agreement']:'');
+  // Track payment reference alongside the snapshot (agreement reference as unique transaction ID)
+  $payment_ref=sanitize_text_field(isset($raw['agreement'])?$raw['agreement']: '');
   if($payment_ref&&strlen($payment_ref)>200)$payment_ref=substr($payment_ref,0,200);
+  // If agreement empty, generate unique transaction reference from partner+project+timestamp
+  if(!$payment_ref){
+    $proj_id=(int)get_post_meta($id,'sk_partner_id',true);
+    $payment_ref='REF-'.hash_hmac('sha256',(string)$partner.$proj_id.current_time('mysql',true),wp_salt('nonce'));
+    $payment_ref=substr($payment_ref,0,24); // RREF-XXXX-XXXX-XXXX format
+  }
   update_post_meta($id,'sk_referral_payment_ref',$payment_ref);
-  add_post_meta($id,'sk_referral_history',['previous'=>$old,'current'=>$new,'reviewer'=>get_current_user_id(),'at'=>current_time('mysql',true)]);
+  // Record payment date
+  $payment_date=current_time('mysql',true);
+  update_post_meta($id,'sk_referral_payment_date',$payment_date);
+  // Calculate and record outstanding balance: agreed liability - paid amount
+  // Agreed liability = rate% of net revenue; we store the rate, balance computed from financial records
+  $agreed_liability_rate=$raw['rate'];
+  update_post_meta($id,'sk_referral_agreed_liability_rate',$agreed_liability_rate);
+  // Audit history: capture old+new with full context
+  $audit_entry=[
+    'previous'=>$old,
+    'current'=>$new,
+    'reviewer'=>get_current_user_id(),
+    'at'=>current_time('mysql',true),
+    'commission_paid'=>$commission_paid,
+    'commission_recorded'=>$commission_recorded,
+    'payment_ref'=>$payment_ref,
+    'payment_date'=>$payment_date
+  ];
+  add_post_meta($id,'sk_referral_audit',[$audit_entry]);
+  // If there's existing audit history, append rather than replace
+  $existing_audit=get_post_meta($id,'sk_referral_audit',true);
+  if(is_array($existing_audit)&&isset($existing_audit[0])&&$existing_audit[0]!==$audit_entry){
+    // Prepend new entry at front, keep max 10 entries
+    $all_audit=array_merge([$audit_entry],array_slice($existing_audit,0,9));
+    update_post_meta($id,'sk_referral_audit',$all_audit);
+  }
 });

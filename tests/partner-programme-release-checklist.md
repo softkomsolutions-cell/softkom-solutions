@@ -12,6 +12,6 @@ Use synthetic records only on authorized staging. Never copy production customer
 - [ ] Verify no-store headers and actual reverse proxy/CDN cache bypass for both admin-post routes; test authenticated and anonymous requests in separate sessions.
 - [ ] Verify financial validation, refunds, supplier liabilities and commission totals with synthetic data.
 - [ ] Verify existing sales funnel and lead intake remain functional and partner applications do not inflate sales leads.
-- [ ] Verify fresh backup and rollback procedure before authorized production deployment.
+- [ ] Verify fresh backup and rollback procedure before authorized production deployment. Note: WordPress transients are cache markers, not backups; full database export and filesystem archive required.
 
 All checks initially pending; record actual evidence before marking passed.
